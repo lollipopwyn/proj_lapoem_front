@@ -20,10 +20,10 @@ function App() {
             path="/community/:communityid"
             element={<Community_detail />}
           />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
 
         {/* Catch all unmatched routes and redirect to Home */}
-        <Route path="*" element={<Navigate to="/" />} />
       </div>
     </BrowserRouter>
   );

@@ -1,0 +1,190 @@
+/* Responsive adjustments */
+@media (max-width: 1920px) {
+  .content-wrapper {
+    padding-right: 10px;
+  }
+}
+
+.community-container {
+  min-height: 100vh;
+  padding: 120px 0 320px; /* Space for navbar and footer */
+}
+
+.community-title {
+  font-size: 48px;
+  line-height: 63px;
+  padding: 0;
+  margin: 0;
+  width: 264px;
+  height: 63px;
+  display: block;
+}
+
+.content-wrapper {
+  max-width: 1920px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 40px;
+  padding-right: 30px;
+}
+
+.main-content {
+  flex: 0 0 auto;
+  width: 1320px;
+}
+
+.header {
+  margin-bottom: 40px;
+  width: 1320px;
+}
+
+.header h1 {
+  margin-bottom: 60px;
+}
+
+.view-options {
+  display: flex;
+  gap: 10px;
+}
+
+.view-options button {
+  padding: 8px 16px;
+  border: none; /* 기본 테두리 제거 */
+  background: none; /* 배경 제거 */
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+  cursor: pointer;
+  font-size: 16px;
+  color: #888; /* 기본 버튼 텍스트 색상 */
+}
+
+.view-options button img.icon {
+  width: 20px; /* 아이콘의 크기 */
+  height: 20px;
+}
+
+.view-options button.active {
+  color: #333; /* 선택된 버튼 텍스트 색상 */
+  font-weight: bold;
+  border-bottom: 2px solid #333; /* 선택된 버튼 밑줄 */
+}
+
+.view-options button:hover {
+  color: #555; /* 호버 시 텍스트 색상 변경 */
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  width: 1320px;
+  height: 1524px;
+  background-color: white;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.post-item {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #ececec;
+  margin-bottom: 20px;
+}
+
+.notice-post {
+  background-color: #ececec;
+  font-weight: bold;
+  height: 92px;
+  display: flex; /* Flexbox 사용 */
+  align-items: center; /* 수직 방향 중앙 정렬 */
+  padding: 0 20px; /* 수평 패딩 추가 (기존 padding을 변경) */
+}
+
+.notice-post .post-content h3 {
+  font-size: 20px;
+}
+
+.regular-post {
+  background-color: #ececec;
+}
+
+.post-item:last-child {
+  border-bottom: none;
+}
+
+.notice-tag {
+  color: #E83030;
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.post-content {
+  flex-grow: 1;
+}
+
+.date {
+  font-size: 12px;
+  color: #888;
+}
+
+.post-content h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.post-meta {
+  margin-top: 10px;
+  color: #666;
+  font-size: 14px;
+  display: flex;
+  gap: 20px;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 340px;
+  height: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  position: sticky;
+  top: 140px; /* navbar height(120px) + 20px margin */
+  align-self: flex-start; /* Prevents the sidebar from stretching */
+  margin-right: 0; /* Ensure sidebar stays at the right edge */
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.hot-topics, .top-users {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.topic-item, .user-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+}

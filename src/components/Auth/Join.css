@@ -1,0 +1,70 @@
+/* join.css */
+.join_container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 50px;
+  text-align: center;
+}
+
+.join_title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.join_description {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.join_form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.join_input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  text-align: center;
+  outline: none;
+}
+
+.join_input:focus {
+  border-color: #333;
+}
+
+.join_button {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  color: white;
+  background-color: #4c4039;
+}
+
+.join_button:hover {
+  background-color: #333;
+}
+
+.error_message {
+  color: red;
+  font-size: 0.9rem;
+}
+
+.gender_radio_group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}

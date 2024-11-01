@@ -1,0 +1,32 @@
+.book-card {
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+}
+
+.book-thumbnail img {
+  width: 100%;
+  height: auto;
+  background-color: var(--text-gray-light);
+  border-radius: 8px;
+}
+
+.book-info {
+  color: var(--text-black);
+}
+
+.book-title {
+  font-size: 18px;
+  font-weight: var(--font-kr-bold);
+}
+
+.book-writer {
+  display: flex;
+  gap: 4px;
+  color: var(--text-gray-dark);
+}
+
+.book-writer p {
+  font-size: var(--font-kr-smallest);
+  font-weight: var(--font-kr-regular);
+}

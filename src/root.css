@@ -17,28 +17,19 @@
   --font-kr: "Noto Sans KR", sans-serif;
   --font-en: "Poppins", sans-serif;
 
-  /* 폰트 사이즈 (국문) */
-  --font-kr-largest: 36pt;
-  --font-kr-large: 24pt;
-  --font-kr-regular: 18pt;
-  --font-kr-title: 18pt;
-  --font-kr-small: 16pt;
-  --font-kr-smallest: 14pt;
+  /* 폰트 사이즈 */
+  --font-large3: 42pt;
+  --font-large2: 36pt;
+  --font-large1: 32pt;
+  --font-normal3: 24pt;
+  --font-normal2: 20pt;
+  --font-normal1: 18pt;
+  --font-small: 16pt;
+  --font-smallest: 14pt;
 
-  /* 폰트 사이즈 (영문/숫자) */
-  --font-en-largest: 42pt;
-  --font-en-large: 32pt;
-  --font-en-title: 20pt;
-  --font-en-regular: 18pt;
-  --font-en-smallest: 14pt;
-
-  /* 폰트 두께 (국문) */
-  --font-kr-regular: 400; /* Regular */
-  --font-kr-bold: 700; /* Bold */
-
-  /* 폰트 두께 (영문/숫자) */
-  --font-en-regular: 400; /* Regular */
-  --font-en-medium: 500; /* Medium */
-  --font-en-semibold: 600; /* SemiBold */
-  --font-en-bold: 700; /* Bold */
+  /* 폰트 두께 */
+  --font-regular-weight: 400;
+  --font-medium-weight: 500;
+  --font-semibold-weight: 600;
+  --font-bold-weight: 700;
 }

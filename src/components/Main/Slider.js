@@ -15,7 +15,7 @@ const Slider = () => {
   const swiperRef = useRef(null);
 
   return (
-    <div className="mt-[100px]">
+    <div className="mt-[100px] mx-[180px]">
       <div className="swiper-container">
         <Swiper
           ref={swiperRef}

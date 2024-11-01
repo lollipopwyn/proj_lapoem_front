@@ -5,6 +5,7 @@ import Booklist from './components/BookList/Booklist';
 import Stella from './components/Stella/Stella';
 import Community from './components/Community/Community';
 import Community_detail from './components/Community/Community_detail';
+import NewForum from './components/Community/NewForum';
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
           <Route path="/booklist" element={<Booklist />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/community" element={<Community />} />
+          <Route path="/new-forum" element={<NewForum />} />
+          <Route path="/community_detail" element={<Community_detail />} />
+
           <Route
             path="/community/:communityid"
             element={<Community_detail />}

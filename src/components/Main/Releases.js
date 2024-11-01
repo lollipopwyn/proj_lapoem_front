@@ -8,7 +8,7 @@ function NewReleases() {
       <p>새로 나온 주목할만한 작품들을 만나보세요 ✨</p>
       <div className="book_list flex gap-10">
         {Array.from({ length: 5 }).map((_, idx) => (
-          <BookCard key={idx} className="p-[40px]" />
+          <BookCard key={idx} />
         ))}
       </div>
     </section>

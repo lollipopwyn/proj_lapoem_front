@@ -18,14 +18,14 @@
   --font-en: "Poppins", sans-serif;
 
   /* 폰트 사이즈 */
-  --font-large3: 42pt;
-  --font-large2: 36pt;
-  --font-large1: 32pt;
-  --font-normal3: 24pt;
-  --font-normal2: 20pt;
-  --font-normal1: 18pt;
-  --font-small: 16pt;
-  --font-smallest: 14pt;
+  --font-large3: 42px;
+  --font-large2: 36px;
+  --font-large1: 32px;
+  --font-normal3: 24px;
+  --font-normal2: 20px;
+  --font-normal1: 18px;
+  --font-small: 16px;
+  --font-smallest: 14px;
 
   /* 폰트 두께 */
   --font-regular-weight: 400;

@@ -13,20 +13,35 @@
 
 .book-info {
   color: var(--text-black);
+  gap: 6px;
 }
 
 .book-title {
-  font-size: 18px;
-  font-weight: var(--font-kr-bold);
+  font-size: var(--font-normal1);
+  font-weight: var(--font-bold-weight);
 }
 
 .book-writer {
   display: flex;
   gap: 4px;
+  font-size: var(--font-smallest);
   color: var(--text-gray-dark);
 }
 
-.book-writer p {
-  font-size: var(--font-kr-smallest);
-  font-weight: var(--font-kr-regular);
+.book-star {
+  display: flex;
+  gap: 4px;
+}
+
+.small_star {
+  width: 20px;
+  height: 20px;
+  object-fit: contain; /* 이미지 비율 유지 */
+}
+
+.average_star {
+  color: var(--text-red);
+}
+.comment_total_people {
+  color: var(--text-gray-dark);
 }

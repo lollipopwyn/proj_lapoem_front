@@ -19,6 +19,8 @@
   width: 264px;
   height: 63px;
   display: block;
+  font-family: var(--font-kr-bold);
+  font-weight: bold;
 }
 
 .content-wrapper {
@@ -220,6 +222,9 @@
 
 .my-forums-stat {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .my-forums-stat img {

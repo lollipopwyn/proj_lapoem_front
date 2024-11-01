@@ -1,6 +1,6 @@
 import React from "react";
 import small_star from "../assets/images/small_star.png";
-import ex from "../assets/images/ex_image.jpg";
+// import ex from "../assets/images/ex_image.jpg"; css 확인용 더미 이미지
 import "./Bookcard.css";
 
 function BookCard({

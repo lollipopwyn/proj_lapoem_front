@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom"; // Link 추가
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/features/auth/authSlice";
+import { logout } from "../redux/features/auth/authSlice";
 
 function Navbar() {
   const dispatch = useDispatch();

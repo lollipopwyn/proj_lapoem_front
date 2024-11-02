@@ -7,6 +7,7 @@ const store = configureStore({
   reducer: {
     auth: authReducer,
     api: apiSlice,
+    // 추가적인 슬라이스를 계속 여기에 연결 가능
   },
 });
 

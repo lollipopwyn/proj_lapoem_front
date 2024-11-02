@@ -1,0 +1,15 @@
+.booklist_wrapper{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+.booklist_content {
+  justify-items: center;
+  margin: 10%;
+  display: flex;
+}
+
+.booklist_item{
+  margin: 10px;
+}
+

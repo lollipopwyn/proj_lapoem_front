@@ -22,6 +22,8 @@ const createApiThunk = (actionType, apiURL, requestMethod) => {
 };
 
 // 2. 각 Thunks 정의---------------------------------
+//    특정 API 요청을 위해 createApiThunk를 호출하여 Thunk 함수 생성
+
 //북 리스트 관련 Thunks
 export const fetchBookListData = createApiThunk(
   'api/fetchGetBookList',
@@ -29,12 +31,14 @@ export const fetchBookListData = createApiThunk(
   getRequest
 );
 
-// 다른 Thunks 지정
+// 다른 Thunks 생성
 
 // 3. 비동기 API 호출 처리------------------------------
 // fulfilled 상태를 처리하는 핸들러 함수 생성
 const handleFullfilled = (stateKey) => (state, action) => {
-  state[stateKey] = action.payload;
+  state[stateKey] = Array.isArray(action.payload)
+    ? action.payload //배열일 경우 그대로 state[stateKey]에 할당
+    : action.payload.data || action.payload; //객체일 경우 data 속성을 우선적으로 할당하고, 만약 data가 없다면 action.payload 자체를 할당
 };
 // rejected 상태를 처리하는 핸들러 함수
 const handleRejected = (state, action) => {
@@ -43,11 +47,11 @@ const handleRejected = (state, action) => {
 };
 
 // 4. apiSlice 슬라이스 생성--------------------------
+//    Redux 슬라이스를 생성하여 초기 상태와 비동기 액션의 상태 관리 설정
 const apiSlice = createSlice({
   name: 'api',
   initialState: {
-    // 초기 상태 지정
-    fetchGetBookList: null,
+    fetchGetBookList: [],
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
     errorMessage: '',

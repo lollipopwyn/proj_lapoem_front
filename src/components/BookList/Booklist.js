@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GET_BOOK_LIST_API_URL } from '../../util/apiUrl';
+import {
+  GET_BOOK_LIST_API_URL,
+  GET_SEARCH_BOOKS_API_URL,
+} from '../../util/apiUrl';
 import Pagination from '../PageNation';
 import './Booklist.css';
+import SearchBar from '../Common/SearchBar';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -29,6 +33,12 @@ const BookList = () => {
       setLoading(false);
     }
   };
+  // 검색 결과를 처리하는 함수
+  const handleSearch = (data) => {
+    setBooks(data.data); // 검색 결과로 도서 목록 업데이트
+    setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
+    setCurrentPage(data.currentPage); // 현재 페이지 업데이트
+  };
 
   const totalPages = Math.ceil(totalBooks / limit); // 총 페이지 수 계산
 
@@ -41,7 +51,7 @@ const BookList = () => {
   return (
     <div className="booklist_wrapper">
       <h1 className="booklist_pagetitle">Book List</h1>
-
+      <SearchBar onSearch={handleSearch} /> {/* SearchBar 컴포넌트 사용 */}
       {loading ? (
         <p>Loading...</p>
       ) : (

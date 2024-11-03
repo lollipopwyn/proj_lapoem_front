@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  GET_BOOK_LIST_API_URL,
-  GET_SEARCH_BOOKS_API_URL,
-} from '../../util/apiUrl';
+import { GET_BOOK_LIST_API_URL } from '../../util/apiUrl';
 import Pagination from '../PageNation';
-import './Booklist.css';
 import SearchBar from '../Common/SearchBar';
+import CategoryFilter from '../Common/CategoryFilter';
+import './Booklist.css';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -14,16 +12,17 @@ const BookList = () => {
   const [totalBooks, setTotalBooks] = useState(0);
   const [limit] = useState(10); // 페이지당 표시할 책의 수
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리 상태 추가
 
   useEffect(() => {
-    fetchBooks(currentPage);
-  }, [currentPage]);
+    fetchBooks(currentPage, selectedCategory);
+  }, [currentPage, selectedCategory]);
 
-  const fetchBooks = async (page) => {
+  const fetchBooks = async (page, genre_tag_id) => {
     setLoading(true);
     try {
       const response = await axios.get(GET_BOOK_LIST_API_URL, {
-        params: { page, limit },
+        params: { page, limit, genre_tag_id },
       });
       setBooks(response.data.data);
       setTotalBooks(response.data.totalBooks);
@@ -40,6 +39,12 @@ const BookList = () => {
     setCurrentPage(data.currentPage); // 현재 페이지 업데이트
   };
 
+  // 카테고리 선택 핸들러
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category); // 선택한 카테고리 ID로 상태 업데이트
+    setCurrentPage(1); // 필터 변경 시 페이지를 1로 초기화
+  };
+
   const totalPages = Math.ceil(totalBooks / limit); // 총 페이지 수 계산
 
   const handlePageChange = (page) => {
@@ -51,6 +56,7 @@ const BookList = () => {
   return (
     <div className="booklist_wrapper">
       <h1 className="booklist_pagetitle">Book List</h1>
+      <CategoryFilter onCategoryChange={handleCategoryChange} />
       <SearchBar onSearch={handleSearch} /> {/* SearchBar 컴포넌트 사용 */}
       {loading ? (
         <p>Loading...</p>

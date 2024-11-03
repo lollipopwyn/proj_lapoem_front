@@ -3,6 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   GET_BOOK_LIST_API_URL,
   GET_SEARCH_BOOKS_API_URL,
+  GET_BOOK_BY_CATEGORY_API_URL,
+  GET_BOOK_ALL_CATEGORIES_API_URL,
   // 다른 엔드포인트 URL
 } from '../../../util/apiUrl';
 import {
@@ -42,6 +44,20 @@ export const fetchSearchBooksData = createApiThunk(
   getRequest
 );
 
+// 카테고리 필터 조회 Thunks
+export const fetchBookByCategoryData = createApiThunk(
+  'api/fetchBookByCategory',
+  GET_BOOK_BY_CATEGORY_API_URL,
+  getRequest
+);
+
+// 책 카타고리 Thunks
+export const fetchBookAllCategoriesData = createApiThunk(
+  'api/fetchBookAllCategories',
+  GET_BOOK_ALL_CATEGORIES_API_URL,
+  getRequest
+);
+
 // 다른 관련 Thunks생성
 
 // 3. 비동기 API 호출 처리------------------------------
@@ -64,6 +80,8 @@ const apiSlice = createSlice({
   initialState: {
     fetchGetBookList: [],
     fetchSearchBooks: null,
+    fetchBookByCategory: null,
+    fetchBookAllCategories: [],
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
     errorMessage: '',
@@ -77,11 +95,24 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookList')
       )
       .addCase(fetchBookListData.rejected, handleRejected)
+      // -----------------------------------------------------
       .addCase(
         fetchSearchBooksData.fulfilled,
         handleFullfilled('fetchSearchBooks')
       )
-      .addCase(fetchSearchBooksData.rejected, handleRejected);
+      .addCase(fetchSearchBooksData.rejected, handleRejected)
+
+      .addCase(
+        fetchBookByCategoryData.fulfilled,
+        handleFullfilled('fetchBookByCategory')
+      )
+      .addCase(fetchBookByCategoryData.rejected, handleRejected)
+
+      .addCase(
+        fetchBookAllCategoriesData.fulfilled,
+        handleFullfilled('fetchBookAllCategories')
+      )
+      .addCase(fetchBookAllCategoriesData.rejected, handleRejected);
 
     // 다른 extraReducers 설정
   },

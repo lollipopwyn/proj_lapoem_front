@@ -27,5 +27,5 @@ COPY --from=build /app/build .
 # 포트 설정
 EXPOSE 80
 
-# Nginx 실행
+# Nginx 데몬 실행
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

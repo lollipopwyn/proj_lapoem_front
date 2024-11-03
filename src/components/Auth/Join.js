@@ -1,4 +1,3 @@
-// components/Auth/Join.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,31 +18,34 @@ function Join() {
   const [error, set_error] = useState(null);
   const [phoneError, setPhoneError] = useState(null); // 전화번호 입력 오류 상태 추가
   const [idError, setIdError] = useState(null); // 아이디 입력 오류 상태 추가
+  const [genderError, setGenderError] = useState(null); // 성별 선택 오류 상태 추가
   const navigate = useNavigate();
 
   const handle_change = (e) => {
     const { name, value } = e.target;
 
-    // 전화번호 필드에서 숫자 외 문자가 입력되었는지 확인
     if (name === 'member_phone') {
-      const isValidPhone = /^[0-9]*$/.test(value); // 숫자만 허용하는 정규 표현식
+      const isValidPhone = /^[0-9]*$/.test(value);
       if (!isValidPhone) {
-        setPhoneError('숫자만 입력해 주세요.'); // 오류 메시지 설정
-        return; // 숫자가 아닌 경우 상태를 업데이트하지 않음
+        setPhoneError('숫자만 입력해 주세요.');
+        return;
       } else {
-        setPhoneError(null); // 올바른 입력 시 오류 메시지 제거
+        setPhoneError(null);
       }
     }
 
-    // 아이디 필드에서 소문자 영어 및 숫자 외 문자가 입력되었는지 확인
     if (name === 'member_id') {
-      const isValidId = /^[a-z0-9]*$/.test(value); // 영어 소문자와 숫자만 허용하는 정규 표현식
+      const isValidId = /^[a-z0-9]*$/.test(value);
       if (!isValidId) {
-        setIdError('아이디는 영어 소문자와 숫자만 입력 가능합니다.'); // 오류 메시지 설정
-        return; // 잘못된 경우 상태를 업데이트하지 않음
+        setIdError('아이디는 영어 소문자와 숫자만 입력 가능합니다.');
+        return;
       } else {
-        setIdError(null); // 올바른 입력 시 오류 메시지 제거
+        setIdError(null);
       }
+    }
+
+    if (name === 'member_gender') {
+      setGenderError(null); // 성별 선택 시 오류 메시지 제거
     }
 
     set_form_data({ ...form_data, [name]: value });
@@ -56,9 +58,15 @@ function Join() {
       return;
     }
 
+    // 성별이 선택되지 않은 경우 오류 메시지 설정
+    if (!form_data.member_gender) {
+      setGenderError('성별을 선택해 주세요.');
+      return;
+    }
+
     try {
       const response = await axios.post(JOIN_USER_API_URL, form_data, { withCredentials: true });
-      alert(response.data.message); // 성공 메시지
+      alert(response.data.message);
       set_error(null);
       navigate('/'); // 홈으로 이동
     } catch (error) {
@@ -83,7 +91,7 @@ function Join() {
           required
           className="join_input"
         />
-        {idError && <p className="error_message">{idError}</p>} {/* 아이디 오류 메시지 */}
+        {idError && <p className="error_message">{idError}</p>}
         <input
           type="password"
           name="member_password"
@@ -116,7 +124,7 @@ function Join() {
           className="join_input"
           required
         />
-        {phoneError && <p className="error_message">{phoneError}</p>} {/* 전화번호 오류 메시지 */}
+        {phoneError && <p className="error_message">{phoneError}</p>}
         <div className="gender_radio_group">
           <label>
             <input
@@ -141,12 +149,13 @@ function Join() {
             여
           </label>
         </div>
+        {genderError && <p className="error_message">{genderError}</p>} {/* 성별 선택 오류 메시지 */}
         <input type="date" name="member_birth_date" onChange={handle_change} className="join_input" required />
         <button type="submit" className="join_button">
           회원가입
         </button>
       </form>
-      {error && <p className="error_message">{error}</p>} {/* 일반 오류 메시지 */}
+      {error && <p className="error_message">{error}</p>}
     </div>
   );
 }

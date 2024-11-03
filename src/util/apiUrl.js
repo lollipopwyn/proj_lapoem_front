@@ -1,17 +1,16 @@
-// GET
-const GET_BOOK_LIST_API_URL = 'http://localhost:8002/book-list';
-const GET_SEARCH_BOOKS_API_URL = 'http://localhost:8002/search-books';
-const GET_BOOK_BY_CATEGORY_API_URL = 'http://localhost:8002/search-category';
-const GET_BOOK_ALL_CATEGORIES_API_URL = 'http://localhost:8002/all-categories';
+// util/apiUrl.js
+const BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://222.112.27.120:8002' // 배포용 URL
+    : 'http://localhost:8002'; // 로컬 개발용 URL
 
-// POST
+// GET 요청 URL
+export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;
+export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`;
+export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`;
+export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`;
 
-export {
-  // GET
-  GET_BOOK_LIST_API_URL,
-  GET_SEARCH_BOOKS_API_URL,
-  GET_BOOK_BY_CATEGORY_API_URL,
-  GET_BOOK_ALL_CATEGORIES_API_URL,
-
-  // POST
-};
+// POST 요청 URL
+export const JOIN_USER_API_URL = `${BASE_URL}/join`; // 회원 가입 URL
+export const LOGIN_USER_API_URL = `${BASE_URL}/login`; // 회원 로그인 URL
+export const VERIFY_USER_API_URL = `${BASE_URL}/verify`; // 사용자 인증 확인 URL

@@ -1,18 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { JOIN_USER_API_URL, LOGIN_USER_API_URL, VERIFY_USER_API_URL } from '../../../util/apiUrl'; // URL 상수 가져오기
 
 export const joinUser = createAsyncThunk('auth/joinUser', async (userData, { rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:8002/join', userData); // 백엔드 URL 명시
+    const response = await axios.post(JOIN_USER_API_URL, userData); // 상수 사용
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data.message);
+    return rejectWithValue(error.response?.data?.message || '회원가입 오류');
   }
 });
 
 export const loginUser = createAsyncThunk('auth/loginUser', async (loginData, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axios.post('http://localhost:8002/login', loginData, { withCredentials: true });
+    const response = await axios.post(LOGIN_USER_API_URL, loginData, { withCredentials: true }); // 상수 사용
     const token = response.data.token;
     localStorage.setItem('token', token); // 토큰을 localStorage에 저장
 
@@ -21,7 +22,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (loginData, { 
 
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response.data.message);
+    return rejectWithValue(error.response?.data?.message || '로그인 오류');
   }
 });
 
@@ -31,7 +32,8 @@ export const initializeAuth = createAsyncThunk('auth/initializeAuth', async (_, 
   if (!token) return rejectWithValue('No token found');
 
   try {
-    const response = await axios.get('http://localhost:8002/verify', {
+    const response = await axios.get(VERIFY_USER_API_URL, {
+      // 상수 사용
       headers: { Authorization: `Bearer ${token}` },
       withCredentials: true,
     });

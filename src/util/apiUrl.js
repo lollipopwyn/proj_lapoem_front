@@ -1,7 +1,7 @@
 // util/apiUrl.js
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://222.112.27.120:8002' // 배포용 URL
+    ? 'http://222.112.27.120:8002' // 배포용 URL
     : 'http://localhost:8002'; // 로컬 개발용 URL
 
 // GET 요청 URL

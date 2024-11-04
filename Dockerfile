@@ -5,7 +5,7 @@ FROM node:alpine3.18 as build
 WORKDIR /app
 
 # package.json 파일과 의존성 설치
-COPY package.json package-lock.json ./  
+COPY package.json package-lock.json ./
 RUN npm install && npm cache clean --force
 
 # 나머지 소스코드 복사 및 빌드
@@ -23,6 +23,9 @@ RUN rm -rf ./*
 
 # 빌드된 정적 파일만 복사
 COPY --from=build /app/build .
+
+# Nginx 설정 파일 복사
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 포트 설정
 EXPOSE 80

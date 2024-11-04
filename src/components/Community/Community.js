@@ -1,16 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // Link를 추가하여 라우팅 가능하게 설정
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice'; // 커뮤니티 게시글 불러오기 thunk
 import './Community.css';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
 import documentIcon from '../../assets/images/document.png';
 import chartIcon from '../../assets/images/chart.png';
-import rank1Icon from '../../assets/images/rank1-icon.png'; // 1등 이모티콘
-import rank2Icon from '../../assets/images/rank2-icon.png'; // 2등 이모티콘
-import rank3Icon from '../../assets/images/rank3-icon.png'; // 3등 이모티콘
+import rank1Icon from '../../assets/images/rank1-icon.png';
+import rank2Icon from '../../assets/images/rank2-icon.png';
+import rank3Icon from '../../assets/images/rank3-icon.png';
 
 const Community = () => {
-  const posts = [
+  const dispatch = useDispatch();
+  const {
+    fetchCommunityPosts: communityPosts,
+    isError,
+    errorMessage,
+  } = useSelector((state) => state.api);
+
+  useEffect(() => {
+    // 커뮤니티 게시글을 불러오는 액션 디스패치
+    dispatch(fetchCommunityPostsData());
+  }, [dispatch]);
+
+  // 공지사항 (하드코딩된 데이터)
+  const notices = [
     {
       id: 1,
       isNotice: true,
@@ -50,22 +65,45 @@ const Community = () => {
           </div>
 
           <div className="posts-container">
-            {posts.map((post) => (
-              <div
-                key={post.id}
-                className={`post-item ${
-                  post.isNotice ? 'notice-post' : 'regular-post'
-                }`}
-              >
+            {/* 공지사항 표시 */}
+            {notices.map((notice) => (
+              <div key={notice.id} className="post-item notice-post">
                 <div className="post-header">
-                  {post.isNotice && <span className="notice-tag">[공지]</span>}
+                  <span className="notice-tag">[공지]</span>
                   <div className="post-contents">
-                    <h3>{post.title}</h3>
+                    <h3>{notice.title}</h3>
                   </div>
-                  <span className="date">{post.date}</span>
+                  <span className="date">{notice.date}</span>
                 </div>
               </div>
             ))}
+
+            {/* 작성된 게시글 표시 */}
+            {isError ? (
+              <p>{errorMessage}</p>
+            ) : (
+              communityPosts.map((post) => (
+                <div key={post.posts_id} className="post-item regular-post">
+                  <div className="post-middle">
+                    <div className="post-contents">
+                      <h3>{post.post_title}</h3>
+                      <p>{post.post_content}</p>
+                    </div>
+                    <div className="post-footer">
+                      {' '}
+                      {/* 하단에 작성자와 날짜 배치 */}
+                      <span className="post-author">
+                        작성자: {post.member_nickname}
+                      </span>
+                      <span className="post-date">
+                        작성날짜:{' '}
+                        {new Date(post.post_created_at).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -132,7 +170,7 @@ const Community = () => {
 
           {/* New Forums Button */}
           <div className="sidebar-section">
-            <Link to="/new-forum">
+            <Link to="/new_forum">
               <button className="new-forum-button">New Forum</button>
             </Link>
           </div>

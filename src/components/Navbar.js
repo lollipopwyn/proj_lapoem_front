@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/features/auth/authSlice';
+import { logoutUser, clearMessage } from '../redux/features/auth/authSlice';
 
 import logo_w from '../assets/images/logo-w.png';
 import login from '../assets/images/login.png';
 
 function Navbar() {
   const dispatch = useDispatch();
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  const { isLoggedIn, user, message } = useSelector((state) => state.auth);
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴 열림 상태 관리
 
@@ -21,16 +21,24 @@ function Navbar() {
     { path: '/community', label: 'COMMUNITY' },
   ];
 
-  const handleLogout = () => {
-    dispatch(logout());
-    setIsMenuOpen(false); // 메뉴 닫기
+  const handleLogout = async () => {
+    await dispatch(logoutUser()); // 서버와 클라이언트 모두에서 로그아웃 처리
+    setIsMenuOpen(false); // 로그아웃 후 메뉴 닫기
   };
+
+  useEffect(() => {
+    // 로그아웃 성공 시 메시지 표시
+    if (message) {
+      alert(message); // "로그아웃 되었습니다." 메시지 표시
+      dispatch(clearMessage()); // 메시지 초기화
+    }
+  }, [message, dispatch]);
 
   return (
     <nav className="nav-container">
       <div className="nav-wrapper">
         <div>
-          <Link to="/Home">
+          <Link to="/">
             <img src={logo_w} alt="logo" className="w-[140px] h-[48px]" />
           </Link>
         </div>

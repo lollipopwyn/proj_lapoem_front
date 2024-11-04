@@ -6,6 +6,8 @@ import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_ALL_CATEGORIES_API_URL,
   GET_NEW_BOOK_API_URL,
+  GET_COMMUNITY_POSTS_API_URL,
+  CREATE_COMMUNITY_POST_API_URL,
   // 다른 엔드포인트 URL
 } from "../../../util/apiUrl";
 import {
@@ -66,6 +68,20 @@ export const fetchNewBookData = createApiThunk(
   getRequest
 );
 
+// 커뮤니티 게시글 가져오기 Thunk
+export const fetchCommunityPostsData = createApiThunk(
+  "api/fetchCommunityPosts",
+  GET_COMMUNITY_POSTS_API_URL,
+  getRequest
+);
+
+// 커뮤니티 새 게시글 생성 Thunk
+export const createCommunityPostData = createApiThunk(
+  "api/createCommunityPost",
+  CREATE_COMMUNITY_POST_API_URL,
+  postRequest
+);
+
 // 다른 관련 Thunks생성
 
 // 3. 비동기 API 호출 처리------------------------------
@@ -75,6 +91,7 @@ const handleFullfilled = (stateKey) => (state, action) => {
     ? action.payload //배열일 경우 그대로 state[stateKey]에 할당
     : action.payload.data || action.payload; //객체일 경우 data 속성을 우선적으로 할당하고, 만약 data가 없다면 action.payload 자체를 할당
 };
+
 // rejected 상태를 처리하는 핸들러 함수
 const handleRejected = (state, action) => {
   state.isError = true;
@@ -91,6 +108,8 @@ const apiSlice = createSlice({
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
     fetchNewBookData: [],
+    fetchCommunityPosts: [],
+    createCommunityPost: null,
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
     errorMessage: "",
@@ -123,9 +142,22 @@ const apiSlice = createSlice({
       )
       .addCase(fetchBookAllCategoriesData.rejected, handleRejected)
 
-      .addCase(fetchNewBookData.fulfilled, handleFullfilled("fetchNewBook"))
-      .addCase(fetchNewBookData.rejected, handleRejected);
+      .addCase(fetchNewBookData.fulfilled, handleFullfilled("fetchNewBookData"))
+      .addCase(fetchNewBookData.rejected, handleRejected)
 
+      // 커뮤니티 게시글 가져오기 처리
+      .addCase(
+        fetchCommunityPostsData.fulfilled,
+        handleFullfilled("fetchCommunityPosts")
+      )
+      .addCase(fetchCommunityPostsData.rejected, handleRejected)
+
+      // 커뮤니티 새 게시글 생성 처리
+      .addCase(
+        createCommunityPostData.fulfilled,
+        handleFullfilled("createCommunityPost")
+      )
+      .addCase(createCommunityPostData.rejected, handleRejected);
     // 다른 extraReducers 설정
   },
 });

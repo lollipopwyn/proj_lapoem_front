@@ -36,11 +36,7 @@ function App() {
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
-          <Route path="/community_detail" element={<Community_detail />} />
-          <Route
-            path="/community/:communityid"
-            element={<Community_detail />}
-          />
+          <Route path="/community/:postId" element={<Community_detail />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

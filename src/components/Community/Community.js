@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice'; // 커뮤니티 게시글 불러오기 thunk
+import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice';
 import './Community.css';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -13,16 +13,19 @@ import rank3Icon from '../../assets/images/rank3-icon.png';
 
 const Community = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [viewType, setViewType] = useState('Public'); // Public or Only me
   const {
     fetchCommunityPosts: communityPosts,
     isError,
     errorMessage,
   } = useSelector((state) => state.api);
+  const currentUser = useSelector((state) => state.auth.user?.memberNum);
 
   useEffect(() => {
-    // 커뮤니티 게시글을 불러오는 액션 디스패치
-    dispatch(fetchCommunityPostsData());
-  }, [dispatch]);
+    console.log('Current viewType:', viewType); // viewType 값 확인
+    dispatch(fetchCommunityPostsData(viewType));
+  }, [dispatch, viewType]);
 
   // 공지사항 (하드코딩된 데이터)
   const notices = [
@@ -46,6 +49,24 @@ const Community = () => {
   const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
   const topUsers = ['User1', 'User2', 'User3'];
 
+  // 필터링된 게시글
+  const filteredPosts = communityPosts.filter((post) => {
+    if (viewType === 'Public') {
+      // Public일 때 visibility가 true인 게시물만 표시
+      return post.visibility === true;
+    } else {
+      // Only me일 때는 visibility가 false이고 현재 사용자의 게시물만 표시
+      return (
+        post.visibility === false && post.member_num === Number(currentUser)
+      );
+    }
+  });
+  console.log('Community Posts:', communityPosts);
+
+  const handlePostClick = (postId) => {
+    navigate(`/community/${postId}`);
+  };
+
   return (
     <div className="community-container">
       <div className="content-wrapper">
@@ -53,11 +74,17 @@ const Community = () => {
           <div className="header">
             <h1 className="community-title">COMMUNITY</h1>
             <div className="view-options">
-              <button className="active">
+              <button
+                className={viewType === 'Public' ? 'active' : ''}
+                onClick={() => setViewType('Public')}
+              >
                 <img src={publicIcon} alt="Public" className="icon" />
                 Public
               </button>
-              <button>
+              <button
+                className={viewType === 'Only me' ? 'active' : ''}
+                onClick={() => setViewType('Only me')}
+              >
                 <img src={meIcon} alt="Only me" className="icon" />
                 Only me
               </button>
@@ -82,16 +109,19 @@ const Community = () => {
             {isError ? (
               <p>{errorMessage}</p>
             ) : (
-              communityPosts.map((post) => (
-                <div key={post.posts_id} className="post-item regular-post">
+              filteredPosts.map((post) => (
+                <div
+                  key={post.posts_id}
+                  className="post-item regular-post"
+                  onClick={() => handlePostClick(post.posts_id)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="post-middle">
                     <div className="post-contents">
                       <h3>{post.post_title}</h3>
                       <p>{post.post_content}</p>
                     </div>
                     <div className="post-footer">
-                      {' '}
-                      {/* 하단에 작성자와 날짜 배치 */}
                       <span className="post-author">
                         작성자: {post.member_nickname}
                       </span>

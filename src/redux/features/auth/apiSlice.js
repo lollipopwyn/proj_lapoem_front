@@ -61,10 +61,17 @@ export const fetchBookAllCategoriesData = createApiThunk(
 );
 
 // 커뮤니티 게시글 가져오기 Thunk
-export const fetchCommunityPostsData = createApiThunk(
+export const fetchCommunityPostsData = createAsyncThunk(
   'api/fetchCommunityPosts',
-  GET_COMMUNITY_POSTS_API_URL,
-  getRequest
+  async (viewType) => {
+    const visibility = viewType === 'Only me' ? 'false' : 'true'; // Only me일 때 visibility=false
+    console.log('Requesting posts with visibility:', visibility); // 확인용 로그
+    const response = await fetch(
+      `${GET_COMMUNITY_POSTS_API_URL}?visibility=${visibility}`
+    );
+    const data = await response.json();
+    return data;
+  }
 );
 
 // 커뮤니티 새 게시글 생성 Thunk
@@ -72,6 +79,34 @@ export const createCommunityPostData = createApiThunk(
   'api/createCommunityPost',
   CREATE_COMMUNITY_POST_API_URL,
   postRequest
+);
+
+export const fetchCommunityPostDetail = createAsyncThunk(
+  'community/fetchPostDetail',
+  async (postId, thunkAPI) => {
+    try {
+      const response = await fetch(`${GET_COMMUNITY_POSTS_API_URL}/${postId}`);
+
+      // 응답이 JSON 형식이 아니면 에러 던지기
+      const contentType = response.headers.get('content-type');
+      if (
+        !response.ok ||
+        !contentType ||
+        !contentType.includes('application/json')
+      ) {
+        throw new Error(
+          'Failed to fetch post details or invalid response format'
+        );
+      }
+
+      const data = await response.json();
+      console.log('Fetched Post Detail:', data); // 서버로부터 받아온 데이터 확인
+      return data; // 단일 게시글 반환
+    } catch (error) {
+      console.error('Error fetching post details:', error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
 );
 
 // 다른 관련 Thunks생성
@@ -89,6 +124,11 @@ const handleRejected = (state, action) => {
   state.errorMessage = action.error.message;
 };
 
+const handlePending = (state) => {
+  state.isError = false;
+  state.errorMessage = '';
+};
+
 // 4. apiSlice 슬라이스 생성--------------------------
 //    Redux 슬라이스를 생성하여 초기 상태와 비동기 액션의 상태 관리 설정
 const apiSlice = createSlice({
@@ -99,6 +139,7 @@ const apiSlice = createSlice({
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
     fetchCommunityPosts: [],
+    postDetail: null,
     createCommunityPost: null,
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
@@ -132,19 +173,25 @@ const apiSlice = createSlice({
       )
       .addCase(fetchBookAllCategoriesData.rejected, handleRejected)
 
-      // 커뮤니티 게시글 가져오기 처리
+      // 여기부터 커뮤니티 게시글 처리
       .addCase(
         fetchCommunityPostsData.fulfilled,
         handleFullfilled('fetchCommunityPosts')
       )
       .addCase(fetchCommunityPostsData.rejected, handleRejected)
 
-      // 커뮤니티 새 게시글 생성 처리
       .addCase(
         createCommunityPostData.fulfilled,
         handleFullfilled('createCommunityPost')
       )
-      .addCase(createCommunityPostData.rejected, handleRejected);
+      .addCase(createCommunityPostData.rejected, handleRejected)
+      .addCase(fetchCommunityPostDetail.pending, handlePending)
+      .addCase(
+        fetchCommunityPostDetail.fulfilled,
+        handleFullfilled('postDetail')
+      )
+      .addCase(fetchCommunityPostDetail.rejected, handleRejected);
+    // -----------------------------------------------------여기까지 커뮤니티
     // 다른 extraReducers 설정
   },
 });

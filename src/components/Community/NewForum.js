@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'; // useSelector 추가
 import { createCommunityPostData } from '../../redux/features/auth/apiSlice';
+import publicIcon from '../../assets/images/public-icon.png';
+import privateIcon from '../../assets/images/only-me-icon.png';
 import './NewForum.css';
 
 const NewForum = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [visibility, setVisibility] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const member_num = useSelector((state) => state.auth.user.memberNum); // useSelector로 Redux 상태에서 member_num 가져오기
@@ -18,25 +21,23 @@ const NewForum = () => {
     // 서버에 게시글 생성 요청
     await dispatch(
       createCommunityPostData({
-        member_num, // member_num을 추가
+        member_num,
         post_title: title,
         post_content: content,
         post_status: 'active',
-        visibility: true,
+        visibility,
       })
     );
 
-    // 제출 후 Community 페이지로 이동
     navigate('/community');
   };
 
   const handleDelete = () => {
-    navigate('/community'); // Community.js로 이동
+    navigate('/community');
   };
 
   return (
     <>
-      <div className="navbar-placeholder"></div>
       <div className="new-forum-container">
         <h2>COMMUNITY</h2>
         <form onSubmit={handleSubmit}>
@@ -51,6 +52,14 @@ const NewForum = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
+            </div>
+            <div
+              className={`toggle-button ${visibility ? 'public' : 'private'}`}
+              onClick={() => setVisibility(!visibility)}
+            >
+              <img src={privateIcon} alt="Private Icon" />
+              <div className="toggle-circle"></div>
+              <img src={publicIcon} alt="Public Icon" />
             </div>
           </div>
           <div className="form-group content-group">

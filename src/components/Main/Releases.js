@@ -4,20 +4,20 @@ import "./Releases.css";
 import { GET_NEW_BOOK_API_URL } from "../../util/apiUrl";
 
 function Releases() {
-  const [latestBooks, setLatestBooks] = useState([]);
+  const [newBooks, setNewBooks] = useState([]);
 
   useEffect(() => {
-    const fetchLatestBooks = async () => {
+    const fetchNewBooks = async () => {
       try {
         const response = await fetch(GET_NEW_BOOK_API_URL);
         const data = await response.json();
-        setLatestBooks(data); // 받아온 데이터를 상태에 저장
+        setNewBooks(data); // 받아온 데이터를 상태에 저장
       } catch (error) {
-        console.error("Error fetching latest books:", error);
+        console.error("Error fetching new books:", error);
       }
     };
 
-    fetchLatestBooks();
+    fetchNewBooks();
   }, []);
 
   return (
@@ -27,7 +27,7 @@ function Releases() {
         <p>새로 나온 주목할만한 작품들을 만나보세요 ✨</p>
       </div>
       <div className="book_list flex gap-10">
-        {latestBooks.map((book) => (
+        {newBooks.map((book) => (
           <BookCard
             key={book.book_id}
             thumbnail={book.book_cover}

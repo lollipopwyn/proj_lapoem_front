@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/features/auth/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Link 추가
 import './Login.css';
 
 function Login() {
@@ -45,6 +45,10 @@ function Login() {
         로그인
       </button>
       {error && <p className="error_message">{error}</p>}
+      <Link to="/join" className="signup_button">
+        회원가입
+      </Link>{' '}
+      {/* 회원가입 버튼 추가 */}
     </div>
   );
 }

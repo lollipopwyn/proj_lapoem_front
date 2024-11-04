@@ -1,56 +1,53 @@
-/* login.css */
 .login_container {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 400px;
   margin: 0 auto;
-  padding-top: 50px;
-  text-align: center;
+  padding: 20px;
+  padding-top: 150px;
 }
 
 .login_title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.login_form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .login_input {
   width: 100%;
-  padding: 12px;
-  font-size: 1rem;
+  padding: 10px;
+  margin-bottom: 15px; /* 간격 조정 */
   border: 1px solid #ccc;
-  border-radius: 30px;
-  text-align: center;
-  outline: none;
-}
-
-.login_input:focus {
-  border-color: #333;
+  border-radius: 25px;
+  font-size: 16px;
+  text-align: center; /* 텍스트 가운데 정렬 */
 }
 
 .login_button {
   width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #4a403a;
   color: white;
-  background-color: #4c4039;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.login_button:hover {
-  background-color: #333;
+.signup_button {
+  margin-top: 20px; /* 로그인 버튼과 간격 */
+  font-size: 16px;
+  color: #4a403a;
+  text-decoration: none;
+}
+
+.signup_button:hover {
+  text-decoration: underline;
 }
 
 .error_message {
   color: red;
-  font-size: 0.9rem;
+  font-size: 14px;
+  margin-top: 10px;
 }

@@ -47,7 +47,7 @@ function Navbar() {
             </Link>
           ))}
         </div>
-        <div className="ml-8">
+        <div className="ml-10">
           {isLoggedIn ? (
             <div className="profile-container">
               <img

@@ -24,6 +24,8 @@ nav {
   display: flex;
   color: #fff;
   gap: 60px;
+  font-size: var(--font-small);
+  font-weight: var(--font-medium-weight);
 }
 
 .nav-item {

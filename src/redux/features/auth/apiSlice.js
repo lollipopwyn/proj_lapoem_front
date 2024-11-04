@@ -1,18 +1,19 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 // API 요청에 사용될 엔드포인트 URL을 import함
 import {
   GET_BOOK_LIST_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_ALL_CATEGORIES_API_URL,
+  GET_NEW_BOOK_API_URL,
   // 다른 엔드포인트 URL
-} from '../../../util/apiUrl';
+} from "../../../util/apiUrl";
 import {
   postRequest,
   getRequest,
   putRequest,
   deleteRequest,
-} from '../../../util/requestMethods';
+} from "../../../util/requestMethods";
 
 //  1. 동적 fetch Thunk 생성기-----------------------
 //    actionType (예: fetchGetBookList)
@@ -32,29 +33,36 @@ const createApiThunk = (actionType, apiURL, requestMethod) => {
 
 //북 리스트 관련 Thunks
 export const fetchBookListData = createApiThunk(
-  'api/fetchGetBookList',
+  "api/fetchGetBookList",
   GET_BOOK_LIST_API_URL,
   getRequest
 );
 
 // 검색 관련 Thunks
 export const fetchSearchBooksData = createApiThunk(
-  'api/fetchSearchBooks',
+  "api/fetchSearchBooks",
   GET_SEARCH_BOOKS_API_URL,
   getRequest
 );
 
 // 카테고리 필터 조회 Thunks
 export const fetchBookByCategoryData = createApiThunk(
-  'api/fetchBookByCategory',
+  "api/fetchBookByCategory",
   GET_BOOK_BY_CATEGORY_API_URL,
   getRequest
 );
 
-// 책 카타고리 Thunks
+// 책 카테고리 Thunks
 export const fetchBookAllCategoriesData = createApiThunk(
-  'api/fetchBookAllCategories',
+  "api/fetchBookAllCategories",
   GET_BOOK_ALL_CATEGORIES_API_URL,
+  getRequest
+);
+
+// 신간 도서 불러오기 Thunks
+export const fetchNewBookData = createApiThunk(
+  "api/fetchNewBook",
+  GET_NEW_BOOK_API_URL,
   getRequest
 );
 
@@ -76,15 +84,16 @@ const handleRejected = (state, action) => {
 // 4. apiSlice 슬라이스 생성--------------------------
 //    Redux 슬라이스를 생성하여 초기 상태와 비동기 액션의 상태 관리 설정
 const apiSlice = createSlice({
-  name: 'api',
+  name: "api",
   initialState: {
     fetchGetBookList: [],
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
+    fetchNewBookData: [],
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
-    errorMessage: '',
+    errorMessage: "",
   },
 
   // 비동기 액션을 처리하는 extraReducers 설정
@@ -92,27 +101,30 @@ const apiSlice = createSlice({
     builder
       .addCase(
         fetchBookListData.fulfilled,
-        handleFullfilled('fetchGetBookList')
+        handleFullfilled("fetchGetBookList")
       )
       .addCase(fetchBookListData.rejected, handleRejected)
       // -----------------------------------------------------
       .addCase(
         fetchSearchBooksData.fulfilled,
-        handleFullfilled('fetchSearchBooks')
+        handleFullfilled("fetchSearchBooks")
       )
       .addCase(fetchSearchBooksData.rejected, handleRejected)
 
       .addCase(
         fetchBookByCategoryData.fulfilled,
-        handleFullfilled('fetchBookByCategory')
+        handleFullfilled("fetchBookByCategory")
       )
       .addCase(fetchBookByCategoryData.rejected, handleRejected)
 
       .addCase(
         fetchBookAllCategoriesData.fulfilled,
-        handleFullfilled('fetchBookAllCategories')
+        handleFullfilled("fetchBookAllCategories")
       )
-      .addCase(fetchBookAllCategoriesData.rejected, handleRejected);
+      .addCase(fetchBookAllCategoriesData.rejected, handleRejected)
+
+      .addCase(fetchNewBookData.fulfilled, handleFullfilled("fetchNewBook"))
+      .addCase(fetchNewBookData.rejected, handleRejected);
 
     // 다른 extraReducers 설정
   },

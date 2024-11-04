@@ -63,15 +63,17 @@ const BookList = () => {
   };
 
   return (
-    <div className="booklist_wrapper">
+    <div className="booklist_container">
       <h1 className="booklist_pagetitle">Book List</h1>
-      <CategoryFilter onCategoryChange={handleCategoryChange} />
-      <SearchBar onSearch={handleSearch} /> {/* SearchBar 컴포넌트 사용 */}
+      <div className="booklist_search">
+        <CategoryFilter onCategoryChange={handleCategoryChange} />
+        <SearchBar onSearch={handleSearch} />{' '}
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
-          <ul className="booklist_content">
+        <div className="booklist_wrapper">
+          <div className="booklist_content">
             {books.map((book) => (
               <BookCard
                 key={book.book_id}
@@ -82,13 +84,15 @@ const BookList = () => {
                 reviewCount={book.review_count}
               />
             ))}
-          </ul>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
-          />
-        </>
+          </div>
+          <div className="pagination">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
+            />
+          </div>
+        </div>
       )}
     </div>
   );

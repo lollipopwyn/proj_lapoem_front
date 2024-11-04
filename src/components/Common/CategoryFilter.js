@@ -31,7 +31,7 @@ const CategoryFilter = ({ onCategoryChange }) => {
 
   return (
     <div className="category-filter">
-      <label htmlFor="category">카테고리: </label>
+      <label htmlFor="category"></label>
       {loading ? (
         <p>Loading categories...</p>
       ) : (

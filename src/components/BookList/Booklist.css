@@ -1,15 +1,37 @@
-.booklist_wrapper{
-  display: flex;
-  flex-direction: column;
-  width: 50%;
+/* Responsive adjustments */
+@media (max-width: 1920px) {
+  .content-wrapper {
+    padding-right: 10px;
+  }
 }
+
+.booklist_container{
+  min-height: 100vh;
+  padding: 120px 0 320px 180px; /* Space for navbar and footer */
+  box-sizing: border-box;
+}
+
+.booklist_pagetitle{
+  font-size: 38px;
+  line-height: 63px;
+  margin: 0;
+  width: 264px;
+  height: 63px;
+  display: block;
+  font-family: var(--font-kr-bold);
+  font-weight: bold;
+}
+
+.booklist_search{
+  display: flex;
+  margin-top: 30px;
+  margin-bottom: 150px;
+
+}
+
 .booklist_content {
-  justify-items: center;
-  margin: 10%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns */
+  row-gap: 100px;
+  /* padding-bottom: 100px; */
 }
-
-.booklist_item{
-  margin: 10px;
-}
-

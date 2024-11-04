@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { GET_SEARCH_BOOKS_API_URL } from '../../util/apiUrl';
+import './Common.css';
 
 const SearchBar = ({ onSearch }) => {
   const [keyword, setKeyword] = useState(''); // 검색어 상태

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { GET_BOOK_ALL_CATEGORIES_API_URL } from '../../util/apiUrl';
+import './Common.css';
 
 const CategoryFilter = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
@@ -27,7 +28,7 @@ const CategoryFilter = ({ onCategoryChange }) => {
 
   return (
     <div className="category-filter">
-      <label htmlFor="category-select">Choose a category:</label>
+      <label htmlFor="category-select"></label>
       <select
         id="category-select"
         value={selectedCategory}

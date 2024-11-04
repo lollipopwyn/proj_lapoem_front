@@ -1,62 +1,45 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import {
-  JOIN_USER_API_URL,
-  LOGIN_USER_API_URL,
-  VERIFY_USER_API_URL,
-} from '../../../util/apiUrl'; // URL 상수 가져오기
+import { JOIN_USER_API_URL, LOGIN_USER_API_URL, VERIFY_USER_API_URL } from '../../../util/apiUrl'; // URL 상수 가져오기
 
-export const joinUser = createAsyncThunk(
-  'auth/joinUser',
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(JOIN_USER_API_URL, userData); // 상수 사용
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || '회원가입 오류');
-    }
+export const joinUser = createAsyncThunk('auth/joinUser', async (userData, { rejectWithValue }) => {
+  try {
+    const response = await axios.post(JOIN_USER_API_URL, userData); // 상수 사용
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || '회원가입 오류');
   }
-);
+});
 
-export const loginUser = createAsyncThunk(
-  'auth/loginUser',
-  async (loginData, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await axios.post(LOGIN_USER_API_URL, loginData, {
-        withCredentials: true,
-      }); // 상수 사용
-      const token = response.data.token;
-      localStorage.setItem('token', token); // 토큰을 localStorage에 저장
+export const loginUser = createAsyncThunk('auth/loginUser', async (loginData, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axios.post(LOGIN_USER_API_URL, loginData, {
+      withCredentials: true,
+    }); // 상수 사용
+    const token = response.data.token;
+    localStorage.setItem('token', token); // 토큰을 localStorage에 저장
 
-      // 로그인 후 인증 상태를 초기화하여 Redux에 유저 정보 저장
-      await dispatch(initializeAuth());
+    // 로그인 후 인증 상태를 초기화하여 Redux에 유저 정보 저장
+    await dispatch(initializeAuth());
 
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || '로그인 오류');
-    }
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || '로그인 오류');
   }
-);
+});
 
 // 새로고침 시 로그인 상태 초기화
-export const initializeAuth = createAsyncThunk(
-  'auth/initializeAuth',
-  async (_, { rejectWithValue }) => {
-    const token = localStorage.getItem('token');
-    if (!token) return rejectWithValue('No token found');
-
-    try {
-      const response = await axios.get(VERIFY_USER_API_URL, {
-        // 상수 사용
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
-      return response.data.user;
-    } catch (error) {
-      return rejectWithValue('Token verification failed');
-    }
+// 새로고침 시 로그인 상태 초기화 (쿠키 기반 인증)
+export const initializeAuth = createAsyncThunk('auth/initializeAuth', async (_, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(VERIFY_USER_API_URL, {
+      withCredentials: true, // 쿠키만으로 인증
+    });
+    return response.data.user;
+  } catch (error) {
+    return rejectWithValue('Token verification failed');
   }
-);
+});
 
 const authSlice = createSlice({
   name: 'auth',

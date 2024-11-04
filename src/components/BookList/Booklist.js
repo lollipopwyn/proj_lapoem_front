@@ -7,6 +7,7 @@ import {
 import Pagination from '../PageNation';
 import SearchBar from '../Common/SearchBar';
 import CategoryFilter from '../Common/CategoryFilter';
+import BookCard from '../Bookcard';
 import './Booklist.css';
 
 const BookList = () => {
@@ -71,20 +72,15 @@ const BookList = () => {
       ) : (
         <>
           <ul className="booklist_content">
-            {books.map((book, index) => (
-              <li key={book.book_id}>
-                <div className="booklist_item">
-                  <p key={book.genre_tag_id}></p>
-                  <p className="booklist_cover ">
-                    <img src={book.book_cover} alt={book.book_title} />
-                  </p>
-
-                  <h2>{book.book_title}</h2>
-                  <p>{book.book_author}</p>
-                  <p>{book.book_publisher}</p>
-                  <p>평점: 8.2(10)</p>
-                </div>
-              </li>
+            {books.map((book) => (
+              <BookCard
+                key={book.book_id}
+                thumbnail={book.book_cover}
+                author={book.book_author}
+                publisher={book.book_publisher}
+                rating={book.average_rating}
+                reviewCount={book.review_count}
+              />
             ))}
           </ul>
           <Pagination

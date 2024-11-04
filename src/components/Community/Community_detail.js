@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Community_detail.css';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCommunityPostDetail } from '../../redux/features/auth/apiSlice';
 import publicIcon from '../../assets/images/public-icon.png';
 import vectorIcon from '../../assets/images/Vector.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -11,8 +13,27 @@ import rank2Icon from '../../assets/images/rank2-icon.png'; // 2등 이모티콘
 import rank3Icon from '../../assets/images/rank3-icon.png'; // 3등 이모티콘
 
 const CommunityDetail = () => {
+  const { postId } = useParams();
+  const dispatch = useDispatch();
   const [commentText, setCommentText] = useState('');
   const [commentLength, setCommentLength] = useState(0);
+
+  // Redux state에서 postDetail을 가져올 때 구조를 확인하고 적절히 수정
+  const postDetail = useSelector((state) => state.api.postDetail);
+  const isLoading = useSelector((state) => state.api.isLoading);
+  const isError = useSelector((state) => state.api.isError);
+  const errorMessage = useSelector((state) => state.api.errorMessage);
+
+  useEffect(() => {
+    console.log('Current Post ID:', postId); // postId가 제대로 들어오는지 확인
+    if (postId) {
+      dispatch(fetchCommunityPostDetail(postId));
+    }
+  }, [dispatch, postId]);
+
+  useEffect(() => {
+    console.log('Post Detail:', postDetail);
+  }, [postDetail]);
 
   const handleCommentChange = (e) => {
     setCommentText(e.target.value);
@@ -22,50 +43,51 @@ const CommunityDetail = () => {
   const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
   const topUsers = ['User1', 'User2', 'User3'];
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {errorMessage}</div>;
+  }
+
+  if (!postDetail || !postDetail.post_title) {
+    return <div>Loading post details...</div>;
+  }
+
   return (
     <div className="community-detail-container">
       <div className="content-wrapper">
         <div className="main-content">
           <h1 className="community-title">COMMUNITY</h1>
-          <div className="post-title">
-            그 별을 쳐다보기만 해도, 나는 지금 시각이 자정이 지났다는 걸
-            안답니다.
-          </div>
+          <div className="post-title">{postDetail.post_title}</div>
           <div className="post-meta">
-            <span className="post-author">닉네임익명</span>
-            <span className="post-date">2024.10.24 23:35:02</span>
-            <img src={publicIcon} alt="Public" className="icon" />
+            <span className="post-author">{postDetail.member_nickname}</span>
+            <span className="post-date">
+              {new Date(postDetail.post_created_at).toLocaleString()}
+            </span>
+            <img
+              src={postDetail.visibility ? publicIcon : meIcon}
+              alt={postDetail.visibility ? 'Public' : 'Only me'}
+              className="icon"
+            />
           </div>
-          <div className="post-content">
-            계절이 지나가는 하늘에 가득히 쏟아질 것입니다. 많은 밤을 이 별들은
-            책상을 다 그리워하는 계십니다. 패, 내 버리었습니다. 가을로 별을
-            듯합니다...계절이 지나가는 하늘에 가득히 쏟아질 것입니다. 많은 밤을
-            이 별들은 책상을 다 그리워하는 계십니다. 패, 내 버리었습니다. 가을로
-            별을 듯합니다...계절이 지나가는 하늘에 가득히 쏟아질 것입니다. 많은
-            밤을 이 별들은 책상을 다 그리워하는 계십니다. 패, 내 버리었습니다.
-            가을로 별을 듯합니다...계절이 지나가는 하늘에 가득히 쏟아질
-            것입니다. 많은 밤을 이 별들은 책상을 다 그리워하는 계십니다. 패, 내
-            버리었습니다. 가을로 별을 듯합니다...
-          </div>
+          <div className="post-content">{postDetail.post_content}</div>
           <div className="comment-section">
             <h2>전체 댓글</h2>
           </div>
           <div className="comments-list">
-            <div className="comment">
-              <span className="comment-author">닉네임익명</span>
-              <span className="comment-text">
-                가슴속에 하나의 별을, 내일 밤 이네들은 별과 나의 어머니, 벌레는
-                별들을 이름과 별까지 가을로 멀리...
-              </span>
-              <span className="comment-date">2024.10.24 23:35:02</span>
-            </div>
-            <div className="comment">
-              <span className="comment-author">sslrspdla</span>
-              <span className="comment-text">
-                가을로 듯합니다. 계집애들의 흙으로 하나에 이네들은 이름과...
-              </span>
-              <span className="comment-date">2024.10.24 23:35:02</span>
-            </div>
+            {postDetail.comments?.map((comment) => (
+              <div key={comment.comment_id} className="comment">
+                <span className="comment-author">
+                  {comment.member_nickname}
+                </span>
+                <span className="comment-text">{comment.comment_text}</span>
+                <span className="comment-date">
+                  {new Date(comment.comment_created_at).toLocaleString()}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
         <div className="sidebar">

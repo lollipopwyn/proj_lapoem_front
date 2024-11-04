@@ -5,6 +5,8 @@ import {
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_ALL_CATEGORIES_API_URL,
+  GET_COMMUNITY_POSTS_API_URL,
+  CREATE_COMMUNITY_POST_API_URL,
   // 다른 엔드포인트 URL
 } from '../../../util/apiUrl';
 import {
@@ -58,6 +60,20 @@ export const fetchBookAllCategoriesData = createApiThunk(
   getRequest
 );
 
+// 커뮤니티 게시글 가져오기 Thunk
+export const fetchCommunityPostsData = createApiThunk(
+  'api/fetchCommunityPosts',
+  GET_COMMUNITY_POSTS_API_URL,
+  getRequest
+);
+
+// 커뮤니티 새 게시글 생성 Thunk
+export const createCommunityPostData = createApiThunk(
+  'api/createCommunityPost',
+  CREATE_COMMUNITY_POST_API_URL,
+  postRequest
+);
+
 // 다른 관련 Thunks생성
 
 // 3. 비동기 API 호출 처리------------------------------
@@ -82,6 +98,8 @@ const apiSlice = createSlice({
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
+    fetchCommunityPosts: [],
+    createCommunityPost: null,
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
     errorMessage: '',
@@ -112,8 +130,21 @@ const apiSlice = createSlice({
         fetchBookAllCategoriesData.fulfilled,
         handleFullfilled('fetchBookAllCategories')
       )
-      .addCase(fetchBookAllCategoriesData.rejected, handleRejected);
+      .addCase(fetchBookAllCategoriesData.rejected, handleRejected)
 
+      // 커뮤니티 게시글 가져오기 처리
+      .addCase(
+        fetchCommunityPostsData.fulfilled,
+        handleFullfilled('fetchCommunityPosts')
+      )
+      .addCase(fetchCommunityPostsData.rejected, handleRejected)
+
+      // 커뮤니티 새 게시글 생성 처리
+      .addCase(
+        createCommunityPostData.fulfilled,
+        handleFullfilled('createCommunityPost')
+      )
+      .addCase(createCommunityPostData.rejected, handleRejected);
     // 다른 extraReducers 설정
   },
 });

@@ -131,14 +131,27 @@
   flex-grow: 1;
 }
 
-.date {
+.post-date {
   font-size: 12px;
   color: #999999;
 }
 
+.post-author {
+  font-size: 12px;
+  color: #999999;
+  margin-right: 8px;
+}
+
 .post-contents h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 24px;
+}
+
+.post-footer {
+  display: flex;
+  font-size: 0.8em;
+  padding-top: 8px;
+  margin-top: 8px;
 }
 
 /* Sidebar styles */

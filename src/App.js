@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import Navbar from './components/NavBar';
+import Navbar from './components/Navbar';
 import Main from './components/Main/Main';
 import Join from './components/Auth/Join';
 import Login from './components/Auth/Login';

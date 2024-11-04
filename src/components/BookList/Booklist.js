@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { GET_BOOK_LIST_API_URL } from '../../util/apiUrl';
+import {
+  GET_BOOK_LIST_API_URL,
+  GET_BOOK_BY_CATEGORY_API_URL,
+} from '../../util/apiUrl';
 import Pagination from '../PageNation';
 import SearchBar from '../Common/SearchBar';
 import CategoryFilter from '../Common/CategoryFilter';
@@ -12,7 +15,7 @@ const BookList = () => {
   const [totalBooks, setTotalBooks] = useState(0);
   const [limit] = useState(10); // 페이지당 표시할 책의 수
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(''); // 선택된 카테고리 상태 추가
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
     fetchBooks(currentPage, selectedCategory);
@@ -21,7 +24,10 @@ const BookList = () => {
   const fetchBooks = async (page, genre_tag_id) => {
     setLoading(true);
     try {
-      const response = await axios.get(GET_BOOK_LIST_API_URL, {
+      const apiUrl = genre_tag_id
+        ? GET_BOOK_BY_CATEGORY_API_URL
+        : GET_BOOK_LIST_API_URL;
+      const response = await axios.get(apiUrl, {
         params: { page, limit, genre_tag_id },
       });
       setBooks(response.data.data);
@@ -32,11 +38,13 @@ const BookList = () => {
       setLoading(false);
     }
   };
+
   // 검색 결과를 처리하는 함수
   const handleSearch = (data) => {
     setBooks(data.data); // 검색 결과로 도서 목록 업데이트
     setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
     setCurrentPage(data.currentPage); // 현재 페이지 업데이트
+    setSelectedCategory(''); // 검색 시 선택된 카테고리 초기화
   };
 
   // 카테고리 선택 핸들러
@@ -76,8 +84,6 @@ const BookList = () => {
                   <p>{book.book_publisher}</p>
                   <p>평점: 8.2(10)</p>
                 </div>
-                {(index + 1) % 5 === 0 && <div className="booklist_clear" />}{' '}
-                {/* 5개마다 줄 바꿈 */}
               </li>
             ))}
           </ul>

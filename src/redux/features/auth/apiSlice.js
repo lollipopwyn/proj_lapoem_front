@@ -5,6 +5,7 @@ import {
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_ALL_CATEGORIES_API_URL,
+  GET_NEW_BOOK_API_URL,
   GET_COMMUNITY_POSTS_API_URL,
   CREATE_COMMUNITY_POST_API_URL,
   // 다른 엔드포인트 URL
@@ -53,10 +54,17 @@ export const fetchBookByCategoryData = createApiThunk(
   getRequest
 );
 
-// 책 카타고리 Thunks
+// 책 카테고리 Thunks
 export const fetchBookAllCategoriesData = createApiThunk(
   'api/fetchBookAllCategories',
   GET_BOOK_ALL_CATEGORIES_API_URL,
+  getRequest
+);
+
+// 신간 도서 불러오기 Thunks
+export const fetchNewBookData = createApiThunk(
+  'api/fetchNewBook',
+  GET_NEW_BOOK_API_URL,
   getRequest
 );
 
@@ -118,6 +126,7 @@ const handleFullfilled = (stateKey) => (state, action) => {
     ? action.payload //배열일 경우 그대로 state[stateKey]에 할당
     : action.payload.data || action.payload; //객체일 경우 data 속성을 우선적으로 할당하고, 만약 data가 없다면 action.payload 자체를 할당
 };
+
 // rejected 상태를 처리하는 핸들러 함수
 const handleRejected = (state, action) => {
   state.isError = true;
@@ -138,6 +147,7 @@ const apiSlice = createSlice({
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
+    fetchNewBookData: [],
     fetchCommunityPosts: [],
     postDetail: null,
     createCommunityPost: null,
@@ -172,6 +182,9 @@ const apiSlice = createSlice({
         handleFullfilled('fetchBookAllCategories')
       )
       .addCase(fetchBookAllCategoriesData.rejected, handleRejected)
+
+      .addCase(fetchNewBookData.fulfilled, handleFullfilled('fetchNewBookData'))
+      .addCase(fetchNewBookData.rejected, handleRejected)
 
       // 여기부터 커뮤니티 게시글 처리
       .addCase(

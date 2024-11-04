@@ -1,18 +1,13 @@
-// components/Login.js
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/features/auth/authSlice';
-import { useNavigate } from 'react-router-dom'; // 리디렉션을 위한 useNavigate 추가
+import { useNavigate, Link } from 'react-router-dom'; // Link 추가
 import './Login.css';
 
 function Login() {
-  const [login_data, set_login_data] = useState({
-    member_id: '',
-    member_password: '',
-  });
-
+  const [login_data, set_login_data] = useState({ member_id: '', member_password: '' });
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // navigate 초기화
+  const navigate = useNavigate();
   const { error, isLoggedIn } = useSelector((state) => state.auth);
 
   const handle_change = (e) => {
@@ -20,7 +15,7 @@ function Login() {
   };
 
   const handle_login = async () => {
-    await dispatch(loginUser(login_data)); // 비동기 액션 호출
+    await dispatch(loginUser(login_data));
   };
 
   useEffect(() => {
@@ -50,6 +45,10 @@ function Login() {
         로그인
       </button>
       {error && <p className="error_message">{error}</p>}
+      <Link to="/join" className="signup_button">
+        회원가입
+      </Link>{' '}
+      {/* 회원가입 버튼 추가 */}
     </div>
   );
 }

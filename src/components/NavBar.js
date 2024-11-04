@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import "./navbar.css";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/features/auth/authSlice";
+import React, { useState } from 'react';
+import './navbar.css';
+import { Link, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../redux/features/auth/authSlice';
 
-import logo_w from "../assets/images/logo-w.png";
-import login from "../assets/images/login.png";
+import logo_w from '../assets/images/logo-w.png';
+import login from '../assets/images/login.png';
 
 function Navbar() {
   const dispatch = useDispatch();
@@ -14,11 +14,11 @@ function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴 열림 상태 관리
 
   const navItems = [
-    { path: "/", label: "HOME" },
-    { path: "/book_list", label: "BOOK LIST" },
-    { path: "/chatstella", label: "STELLA CHAT" },
-    { path: "/thread_on", label: "THREAD ON" },
-    { path: "/community", label: "COMMUNITY" },
+    { path: '/', label: 'HOME' },
+    { path: '/book_list', label: 'BOOK LIST' },
+    { path: '/chatstella', label: 'STELLA CHAT' },
+    { path: '/thread_on', label: 'THREAD ON' },
+    { path: '/community', label: 'COMMUNITY' },
   ];
 
   const handleLogout = () => {
@@ -39,9 +39,7 @@ function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${
-                location.pathname === item.path ? "active" : ""
-              }`}
+              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
             >
               <p>{item.label}</p>
             </Link>

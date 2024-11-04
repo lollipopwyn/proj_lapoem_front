@@ -1,19 +1,20 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import Navbar from './components/NavBar';
-import Main from './components/Main/Main';
-import Join from './components/Auth/Join';
-import Login from './components/Auth/Login';
-import Booklist from './components/BookList/Booklist';
-import Stella from './components/Stella/Stella';
-import Community from './components/Community/Community';
-import NewForum from './components/Community/NewForum';
-import Community_detail from './components/Community/Community_detail';
-import ThreadOn from './components/ThreadOn/Threadon';
+import Navbar from "./components/Navbar";
+import Main from "./components/Main/Main";
+import Join from "./components/Auth/Join";
+import Login from "./components/Auth/Login";
+import Booklist from "./components/BookList/Booklist";
+import Stella from "./components/Stella/Stella";
+import Community from "./components/Community/Community";
+import NewForum from "./components/Community/NewForum";
+import Community_detail from "./components/Community/Community_detail";
+import ThreadOn from "./components/ThreadOn/Threadon";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { initializeAuth } from './redux/features/auth/authSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { initializeAuth } from "./redux/features/auth/authSlice";
+import Mypage from "./components/My/Mypage";
 
 function App() {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ function App() {
           <Route path="/" element={<Main />} />
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/book-list" element={<Booklist />} />
+          <Route path="/book_list" element={<Booklist />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/community" element={<Community />} />
@@ -41,6 +42,7 @@ function App() {
             path="/community/:communityid"
             element={<Community_detail />}
           />
+          <Route path="/mypage" element={<Mypage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
 

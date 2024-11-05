@@ -16,22 +16,22 @@ function ThreadCard({ cover, title, author, publisher, participantsCount }) {
           <div className="thread-tag">
             현재 {participantsCount || 1}명 참여 중
           </div>
-          <img src={Thread_i} alt="아이콘" className="thread-icon w-8 h-8" />
+          <img src={Thread_i} alt="아이콘" className="thread-icon" />
 
           <div className="thread-info">
-            <p className="thread-title">{title}</p>
-            {/* <p className="thread-title">채식주의자(리마스터판)</p> */}
+            {/* <p className="thread-title">{title}</p> */}
+            <p className="thread-title">채식주의자(리마스터판)</p>
 
-            <div className="thread-writer">
+            {/* <div className="thread-writer">
               <p>{author}</p>
               <p>·</p>
               <p>{publisher}</p>
-            </div>
-            {/* <div className="thread-writer">
+            </div> */}
+            <div className="thread-writer">
               <p>한강</p>
               <p>·</p>
               <p>창비</p>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

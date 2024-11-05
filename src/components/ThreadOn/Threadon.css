@@ -41,22 +41,6 @@
 
 @media (max-width: 1600px) {
   .thread-list {
-    grid-template-columns: repeat(3, 1fr); /* 한 줄에 2개로 변경 */
-    gap: 20px 30px;
-  }
-
-  .thread-card {
-    max-width: 420px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .thread-list {
-    grid-template-columns: 1fr; /* 한 줄에 1개 */
-    gap: 20px;
-  }
-
-  .thread-card {
-    max-width: 100%;
+    gap: 30px 39px;
   }
 }

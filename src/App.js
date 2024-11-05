@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
+import BookDetail from './components/BookList/BookDetail';
 
 function App() {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ function App() {
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
+          <Route path="/book_list/:bookId" element={<BookDetail />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/community" element={<Community />} />

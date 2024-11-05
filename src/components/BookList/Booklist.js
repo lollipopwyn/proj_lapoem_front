@@ -31,6 +31,7 @@ const BookList = () => {
       const response = await axios.get(apiUrl, {
         params: { page, limit, genre_tag_id },
       });
+      console.log('Data fetched successfully:', response.data.data);
       setBooks(response.data.data);
       setTotalBooks(response.data.totalBooks);
       setLoading(false);

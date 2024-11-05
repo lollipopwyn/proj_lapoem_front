@@ -1,11 +1,13 @@
 // util/apiUrl.js
 const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "http://222.112.27.120:8002" // 배포용 URL
-    : "http://localhost:8002"; // 로컬 개발용 URL
+  process.env.NODE_ENV === 'production'
+    ? 'http://222.112.27.120:8002' // 배포용 URL
+    : 'http://localhost:8002'; // 로컬 개발용 URL
 
 // GET 요청 URL
 export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;
+export const GET_BOOK_DETAIL_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}`;
 export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`;
 export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`;
 export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`;

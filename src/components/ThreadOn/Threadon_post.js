@@ -19,6 +19,8 @@ const Threadon_post = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
 
+  const [selectedBook, setSelectedBook] = useState(null); // 선택된 도서 상태 추가
+
   useEffect(() => {
     fetchBooks(currentPage, selectedCategory);
   }, [currentPage, selectedCategory]);
@@ -63,13 +65,40 @@ const Threadon_post = () => {
     }
   };
 
+  // 선택된 도서를 상태에 저장하는 함수
+  const handleBookSelect = (book) => {
+    console.log("Selected book:", book); // 클릭된 도서의 객체 데이터 확인
+    setSelectedBook(book);
+  };
+
   return (
     <div className="thread-container">
       <h1 className="thread-header">THREAD ON</h1>
       <div className="new_thread_book_search">
-        <CategoryFilter onCategoryChange={handleCategoryChange} />
-        <SearchBar apiUrl={GET_SEARCH_BOOKS_API_URL} onSearch={handleSearch} />
+        <div className="flex">
+          <CategoryFilter onCategoryChange={handleCategoryChange} />
+          <SearchBar
+            apiUrl={GET_SEARCH_BOOKS_API_URL}
+            onSearch={handleSearch}
+          />
+        </div>
+        <button className="post-thread-button">Post Thread</button>
       </div>
+
+      {/* 선택한 도서 정보 영역 */}
+      {selectedBook && (
+        <div className="selected-book-info">
+          <img src={selectedBook.book_cover} alt="책 포지" />
+          <h2>{selectedBook.book_title}</h2>
+          <p>저자: {selectedBook.book_author}</p>
+          <p>평점: {selectedBook.average_rating}</p>
+          <p>리뷰 수: {selectedBook.review_count}</p>
+          <p>출판사: {selectedBook.book_publisher}</p>
+          <p>
+            출판일: {new Date(selectedBook.publish_date).toLocaleDateString()}
+          </p>
+        </div>
+      )}
 
       {loading ? (
         <p>Loading...</p>
@@ -77,22 +106,27 @@ const Threadon_post = () => {
         <div className="booklist_wrapper">
           <div className="booklist_content">
             {books.map((book) => (
-              <BookCard
+              <div
                 key={book.book_id}
-                thumbnail={book.book_cover}
-                title={book.book_title}
-                author={book.book_author}
-                publisher={book.book_publisher}
-                rating={book.average_rating}
-                reviewCount={book.review_count}
-              />
+                onClick={() => handleBookSelect(book)} // 감싸는 div에 클릭 이벤트 추가
+                style={{ cursor: "pointer" }} // 포인터 커서 추가
+              >
+                <BookCard
+                  thumbnail={book.book_cover}
+                  title={book.book_title}
+                  author={book.book_author}
+                  publisher={book.book_publisher}
+                  rating={book.average_rating}
+                  reviewCount={book.review_count}
+                />
+              </div>
             ))}
           </div>
           <div className="pagination">
             <Pagination
               currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
+              totalPages={Math.ceil(totalBooks / limit)}
+              onPageChange={handlePageChange}
             />
           </div>
         </div>

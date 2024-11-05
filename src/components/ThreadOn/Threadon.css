@@ -1,0 +1,46 @@
+@media (max-width: 1920px) {
+  .thread-container {
+    min-height: 100vh;
+    padding: 180px 180px 0;
+  }
+
+  .thread-header {
+    margin-bottom: 50px;
+  }
+
+  .thread-header h1 {
+    font-size: var(--font-large2);
+    font-weight: var(--font-bold-weight);
+    color: var(--text-black);
+  }
+
+  .thread-new-thread-button {
+    background-color: var(--text-point);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-small);
+    font-weight: var(--font-medium-weight);
+  }
+
+  .thread-control-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .thread-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 60px;
+  }
+}
+
+@media (max-width: 1600px) {
+  .thread-list {
+    gap: 30px 39px;
+  }
+}

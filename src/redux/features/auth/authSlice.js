@@ -3,14 +3,8 @@ import axios from 'axios';
 import {
   JOIN_USER_API_URL,
   LOGIN_USER_API_URL,
-  VERIFY_USER_API_URL,
+  LOGOUT_USER_API_URL,
 } from '../../../util/apiUrl';
-
-const LOGOUT_USER_API_URL = `${
-  process.env.NODE_ENV === 'production'
-    ? 'http://222.112.27.120:8002'
-    : 'http://localhost:8002'
-}/logout`;
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -130,7 +124,6 @@ const authSlice = createSlice({
         console.log('Redux user state after initialization:', state.user);
       })
       .addCase(initializeAuth.rejected, (state) => {
-        console.log('initializeAuth rejected');
         state.user = null;
         state.isLoggedIn = false;
         state.isAuthInitializing = false;

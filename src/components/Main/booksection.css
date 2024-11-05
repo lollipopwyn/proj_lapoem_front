@@ -7,7 +7,7 @@
 }
 
 .best {
-  margin-top: 140px;
+  margin-top: 120px;
 }
 
 .section-title {
@@ -30,18 +30,4 @@
   gap: 20px;
   flex-wrap: wrap;
   justify-content: space-between;
-}
-
-.book-thumbnail {
-  width: 100%;
-  aspect-ratio: 3 / 4; /* 3:4 비율 설정 */
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.book-thumbnail img {
-  width: 100%;
-  height: auto; /* 세로를 자동 조절 */
-  max-height: 100%; /* 부모 요소의 높이를 초과하지 않도록 제한 */
-  object-fit: cover; /* 비율을 최대한 유지하면서 채움 */
 }

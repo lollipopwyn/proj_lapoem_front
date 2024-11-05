@@ -21,8 +21,10 @@ function App() {
   const { isLoggedIn } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(initializeAuth()); // 앱 로드 시 인증 상태 초기화
-  }, [dispatch]);
+    if (isLoggedIn) {
+      dispatch(initializeAuth());
+    }
+  }, [dispatch, isLoggedIn]);
 
   return (
     <BrowserRouter>

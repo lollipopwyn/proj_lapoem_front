@@ -1,0 +1,83 @@
+@media (max-width: 1920px) {
+  .thread-card {
+    display: flex;
+    width: 480px;
+    padding: 30px 40px;
+    background-color: var(--text-gray-bg);
+    border: 1px solid var(--text-gray-light);
+    border-radius: 30px;
+    position: relative;
+  }
+
+  .thread-wrapper {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .thread-thumbnail {
+    flex-basis: 33%;
+    display: flex;
+    align-items: center;
+    aspect-ratio: 3 / 4; /* 3:4 비율 설정 */
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .thread-thumbnail img {
+    width: 100%;
+    height: auto;
+    background-color: var(--text-gray-light);
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .thread-info-wrapper {
+    /* display: flex;
+    flex-direction: column;
+    justify-content: flex-end; */
+    /* flex-grow: 1; */
+    margin-top: 8px;
+    text-align: left;
+  }
+
+  .thread-icon {
+    position: absolute;
+    top: 35px;
+    right: 40px;
+    opacity: 0.2;
+  }
+
+  .thread-tag {
+    background-color: rgba(232, 48, 48, 0.1);
+    border: 1px solid var(--text-red);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: var(--font-smallest);
+    font-weight: var(--font-semibold-weight);
+    color: var(--text-black);
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+
+  .thread-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .thread-title {
+    margin-top: auto; /* 제목이 길어지면 위쪽으로 늘어남 */
+    font-size: var(--font-normal2);
+    font-weight: var(--font-bold-weight);
+    color: var(--text-black);
+    margin-bottom: 4px;
+  }
+
+  .thread-writer {
+    display: flex;
+    gap: 4px;
+    font-size: var(--font-small);
+    font-weight: var(--font-regular-weight);
+    color: var(--text-gray-dark);
+  }
+}

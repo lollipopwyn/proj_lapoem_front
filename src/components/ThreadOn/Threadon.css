@@ -1,0 +1,72 @@
+@media (max-width: 1920px) {
+  .Thread-container {
+    min-height: 100vh;
+    padding: 180px 180px 0;
+  }
+
+  .Thread-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+  }
+
+  .Thread-header h1 {
+    font-size: var(--font-large2);
+    font-weight: var(--font-bold-weight);
+    color: var(--text-black);
+  }
+
+  .Thread-new-thread-button {
+    background-color: var(--text-point);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-small);
+    font-weight: var(--font-medium-weight);
+  }
+
+  /* 검색 바 */
+  .Thread-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0 30px;
+    gap: 10px;
+  }
+
+  .Thread-filter-select {
+    padding: 10px;
+    border: 1px solid var(--text-gray-light);
+    border-radius: 20px;
+  }
+
+  .Thread-search-bar input {
+    padding: 10px 15px;
+    width: 400px;
+    border: 1px solid var(--text-gray-light);
+    border-radius: 20px;
+    font-size: var(--font-small);
+  }
+
+  .Thread-search-button {
+    background-color: var(--text-point);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    font-size: var(--font-normal1);
+  }
+
+  /* 스레드 리스트 컨테이너 */
+  .Thread-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+}

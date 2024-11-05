@@ -31,7 +31,6 @@
 
 .book-writer {
   display: flex;
-  gap: 4px;
   font-size: var(--font-smallest);
   color: var(--text-gray-dark);
 }

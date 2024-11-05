@@ -23,9 +23,7 @@ function BookCard({
         {/* <p className="book-title">채식주의자</p> */}
 
         <div className="book-writer">
-          <p>{author}</p>
-          <p>·</p>
-          <p>{publisher}</p>
+          <p>{`${author} · ${publisher}`}</p>
         </div>
         {/* <div className="book-writer">
           <p>한강</p>

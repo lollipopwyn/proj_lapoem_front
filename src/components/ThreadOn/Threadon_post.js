@@ -43,7 +43,7 @@ const Threadon_post = () => {
       }
 
       const response = await axios.get(apiUrl, { params });
-      setBooks(response.data.data);
+      setBooks(response.data.data.slice(0, limit));
       setTotalBooks(response.data.totalBooks);
       setLoading(false);
     } catch (error) {
@@ -55,9 +55,10 @@ const Threadon_post = () => {
   const handleSearch = (data) => {
     setIsSearching(true);
     setSearchTerm(data.keyword); // SearchBar에서 검색어를 가져와서 저장
+
     setBooks(data.data.slice(0, limit)); // 검색 결과 중 상위 5개만 도서 목록 업데이트
     setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
-    setCurrentPage(1); // 검색 시 페이지를 1로 초기화
+    setCurrentPage(1);
     setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
   };
 

@@ -78,6 +78,7 @@ const BookList = () => {
               <BookCard
                 key={book.book_id}
                 thumbnail={book.book_cover}
+                title={book.book_title}
                 author={book.book_author}
                 publisher={book.book_publisher}
                 rating={book.average_rating}

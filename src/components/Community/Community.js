@@ -43,26 +43,26 @@ const Community = () => {
     console.log('Is Logged In:', isLoggedIn);
     console.log('Current User:', currentUser);
 
-    if (
-      authInitialized &&
-      isLoggedIn &&
-      currentUser &&
-      currentUser.user?.memberNum
-    ) {
-      const fetchPosts = async () => {
-        if (viewType === 'Public') {
-          await dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
-        } else if (viewType === 'Only me') {
-          await dispatch(
-            fetchCommunityPostsData({
-              viewType: 'Only me',
-              member_num: currentUser.user.memberNum,
-            })
-          );
-        }
-      };
-      fetchPosts();
-    }
+    const fetchPosts = async () => {
+      if (viewType === 'Public') {
+        // 로그인 여부와 상관없이 Public 게시글을 요청
+        await dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
+      } else if (
+        viewType === 'Only me' &&
+        isLoggedIn &&
+        currentUser?.user?.memberNum
+      ) {
+        // Only me 게시글은 로그인한 사용자만 요청
+        await dispatch(
+          fetchCommunityPostsData({
+            viewType: 'Only me',
+            member_num: currentUser.user.memberNum,
+          })
+        );
+      }
+    };
+
+    fetchPosts();
   }, [authInitialized, isLoggedIn, currentUser, viewType, dispatch]);
 
   // 공지사항 (하드코딩된 데이터)

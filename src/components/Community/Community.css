@@ -7,7 +7,7 @@
 
 .community-container {
   min-height: 100vh;
-  padding: 120px 0 320px 180px; /* Space for navbar and footer */
+  padding: 220px 0 320px 180px; /* Space for navbar and footer */
   box-sizing: border-box;
 }
 
@@ -122,7 +122,7 @@
 }
 
 .notice-tag {
-  color: #E83030;
+  color: #e83030;
   font-size: 24px;
   margin-right: 10px;
 }
@@ -160,7 +160,7 @@
   height: 720px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: sticky;
   top: 140px; /* navbar height(120px) + 20px margin */
@@ -181,13 +181,15 @@
   margin-bottom: 15px;
 }
 
-.hot-topics, .top-users {
+.hot-topics,
+.top-users {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.topic-item, .user-item {
+.topic-item,
+.user-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -199,7 +201,7 @@
 .new-forum-button {
   width: 100%;
   padding: 10px;
-  background-color: #4B433B;
+  background-color: #4b433b;
   color: #ffffff;
   border: none;
   border-radius: 4px;
@@ -209,7 +211,7 @@
 }
 
 .new-forum-button:hover {
-  background-color: #4B433B;
+  background-color: #4b433b;
 }
 
 .my-forums-section {

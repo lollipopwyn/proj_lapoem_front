@@ -9,11 +9,6 @@ import Community from './components/Community/Community';
 import NewForum from './components/Community/NewForum';
 import Community_detail from './components/Community/Community_detail';
 import ThreadOn from './components/ThreadOn/Threadon';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { initializeAuth } from './redux/features/auth/authSlice';
-import Mypage from './components/My/Mypage';
 import BookDetail from './components/BookList/BookDetail';
 
 import { useDispatch, useSelector } from 'react-redux';

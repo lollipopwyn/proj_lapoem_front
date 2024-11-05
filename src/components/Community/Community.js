@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice';
-import { initializeAuth } from '../../redux/features/auth/authSlice';
 import './Community.css';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -16,7 +15,7 @@ const Community = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [viewType, setViewType] = useState('Public'); // Public or Only me
-  const [authInitialized, setAuthInitialized] = useState(false);
+
   const {
     fetchCommunityPosts: communityPosts,
     isLoading,
@@ -27,43 +26,23 @@ const Community = () => {
     user: currentUser,
     isLoggedIn,
     isAuthInitializing,
+    authInitialized,
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const initializeAuthState = async () => {
-      await dispatch(initializeAuth());
-      setAuthInitialized(true); // 인증 초기화 완료 설정
-    };
-    initializeAuthState();
-  }, [dispatch]);
-
-  // authInitialized가 true이고, currentUser가 존재할 때 데이터를 요청
-  useEffect(() => {
-    console.log('Auth Initialized:', authInitialized);
-    console.log('Is Logged In:', isLoggedIn);
-    console.log('Current User:', currentUser);
-
-    const fetchPosts = async () => {
-      if (viewType === 'Public') {
-        // 로그인 여부와 상관없이 Public 게시글을 요청
-        await dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
-      } else if (
-        viewType === 'Only me' &&
-        isLoggedIn &&
-        currentUser?.user?.memberNum
-      ) {
-        // Only me 게시글은 로그인한 사용자만 요청
-        await dispatch(
-          fetchCommunityPostsData({
-            viewType: 'Only me',
-            member_num: currentUser.user.memberNum,
-          })
-        );
-      }
-    };
-
-    fetchPosts();
-  }, [authInitialized, isLoggedIn, currentUser, viewType, dispatch]);
+    if (viewType === 'Public') {
+      // 로그인 여부와 상관없이 Public 게시글을 요청
+      dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
+    } else if (viewType === 'Only me' && isLoggedIn && currentUser?.memberNum) {
+      // Only me 게시글은 로그인한 사용자만 요청
+      dispatch(
+        fetchCommunityPostsData({
+          viewType: 'Only me',
+          member_num: currentUser.memberNum,
+        })
+      );
+    }
+  }, [viewType, isLoggedIn, currentUser, dispatch]);
 
   // 공지사항 (하드코딩된 데이터)
   const notices = [
@@ -89,11 +68,16 @@ const Community = () => {
 
   const handleViewChange = (type) => {
     setViewType(type);
-    if (isLoggedIn) {
+    if (authInitialized) {
       if (type === 'Public') {
-        dispatch(fetchCommunityPostsData('Public'));
-      } else if (type === 'Only me' && currentUser) {
-        dispatch(fetchCommunityPostsData('Only me'));
+        dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
+      } else if (type === 'Only me' && isLoggedIn && currentUser?.memberNum) {
+        dispatch(
+          fetchCommunityPostsData({
+            viewType: 'Only me',
+            member_num: currentUser.memberNum,
+          })
+        );
       }
     }
   };
@@ -105,7 +89,7 @@ const Community = () => {
     } else if (viewType === 'Only me') {
       return (
         post.visibility === false &&
-        Number(post.member_num) === Number(currentUser.user?.memberNum)
+        Number(post.member_num) === Number(currentUser?.memberNum)
       );
     }
     return false;

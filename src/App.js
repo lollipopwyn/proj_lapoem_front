@@ -16,13 +16,21 @@ import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
 import BookDetail from './components/BookList/BookDetail';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { initializeAuth } from './redux/features/auth/authSlice';
+import Mypage from './components/My/Mypage';
+import Threadon_post from './components/ThreadOn/Threadon_post';
+
 function App() {
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(initializeAuth()); // 앱 로드 시 인증 상태 초기화
-  }, [dispatch]);
+    if (isLoggedIn) {
+      dispatch(initializeAuth());
+    }
+  }, [dispatch, isLoggedIn]);
 
   return (
     <BrowserRouter>
@@ -36,6 +44,7 @@ function App() {
           <Route path="/book_list/:bookId" element={<BookDetail />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
+          <Route path="/new_thread" element={<Threadon_post />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
           <Route path="/community/:postId" element={<Community_detail />} />

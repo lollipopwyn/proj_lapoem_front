@@ -87,28 +87,74 @@ export const fetchBestBookData = createApiThunk(
 // 커뮤니티 게시글 가져오기 Thunk
 export const fetchCommunityPostsData = createAsyncThunk(
   'api/fetchCommunityPosts',
-  async ({ viewType, member_num }) => {
+  async ({ viewType, member_num }, { rejectWithValue }) => {
     const visibility = viewType === 'Only me' ? 'false' : 'true';
     const url = `${GET_COMMUNITY_POSTS_API_URL}?visibility=${visibility}${
       member_num ? `&member_num=${member_num}` : ''
     }`;
+
     console.log(
       'Requesting posts with visibility:',
       visibility,
       'and member_num:',
       member_num
     );
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
+
+    try {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        console.error(
+          'Failed to fetch posts:',
+          response.status,
+          response.statusText
+        );
+        return rejectWithValue('Failed to fetch posts');
+      }
+
+      const data = await response.json();
+      console.log('Fetched posts data:', data); // 서버로부터 받아온 데이터 확인
+      return data;
+    } catch (error) {
+      console.error('Network error:', error);
+      return rejectWithValue('Network error');
+    }
   }
 );
 
 // 커뮤니티 새 게시글 생성 Thunk
-export const createCommunityPostData = createApiThunk(
+export const createCommunityPostData = createAsyncThunk(
   'api/createCommunityPost',
-  CREATE_COMMUNITY_POST_API_URL,
-  postRequest
+  async (postData, { getState, rejectWithValue }) => {
+    try {
+      // 현재 로그인한 사용자 정보에서 member_num 가져오기
+      const { auth } = getState();
+      const member_num = auth.user?.memberNum;
+
+      // member_num이 postData에 포함되지 않은 경우 추가
+      const requestData = {
+        ...postData,
+        member_num: postData.member_num || member_num,
+      };
+
+      console.log('Sending post data to server:', requestData); // 서버에 보내는 데이터 확인
+
+      // postRequest 함수 호출
+      const data = await postRequest(
+        CREATE_COMMUNITY_POST_API_URL,
+        requestData
+      );
+
+      // 성공적인 요청 처리
+      console.log('Post created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Error creating post:', error.message);
+      return rejectWithValue(
+        error.message || 'Network error or failed to parse response.'
+      );
+    }
+  }
 );
 
 export const fetchCommunityPostDetail = createAsyncThunk(

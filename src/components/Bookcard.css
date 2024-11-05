@@ -7,8 +7,16 @@
 .book-thumbnail img {
   width: 100%;
   height: auto;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
   background-color: var(--text-gray-light);
   border-radius: 8px;
+}
+
+.book-thumbnail {
+  aspect-ratio: 3 / 4; /* 3:4 비율 설정 */
+  overflow: hidden;
 }
 
 .book-info {
@@ -36,7 +44,7 @@
 .small_star {
   width: 20px;
   height: 20px;
-  object-fit: contain; /* 이미지 비율 유지 */
+  object-fit: contain;
 }
 
 .average_star {

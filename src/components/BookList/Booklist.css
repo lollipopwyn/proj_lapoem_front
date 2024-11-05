@@ -7,7 +7,7 @@
 
 .booklist_container {
   min-height: 100vh;
-  padding: 220px 0 320px 180px; /* Space for navbar and footer */
+  padding: 180px 0 320px 180px; /* Space for navbar and footer */
   box-sizing: border-box;
 }
 

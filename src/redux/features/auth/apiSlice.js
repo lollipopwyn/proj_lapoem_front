@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 // API 요청에 사용될 엔드포인트 URL을 import함
 import {
   GET_BOOK_LIST_API_URL,
+  GET_BOOK_REVIEWS_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
@@ -46,6 +47,13 @@ export const fetchBookListData = createApiThunk(
 export const fetchBookDetailData = createApiThunk(
   'api/fetchGetBookDetail',
   async (bookId) => GET_BOOK_DETAIL_API_URL(bookId),
+  getRequest
+);
+
+// 북 리뷰 Thunks
+export const fetchBookReviewsData = createApiThunk(
+  'api/fetchGetBookReviews',
+  async (bookId) => GET_BOOK_REVIEWS_API_URL(bookId),
   getRequest
 );
 
@@ -216,6 +224,7 @@ const apiSlice = createSlice({
   initialState: {
     fetchGetBookList: [],
     fetchGetBookDetail: null,
+    fetchGetBookReviews: [],
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
@@ -239,6 +248,12 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookList')
       )
       .addCase(fetchBookListData.rejected, handleRejected)
+      // 북 리뷰-----------------------------------------------------
+      .addCase(
+        fetchBookReviewsData.fulfilled,
+        handleFullfilled('fetchGetBookReviews')
+      )
+      .addCase(fetchBookReviewsData.rejected, handleRejected)
       // 북 상세페이지-----------------------------------------------------
       .addCase(
         fetchBookDetailData.fulfilled,

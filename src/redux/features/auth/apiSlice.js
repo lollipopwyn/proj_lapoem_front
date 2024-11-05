@@ -71,12 +71,18 @@ export const fetchNewBookData = createApiThunk(
 // 커뮤니티 게시글 가져오기 Thunk
 export const fetchCommunityPostsData = createAsyncThunk(
   'api/fetchCommunityPosts',
-  async (viewType) => {
-    const visibility = viewType === 'Only me' ? 'false' : 'true'; // Only me일 때 visibility=false
-    console.log('Requesting posts with visibility:', visibility); // 확인용 로그
-    const response = await fetch(
-      `${GET_COMMUNITY_POSTS_API_URL}?visibility=${visibility}`
+  async ({ viewType, member_num }) => {
+    const visibility = viewType === 'Only me' ? 'false' : 'true';
+    const url = `${GET_COMMUNITY_POSTS_API_URL}?visibility=${visibility}${
+      member_num ? `&member_num=${member_num}` : ''
+    }`;
+    console.log(
+      'Requesting posts with visibility:',
+      visibility,
+      'and member_num:',
+      member_num
     );
+    const response = await fetch(url);
     const data = await response.json();
     return data;
   }
@@ -125,15 +131,18 @@ const handleFullfilled = (stateKey) => (state, action) => {
   state[stateKey] = Array.isArray(action.payload)
     ? action.payload //배열일 경우 그대로 state[stateKey]에 할당
     : action.payload.data || action.payload; //객체일 경우 data 속성을 우선적으로 할당하고, 만약 data가 없다면 action.payload 자체를 할당
+  state.isLoading = false;
 };
 
 // rejected 상태를 처리하는 핸들러 함수
 const handleRejected = (state, action) => {
+  state.isLoading = false;
   state.isError = true;
   state.errorMessage = action.error.message;
 };
 
 const handlePending = (state) => {
+  state.isLoading = true;
   state.isError = false;
   state.errorMessage = '';
 };
@@ -151,6 +160,7 @@ const apiSlice = createSlice({
     fetchCommunityPosts: [],
     postDetail: null,
     createCommunityPost: null,
+    isLoading: false,
     // 다른 api슬라이스 초기 상태 지정
     isError: false,
     errorMessage: '',

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice';
+import { initializeAuth } from '../../redux/features/auth/authSlice';
 import './Community.css';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -15,17 +16,54 @@ const Community = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [viewType, setViewType] = useState('Public'); // Public or Only me
+  const [authInitialized, setAuthInitialized] = useState(false);
   const {
     fetchCommunityPosts: communityPosts,
+    isLoading,
     isError,
     errorMessage,
   } = useSelector((state) => state.api);
-  const currentUser = useSelector((state) => state.auth.user?.memberNum);
+  const {
+    user: currentUser,
+    isLoggedIn,
+    isAuthInitializing,
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    console.log('Current viewType:', viewType); // viewType 값 확인
-    dispatch(fetchCommunityPostsData(viewType));
-  }, [dispatch, viewType]);
+    const initializeAuthState = async () => {
+      await dispatch(initializeAuth());
+      setAuthInitialized(true); // 인증 초기화 완료 설정
+    };
+    initializeAuthState();
+  }, [dispatch]);
+
+  // authInitialized가 true이고, currentUser가 존재할 때 데이터를 요청
+  useEffect(() => {
+    console.log('Auth Initialized:', authInitialized);
+    console.log('Is Logged In:', isLoggedIn);
+    console.log('Current User:', currentUser);
+
+    if (
+      authInitialized &&
+      isLoggedIn &&
+      currentUser &&
+      currentUser.user?.memberNum
+    ) {
+      const fetchPosts = async () => {
+        if (viewType === 'Public') {
+          await dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
+        } else if (viewType === 'Only me') {
+          await dispatch(
+            fetchCommunityPostsData({
+              viewType: 'Only me',
+              member_num: currentUser.user.memberNum,
+            })
+          );
+        }
+      };
+      fetchPosts();
+    }
+  }, [authInitialized, isLoggedIn, currentUser, viewType, dispatch]);
 
   // 공지사항 (하드코딩된 데이터)
   const notices = [
@@ -49,19 +87,31 @@ const Community = () => {
   const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
   const topUsers = ['User1', 'User2', 'User3'];
 
+  const handleViewChange = (type) => {
+    setViewType(type);
+    if (isLoggedIn) {
+      if (type === 'Public') {
+        dispatch(fetchCommunityPostsData('Public'));
+      } else if (type === 'Only me' && currentUser) {
+        dispatch(fetchCommunityPostsData('Only me'));
+      }
+    }
+  };
+
   // 필터링된 게시글
   const filteredPosts = communityPosts.filter((post) => {
     if (viewType === 'Public') {
-      // Public일 때 visibility가 true인 게시물만 표시
       return post.visibility === true;
-    } else {
-      // Only me일 때는 visibility가 false이고 현재 사용자의 게시물만 표시
+    } else if (viewType === 'Only me') {
       return (
-        post.visibility === false && post.member_num === Number(currentUser)
+        post.visibility === false &&
+        Number(post.member_num) === Number(currentUser.user?.memberNum)
       );
     }
+    return false;
   });
-  console.log('Community Posts:', communityPosts);
+
+  console.log('Filtered Posts:', filteredPosts);
 
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
@@ -106,8 +156,12 @@ const Community = () => {
             ))}
 
             {/* 작성된 게시글 표시 */}
-            {isError ? (
+            {isLoading ? (
+              <div>Loading...</div>
+            ) : isError ? (
               <p>{errorMessage}</p>
+            ) : filteredPosts.length === 0 ? (
+              <p>No posts found.</p>
             ) : (
               filteredPosts.map((post) => (
                 <div

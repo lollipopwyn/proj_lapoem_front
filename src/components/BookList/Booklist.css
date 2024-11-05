@@ -5,13 +5,13 @@
   }
 }
 
-.booklist_container{
+.booklist_container {
   min-height: 100vh;
-  padding: 120px 0 320px 180px; /* Space for navbar and footer */
+  padding: 180px 0 320px 180px; /* Space for navbar and footer */
   box-sizing: border-box;
 }
 
-.booklist_pagetitle{
+.booklist_pagetitle {
   font-size: 38px;
   line-height: 63px;
   margin: 0;
@@ -22,11 +22,10 @@
   font-weight: bold;
 }
 
-.booklist_search{
+.booklist_search {
   display: flex;
   margin-top: 30px;
   margin-bottom: 150px;
-
 }
 
 .booklist_content {

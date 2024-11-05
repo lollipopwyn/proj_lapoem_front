@@ -2,7 +2,7 @@
   .thread-card {
     display: flex;
     width: 480px;
-    padding: 30px 40px;
+    padding: 20px 30px;
     background-color: var(--text-gray-bg);
     border: 1px solid var(--text-gray-light);
     border-radius: 30px;
@@ -16,10 +16,8 @@
   }
 
   .thread-thumbnail {
-    flex-basis: 33%;
-    display: flex;
-    align-items: center;
-    aspect-ratio: 3 / 4; /* 3:4 비율 설정 */
+    width: 160px;
+    height: auto;
     overflow: hidden;
     border-radius: 8px;
   }
@@ -27,9 +25,12 @@
   .thread-thumbnail img {
     width: 100%;
     height: auto;
+    max-height: 100%;
+    aspect-ratio: 3 / 4; /* 3:4 비율 설정 */
     background-color: var(--text-gray-light);
     border-radius: 8px;
     object-fit: cover;
+    object-position: center;
   }
 
   .thread-info-wrapper {
@@ -43,18 +44,18 @@
 
   .thread-icon {
     position: absolute;
-    top: 35px;
-    right: 40px;
+    top: 30px;
+    right: 30px;
     opacity: 0.2;
   }
 
   .thread-tag {
-    background-color: rgba(232, 48, 48, 0.1);
-    border: 1px solid var(--text-red);
+    background-color: #9999993b;
+    border: 1px solid var(--text-gray-medium);
     border-radius: 8px;
     padding: 10px 12px;
     font-size: var(--font-smallest);
-    font-weight: var(--font-semibold-weight);
+    font-weight: var(--font-medium-weight);
     color: var(--text-black);
     display: inline-block;
     margin-bottom: 14px;
@@ -66,7 +67,6 @@
   }
 
   .thread-title {
-    margin-top: auto; /* 제목이 길어지면 위쪽으로 늘어남 */
     font-size: var(--font-normal2);
     font-weight: var(--font-bold-weight);
     color: var(--text-black);
@@ -79,5 +79,28 @@
     font-size: var(--font-small);
     font-weight: var(--font-regular-weight);
     color: var(--text-gray-dark);
+  }
+}
+
+@media (max-width: 1600px) {
+  .thread-card {
+    display: flex;
+    width: 420px;
+    padding: 18px 24px;
+  }
+
+  .thread-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
+    gap: 20px 60px; /* 세로 간격: 20px, 가로 간격: 60px */
+  }
+
+  .thread-card {
+    width: 100%; /* 그리드 셀에 맞춰 자동 조정 */
+    max-width: 30px; /* 카드의 최대 너비 제한 */
+  }
+
+  .thread-thumbnail {
+    width: 140px; /* 이미지 크기 축소 */
   }
 }

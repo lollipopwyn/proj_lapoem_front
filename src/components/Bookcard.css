@@ -8,7 +8,8 @@
   width: 100%;
   height: auto;
   max-height: 100%; /* 부모 요소의 높이를 초과하지 않도록 제한 */
-  object-fit: cover; /* 비율을 최대한 유지하면서 채움 */
+  object-fit: cover;
+  object-position: center;
   background-color: var(--text-gray-light);
   border-radius: 8px;
 }

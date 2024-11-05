@@ -6,6 +6,7 @@ import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_ALL_CATEGORIES_API_URL,
   GET_NEW_BOOK_API_URL,
+  GET_BEST_BOOK_API_URL,
   GET_COMMUNITY_POSTS_API_URL,
   CREATE_COMMUNITY_POST_API_URL,
   // 다른 엔드포인트 URL
@@ -65,6 +66,13 @@ export const fetchBookAllCategoriesData = createApiThunk(
 export const fetchNewBookData = createApiThunk(
   'api/fetchNewBook',
   GET_NEW_BOOK_API_URL,
+  getRequest
+);
+
+// 베스트셀러 불러오기 Thunks
+export const fetchBestBookData = createApiThunk(
+  'api/fetchBestBook',
+  GET_BEST_BOOK_API_URL,
   getRequest
 );
 
@@ -157,6 +165,7 @@ const apiSlice = createSlice({
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
     fetchNewBookData: [],
+    fetchBestBookData: [],
     fetchCommunityPosts: [],
     postDetail: null,
     createCommunityPost: null,
@@ -195,6 +204,12 @@ const apiSlice = createSlice({
 
       .addCase(fetchNewBookData.fulfilled, handleFullfilled('fetchNewBookData'))
       .addCase(fetchNewBookData.rejected, handleRejected)
+
+      .addCase(
+        fetchBestBookData.fulfilled,
+        handleFullfilled('fetchBestBookData')
+      )
+      .addCase(fetchBestBookData.rejected, handleRejected)
 
       // 여기부터 커뮤니티 게시글 처리
       .addCase(

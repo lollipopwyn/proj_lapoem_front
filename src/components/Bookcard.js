@@ -34,7 +34,11 @@ function BookCard({
         </div> */}
 
         <div className="book-star">
-          <img src={small_star} alt="아이콘" className="small_star" />
+          <img
+            src={small_star}
+            alt="아이콘"
+            className="small_star w-[20px] h-[20px]"
+          />
           <p className="average_star">{rating}</p>
           <p className="comment_total_people">({reviewCount})</p>
         </div>

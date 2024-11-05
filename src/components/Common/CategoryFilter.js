@@ -5,42 +5,45 @@ import './Common.css';
 
 const CategoryFilter = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(''); // 기본값으로 전체 선택
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 카테고리 목록을 불러오기
     const fetchCategories = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(GET_BOOK_ALL_CATEGORIES_API_URL); // 카테고리 데이터 가져오기
-        setCategories(response.data.categories); // 카테고리 상태 업데이트
+        const response = await axios.get(GET_BOOK_ALL_CATEGORIES_API_URL);
+        setCategories(response.data.categories);
       } catch (error) {
         console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
 
-  const handleCategoryChange = (event) => {
-    const value = event.target.value;
-    setSelectedCategory(value);
-    onCategoryChange(value); // 부모 컴포넌트에 선택한 카테고리 전달
+  const handleCategorySelect = (e) => {
+    const selectedCategoryId = e.target.value;
+    onCategoryChange(selectedCategoryId);
   };
 
   return (
     <div className="category-filter">
-      <label htmlFor="category-select"></label>
-      <select
-        id="category-select"
-        value={selectedCategory}
-        onChange={handleCategoryChange}
-      >
-        <option value="">전체</option> {/* 전체 선택 옵션 */}
-        {categories.map((category) => (
-          <option key={category.genre_tag_id} value={category.genre_tag_id}>
-            {category.genre_tag_name}
-          </option>
-        ))}
-      </select>
+      <label htmlFor="category"></label>
+      {loading ? (
+        <p>Loading categories...</p>
+      ) : (
+        <select id="category" onChange={handleCategorySelect}>
+          <option value="">전체</option>
+          {categories.map((category) => (
+            <option key={category.genre_tag_id} value={category.genre_tag_id}>
+              {category.genre_tag_name}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 };

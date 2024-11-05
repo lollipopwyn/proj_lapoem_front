@@ -1,9 +1,6 @@
-.searchbar{
- display: flex;
- margin-left: 250px;
-}
-
-.category-filter{
-  margin-top: 100px;
-  margin-left: 100px;
+.pagination{
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  gap: 20px;
 }

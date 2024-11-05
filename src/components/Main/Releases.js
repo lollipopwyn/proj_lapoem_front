@@ -1,6 +1,7 @@
+// Releases.js
 import React, { useEffect, useState } from "react";
 import BookCard from "../Bookcard";
-import "./Releases.css";
+import "./booksection.css"; // 공통 CSS 파일
 import { GET_NEW_BOOK_API_URL } from "../../util/apiUrl";
 
 function Releases() {
@@ -11,7 +12,7 @@ function Releases() {
       try {
         const response = await fetch(GET_NEW_BOOK_API_URL);
         const data = await response.json();
-        setNewBooks(data); // 받아온 데이터를 상태에 저장
+        setNewBooks(data);
       } catch (error) {
         console.error("Error fetching new books:", error);
       }
@@ -21,12 +22,12 @@ function Releases() {
   }, []);
 
   return (
-    <section className="new-container">
-      <div className="new-title">
+    <section className="book-section new">
+      <div className="section-title">
         <h2>SPOTLIGHT ON NEW RELEASES</h2>
         <p>새로 나온 주목할만한 작품들을 만나보세요 ✨</p>
       </div>
-      <div className="book_list flex gap-10">
+      <div className="book-list">
         {newBooks.map((book) => (
           <BookCard
             key={book.book_id}

@@ -23,7 +23,7 @@
     font-weight: var(--font-medium-weight);
   }
 
-  .thread-control-bar {
+  .thread-search-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;

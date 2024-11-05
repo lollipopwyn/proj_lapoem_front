@@ -98,7 +98,7 @@ function Threadon() {
     <div className="thread-container">
       <h1 className="thread-header">THREAD ON</h1>
 
-      <div className="thread-control-bar">
+      <div className="thread-search-bar">
         <SearchBar onSearch={handleSearch} />
         <button
           className="thread-new-thread-button"

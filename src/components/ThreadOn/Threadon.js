@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate import 추가
 import ThreadCard from "./ThreadCard";
 import SearchBar from "../Common/SearchBar";
 import PageNation from "../PageNation";
@@ -9,6 +10,7 @@ function Threadon() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
     const data = [
@@ -94,13 +96,17 @@ function Threadon() {
 
   return (
     <div className="thread-container">
-      <header className="thread-header">
-        <h1 className="mb-20">THREAD ON</h1>
-        <div className="thread-control-bar">
-          <SearchBar onSearch={handleSearch} />
-          <button className="thread-new-thread-button">+ New Thread</button>
-        </div>
-      </header>
+      <h1 className="thread-header">THREAD ON</h1>
+
+      <div className="thread-control-bar">
+        <SearchBar onSearch={handleSearch} />
+        <button
+          className="thread-new-thread-button"
+          onClick={() => navigate("/new_thread")} // 버튼 클릭 시 "/new-thread"로 이동
+        >
+          New Thread
+        </button>
+      </div>
 
       <div className="thread-list">
         {currentItems.map((thread) => (

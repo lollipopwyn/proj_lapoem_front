@@ -84,10 +84,26 @@
   }
 }
 
+@media (max-width: 1800px) {
+  .thread-card {
+    display: flex;
+    width: 440px;
+    padding: 18px 24px;
+  }
+}
+
+@media (max-width: 1700px) {
+  .thread-card {
+    display: flex;
+    width: 400px;
+    padding: 18px 24px;
+  }
+}
+
 @media (max-width: 1600px) {
   .thread-card {
     display: flex;
-    width: 360px;
+    width: 370px;
     padding: 18px 24px;
   }
 
@@ -113,5 +129,13 @@
 
   .thread-writer {
     font-size: var(--font-smallest);
+  }
+}
+
+@media (max-width: 1500px) {
+  .thread-card {
+    display: flex;
+    width: 360px;
+    padding: 18px 24px;
   }
 }

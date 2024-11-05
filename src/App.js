@@ -1,19 +1,20 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Main from './components/Main/Main';
-import Join from './components/Auth/Join';
-import Login from './components/Auth/Login';
-import Booklist from './components/BookList/Booklist';
-import Stella from './components/Stella/Stella';
-import Community from './components/Community/Community';
-import NewForum from './components/Community/NewForum';
-import Community_detail from './components/Community/Community_detail';
-import ThreadOn from './components/ThreadOn/Threadon';
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Main from "./components/Main/Main";
+import Join from "./components/Auth/Join";
+import Login from "./components/Auth/Login";
+import Booklist from "./components/BookList/Booklist";
+import Stella from "./components/Stella/Stella";
+import Community from "./components/Community/Community";
+import NewForum from "./components/Community/NewForum";
+import Community_detail from "./components/Community/Community_detail";
+import ThreadOn from "./components/ThreadOn/Threadon";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { initializeAuth } from './redux/features/auth/authSlice';
-import Mypage from './components/My/Mypage';
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { initializeAuth } from "./redux/features/auth/authSlice";
+import Mypage from "./components/My/Mypage";
+import Threadon_post from "./components/ThreadOn/Threadon_post";
 
 function App() {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ function App() {
           <Route path="/book_list" element={<Booklist />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
+          <Route path="/new_thread" element={<Threadon_post />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
           <Route path="/community/:postId" element={<Community_detail />} />

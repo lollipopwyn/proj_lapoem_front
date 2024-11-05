@@ -1,3 +1,4 @@
+/* 1920px 이하 */
 @media (max-width: 1920px) {
   .thread-container {
     min-height: 100vh;
@@ -5,23 +6,20 @@
   }
 
   .thread-header {
-    margin-bottom: 50px;
-  }
-
-  .thread-header h1 {
     font-size: var(--font-large2);
     font-weight: var(--font-bold-weight);
     color: var(--text-black);
+    margin-bottom: 60px;
   }
 
   .thread-new-thread-button {
     background-color: var(--text-point);
     color: white;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
     border: none;
-    font-size: var(--font-small);
+    font-size: var(--font-smallest);
     font-weight: var(--font-medium-weight);
   }
 
@@ -29,18 +27,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
   }
 
   .thread-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px 60px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개씩 배치 */
+    gap: 40px 60px; /* 세로 40px, 가로 60px */
   }
 }
 
+/* 1600px 이하 */
 @media (max-width: 1600px) {
+  .thread-container {
+    padding: 160px 160px 0;
+  }
+
   .thread-list {
-    gap: 30px 39px;
+    grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개 */
+    gap: 30px 50px; /* 세로 30px, 가로 50px */
   }
 }

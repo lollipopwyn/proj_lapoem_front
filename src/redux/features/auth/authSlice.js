@@ -4,6 +4,7 @@ import {
   JOIN_USER_API_URL,
   LOGIN_USER_API_URL,
   LOGOUT_USER_API_URL,
+  VERIFY_USER_API_URL,
 } from '../../../util/apiUrl';
 
 const initialState = {

@@ -1,62 +1,130 @@
 /* ====== Common Post Request Function ====== */
-export async function postRequest(url, options) {
+export async function postRequest(url, data) {
   const defaultOptions = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    ...options,
+    body: JSON.stringify(data),
+    credentials: 'include',
   };
-  return await fetch(url, defaultOptions).then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  });
+
+  const response = await fetch(url, defaultOptions);
+
+  // 응답 데이터 변수 선언
+  let responseData;
+
+  try {
+    // JSON 파싱 시도
+    responseData = await response.json();
+  } catch (error) {
+    throw new Error('Failed to parse response JSON.');
+  }
+
+  // 응답이 성공적이지 않을 경우 에러 처리
+  if (!response.ok) {
+    throw new Error(responseData?.message || 'Network response was not ok');
+  }
+
+  // 정상적인 응답일 경우 파싱된 데이터 반환
+  return responseData;
 }
 
 /* ====== Common GET Request Function ====== */
 export async function getRequest(url) {
-  return await fetch(url).then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  });
+  const response = await fetch(url, { credentials: 'include' });
+  let responseData;
+
+  try {
+    responseData = await response.json(); // 응답을 JSON 형식으로 파싱
+  } catch (error) {
+    throw new Error('Failed to parse response JSON.');
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || 'Network response was not ok');
+  }
+
+  return responseData;
 }
 
 /* ====== Common Put Request Function ====== */
-export async function putRequest(url, options) {
+export async function putRequest(url, data) {
   const defaultOptions = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    ...options,
+    body: JSON.stringify(data),
+    credentials: 'include',
   };
-  return await fetch(url, defaultOptions).then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-  });
+
+  const response = await fetch(url, defaultOptions);
+  let responseData;
+
+  try {
+    responseData = await response.json();
+  } catch (error) {
+    throw new Error('Failed to parse response JSON.');
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || 'Network response was not ok');
+  }
+
+  return responseData;
 }
 
 /* ====== Common Patch Request Function ====== */
-export async function patchRequest(url, options) {
-  return await fetch(url, options).then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  });
+export async function patchRequest(url, data) {
+  const defaultOptions = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  };
+
+  const response = await fetch(url, defaultOptions);
+  let responseData;
+
+  try {
+    responseData = await response.json();
+  } catch (error) {
+    throw new Error('Failed to parse response JSON.');
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || 'Network response was not ok');
+  }
+
+  return responseData;
 }
 
 /* ====== Common Delete Request Function ====== */
-export async function deleteRequest(url, options) {
-  return await fetch(url, options).then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  });
+export async function deleteRequest(url, data) {
+  const defaultOptions = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    credentials: 'include',
+  };
+
+  const response = await fetch(url, defaultOptions);
+  let responseData;
+
+  try {
+    responseData = await response.json();
+  } catch (error) {
+    throw new Error('Failed to parse response JSON.');
+  }
+
+  if (!response.ok) {
+    throw new Error(responseData.message || 'Network response was not ok');
+  }
+
+  return responseData;
 }

@@ -18,7 +18,7 @@
 
 .selected-book-container {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .selected-box {

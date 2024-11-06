@@ -103,7 +103,7 @@ const Threadon_post = () => {
           )}
         </div>
 
-        <div className="selected-book-details ml-7">
+        <div className="selected-book-details ml-7 pt-8">
           {selectedBook ? (
             <>
               <h2>{selectedBook.book_title}</h2>

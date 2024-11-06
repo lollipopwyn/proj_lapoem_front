@@ -30,6 +30,8 @@ export const LOGOUT_USER_API_URL = `${BASE_URL}/logout`; // 회원 로그아웃 
 export const VERIFY_USER_API_URL = `${BASE_URL}/verify`; // 사용자 인증 확인 URL
 export const CREATE_COMMUNITY_POST_API_URL = `${BASE_URL}/community`; // 커뮤니티 새 게시글 작성
 export const CREATE_COMMENT_API_URL = `${BASE_URL}/community/comment`; // 댓글 작성 URL
+export const CREATE_BOOK_REVIEW_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}/reviews`; //책 리뷰 작성
 
 // DELETE 요청 URL
 export const DELETE_COMMENT_API_URL = (commentId) =>

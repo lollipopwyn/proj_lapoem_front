@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { GET_BOOK_REVIEWS_API_URL } from '../../util/apiUrl';
+import './BookDetail.css';
 
 const BookReviews = () => {
   const { bookId } = useParams(); // bookId를 여기서 가져옵니다.
@@ -42,21 +43,23 @@ const BookReviews = () => {
 
   return (
     <div>
-      <h2>Book Reviews</h2>
-      {reviews.length > 0 ? ( // 리뷰가 있는지 체크
-        <ul>
-          {reviews.map((review, index) => (
-            <li key={index}>
-              <h3>{review.member_nickname}</h3> {/* 리뷰 작성자의 별명 */}
-              <p>{review.review_content}</p> {/* 리뷰 내용 */}
-              <p>Rating: {review.rating}</p> {/* 평점 */}
-              <p>Date: {review.review_created_at}</p> {/* 작성 날짜 */}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No reviews available.</p> // 리뷰가 없을 경우 메시지 출력
-      )}
+      <div className="book-review-list">
+        <h2>Book Reviews</h2>
+        {reviews.length > 0 ? ( // 리뷰가 있는지 체크
+          <ul>
+            {reviews.map((review, index) => (
+              <li key={index}>
+                <h3>{review.member_nickname}</h3> {/* 리뷰 작성자의 별명 */}
+                <p>{review.review_content}</p> {/* 리뷰 내용 */}
+                <p>Rating: {review.rating}</p> {/* 평점 */}
+                <p>Date: {review.review_created_at}</p> {/* 작성 날짜 */}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No reviews available.</p> // 리뷰가 없을 경우 메시지 출력
+        )}
+      </div>
     </div>
   );
 };

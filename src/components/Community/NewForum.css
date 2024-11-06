@@ -176,6 +176,7 @@ textarea::placeholder {
   padding: 2px;
   transition: background-color 0.3s;
   justify-content: space-between; /* 양쪽 끝에 아이콘을 배치 */
+  margin-right: 18px;
 }
 
 .toggle-icon {

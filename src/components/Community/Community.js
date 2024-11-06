@@ -187,8 +187,8 @@ const Community = () => {
               </div>
               <div className="my-forums-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
-                <div className="my-forums-stat-title">Total Views</div>
-                <div className="my-forums-stat-value">1,107</div>
+                <div className="my-comment-stat-title">Total Comment</div>
+                <div className="my-comment-stat-value">1,107</div>
               </div>
             </div>
           </div>
@@ -213,7 +213,6 @@ const Community = () => {
               ))}
             </div>
           </div>
-
           <div className="sidebar-section">
             <h2>Today's People</h2>
             <div className="top-users">

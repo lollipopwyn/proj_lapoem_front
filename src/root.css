@@ -28,8 +28,8 @@
   --font-smallest: 14px;
 
   /* 폰트 두께 */
-  --font-regular-weight: 400;
-  --font-medium-weight: 500;
-  --font-semibold-weight: 600;
-  --font-bold-weight: 700;
+  --font-regular-weight: 300;
+  --font-medium-weight: 400;
+  --font-semibold-weight: 500;
+  --font-bold-weight: 600;
 }

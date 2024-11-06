@@ -10,6 +10,7 @@ import CategoryFilter from "../Common/CategoryFilter";
 import Pagination from "../PageNation";
 import BookCard from "../Bookcard";
 import "./Threadon_post.css";
+import small_star from "../../assets/images/small_star.png";
 
 const Threadon_post = () => {
   const [books, setBooks] = useState([]);
@@ -73,7 +74,7 @@ const Threadon_post = () => {
 
   return (
     <div className="thread-container">
-      <h1 className="thread-header">THREAD ON</h1>
+      {/* <h1 className="thread-header">THREAD ON</h1> */}
       <div className="new_thread_book_search">
         <div className="flex">
           <CategoryFilter onCategoryChange={handleCategoryChange} />
@@ -82,32 +83,66 @@ const Threadon_post = () => {
             onSearch={handleSearch}
           />
         </div>
-        <button className="post-thread-button">Post Thread</button>
       </div>
 
       {/* 선택한 도서 정보 영역 */}
-      <div className="selected-book-info">
-        {selectedBook ? (
-          <>
-            <img src={selectedBook.book_cover} alt="책 포지" />
-            <h2>{selectedBook.book_title}</h2>
-            <p>저자: {selectedBook.book_author}</p>
-            <p>평점: {selectedBook.average_rating}</p>
-            <p>리뷰 수: {selectedBook.review_count}</p>
-            <p>출판사: {selectedBook.book_publisher}</p>
-            <p>
-              출판일: {new Date(selectedBook.publish_date).toLocaleDateString()}
-            </p>
-          </>
-        ) : (
-          <p>도서를 선택해주세요.</p> // 기본 메시지
-        )}
+      <div className="selected-book-container">
+        <div>
+          {selectedBook ? (
+            <div className="selected-box">
+              <img
+                className="selected-book"
+                src={selectedBook.book_cover}
+                alt="책 표지"
+                onClick={() => setSelectedBook(null)}
+              />
+              <button className="post-thread-button">Post Thread</button>
+            </div>
+          ) : (
+            <div className="placeholder-image" />
+          )}
+        </div>
+
+        <div className="selected-book-details ml-7">
+          {selectedBook ? (
+            <>
+              <h2>{selectedBook.book_title}</h2>
+              <div className="book-star thread-star">
+                <img
+                  src={small_star}
+                  alt="아이콘"
+                  className="small_star w-5 h-5"
+                />
+                <p className="average_star">{selectedBook.average_rating}</p>
+                <p className="comment_total_people">
+                  ({selectedBook.review_count})
+                </p>
+              </div>
+              <div className="book-info-row">
+                <div className="book-info-left">
+                  <p>저자</p>
+                  <p>출판사</p>
+                  <p>출판일</p>
+                </div>
+                <div className="book-info-right">
+                  <p>{selectedBook.book_author}</p>
+                  <p>{selectedBook.book_publisher}</p>
+                  <p>
+                    {new Date(selectedBook.publish_date).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="select-waiting">도서를 선택해주세요.</p>
+          )}
+        </div>
       </div>
 
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="booklist_wrapper">
+        <div className="booklist_wrapper thread-book-list">
           <div className="booklist_content">
             {books.map((book) => (
               <div
@@ -122,6 +157,8 @@ const Threadon_post = () => {
                   publisher={book.book_publisher}
                   rating={book.average_rating}
                   reviewCount={book.review_count}
+                  bookId={book.book_id}
+                  disableLink={true} // Link 비활성화
                 />
               </div>
             ))}

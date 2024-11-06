@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   GET_BOOK_LIST_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_SEARCH_BOOKS_API_URL,
-} from "../../util/apiUrl";
-import Pagination from "../PageNation";
-import SearchBar from "../Common/SearchBar";
-import CategoryFilter from "../Common/CategoryFilter";
-import BookCard from "../Bookcard";
-import "./Booklist.css";
+} from '../../util/apiUrl';
+import Pagination from '../PageNation';
+import SearchBar from '../Common/SearchBar';
+import CategoryFilter from '../Common/CategoryFilter';
+import BookCard from '../Bookcard';
+import './Booklist.css';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -17,7 +17,7 @@ const BookList = () => {
   const [totalBooks, setTotalBooks] = useState(0);
   const [limit] = useState(10); // 페이지당 표시할 책의 수
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
     fetchBooks(currentPage, selectedCategory);
@@ -37,7 +37,7 @@ const BookList = () => {
       setTotalBooks(response.data.totalBooks);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching books:", error);
+      console.error('Error fetching books:', error);
       setLoading(false);
     }
   };
@@ -47,7 +47,7 @@ const BookList = () => {
     setBooks(data.data); // 검색 결과로 도서 목록 업데이트
     setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
     setCurrentPage(data.currentPage); // 현재 페이지 업데이트
-    setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
+    setSelectedCategory(''); // 검색 시 선택된 카테고리 초기화
   };
 
   // 카테고리 선택 핸들러
@@ -72,7 +72,7 @@ const BookList = () => {
         <SearchBar
           apiUrl={GET_SEARCH_BOOKS_API_URL}
           onSearch={handleSearch}
-        />{" "}
+        />{' '}
       </div>
       {loading ? (
         <p>Loading...</p>
@@ -82,6 +82,7 @@ const BookList = () => {
             {books.map((book) => (
               <BookCard
                 key={book.book_id}
+                bookId={book.book_id}
                 thumbnail={book.book_cover}
                 title={book.book_title}
                 author={book.book_author}

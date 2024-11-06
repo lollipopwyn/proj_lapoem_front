@@ -31,5 +31,9 @@ export const VERIFY_USER_API_URL = `${BASE_URL}/verify`; // 사용자 인증 확
 export const CREATE_COMMUNITY_POST_API_URL = `${BASE_URL}/community`; // 커뮤니티 새 게시글 작성
 export const CREATE_COMMENT_API_URL = `${BASE_URL}/community/comment`; // 댓글 작성 URL
 
+// DELETE 요청 URL
+export const DELETE_COMMENT_API_URL = (commentId) =>
+  `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
+
 // FastAPI WebSocket URL
 export const WEBSOCKET_CHAT_URL = `${FASTAPI_BASE_URL}/ws/chat`;

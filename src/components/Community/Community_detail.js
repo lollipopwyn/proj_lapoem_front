@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import './Community_detail.css';
 import { Link, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCommunityPostDetail } from '../../redux/features/auth/apiSlice';
+import {
+  fetchCommunityPostDetail,
+  addCommentToPost,
+  fetchCommentsByPostId,
+} from '../../redux/features/auth/apiSlice';
 import publicIcon from '../../assets/images/public-icon.png';
 import vectorIcon from '../../assets/images/Vector.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -20,24 +24,64 @@ const CommunityDetail = () => {
 
   // Redux state에서 postDetail을 가져올 때 구조를 확인하고 적절히 수정
   const postDetail = useSelector((state) => state.api.postDetail);
+  const comments = useSelector((state) => state.api.comments);
   const isLoading = useSelector((state) => state.api.isLoading);
   const isError = useSelector((state) => state.api.isError);
   const errorMessage = useSelector((state) => state.api.errorMessage);
+  const memberNum = useSelector((state) => state.auth.user?.memberNum);
 
   useEffect(() => {
     console.log('Current Post ID:', postId); // postId가 제대로 들어오는지 확인
     if (postId) {
       dispatch(fetchCommunityPostDetail(postId));
+      dispatch(fetchCommentsByPostId(postId));
     }
   }, [dispatch, postId]);
+
+  useEffect(() => {
+    console.log('Comments:', comments); // 댓글 상태가 제대로 업데이트되는지 확인
+  }, [comments]);
+
+  const handleCommentChange = (e) => {
+    setCommentText(e.target.value);
+    setCommentLength(e.target.value.length);
+  };
 
   useEffect(() => {
     console.log('Post Detail:', postDetail);
   }, [postDetail]);
 
-  const handleCommentChange = (e) => {
-    setCommentText(e.target.value);
-    setCommentLength(e.target.value.length);
+  const handleCommentSubmit = async () => {
+    if (commentText.trim() === '') {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    if (!memberNum) {
+      alert('로그인 후 댓글을 작성하실 수 있습니다.');
+      return;
+    }
+
+    const newComment = {
+      posts_id: postId,
+      member_num: memberNum,
+      member_nickname: postDetail.member_nickname,
+      comment_content: commentText,
+      comment_created_at: new Date().toISOString(),
+    };
+
+    try {
+      // 댓글 작성 액션 호출
+      await dispatch(addCommentToPost(newComment));
+      // 댓글 작성 후 최신 게시글 정보를 다시 가져옴
+      dispatch(fetchCommunityPostDetail(postId));
+      dispatch(fetchCommentsByPostId(postId));
+      // 작성 후 텍스트 및 길이 초기화
+      setCommentText('');
+      setCommentLength(0);
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+    }
   };
 
   const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
@@ -77,12 +121,12 @@ const CommunityDetail = () => {
             <h2>전체 댓글</h2>
           </div>
           <div className="comments-list">
-            {postDetail.comments?.map((comment) => (
+            {comments?.map((comment) => (
               <div key={comment.comment_id} className="comment">
                 <span className="comment-author">
                   {comment.member_nickname}
                 </span>
-                <span className="comment-text">{comment.comment_text}</span>
+                <span className="comment-text">{comment.comment_content}</span>
                 <span className="comment-date">
                   {new Date(comment.comment_created_at).toLocaleString()}
                 </span>
@@ -170,7 +214,9 @@ const CommunityDetail = () => {
           </div>
           <div className="comment-length-button-wrapper">
             <span className="comment-length">({commentLength}/300)</span>
-            <button className="comment-button">Leave a Comment</button>
+            <button className="comment-button" onClick={handleCommentSubmit}>
+              Leave a Comment
+            </button>
           </div>
         </div>
         <Link to="/community" className="to-list-button">

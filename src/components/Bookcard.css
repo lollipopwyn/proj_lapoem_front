@@ -7,7 +7,7 @@
 .book-thumbnail img {
   width: 100%;
   height: auto;
-  max-height: 100%; /* 부모 요소의 높이를 초과하지 않도록 제한 */
+  max-height: 100%;
   object-fit: cover;
   object-position: center;
   background-color: var(--text-gray-light);
@@ -31,7 +31,6 @@
 
 .book-writer {
   display: flex;
-  gap: 4px;
   font-size: var(--font-smallest);
   color: var(--text-gray-dark);
 }
@@ -44,7 +43,7 @@
 .small_star {
   width: 20px;
   height: 20px;
-  object-fit: contain; /* 이미지 비율 유지 */
+  object-fit: contain;
 }
 
 .average_star {

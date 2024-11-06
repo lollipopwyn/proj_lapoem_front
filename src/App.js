@@ -9,11 +9,14 @@ import Community from './components/Community/Community';
 import NewForum from './components/Community/NewForum';
 import Community_detail from './components/Community/Community_detail';
 import ThreadOn from './components/ThreadOn/Threadon';
+import BookDetail from './components/BookList/BookDetail';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
+import Threadon_post from './components/ThreadOn/Threadon_post';
+import BookReviews from './components/BookList/BookReviews';
 
 function App() {
   const dispatch = useDispatch();
@@ -34,8 +37,11 @@ function App() {
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
+          <Route path="/book_list/:bookId" element={<BookDetail />} />
+          <Route path="/book_list/:bookId/reviews" element={<BookReviews />} />
           <Route path="/chatstella" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
+          <Route path="/new_thread" element={<Threadon_post />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
           <Route path="/community/:postId" element={<Community_detail />} />

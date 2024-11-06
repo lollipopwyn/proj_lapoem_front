@@ -86,19 +86,23 @@ const Threadon_post = () => {
       </div>
 
       {/* 선택한 도서 정보 영역 */}
-      {selectedBook && (
-        <div className="selected-book-info">
-          <img src={selectedBook.book_cover} alt="책 포지" />
-          <h2>{selectedBook.book_title}</h2>
-          <p>저자: {selectedBook.book_author}</p>
-          <p>평점: {selectedBook.average_rating}</p>
-          <p>리뷰 수: {selectedBook.review_count}</p>
-          <p>출판사: {selectedBook.book_publisher}</p>
-          <p>
-            출판일: {new Date(selectedBook.publish_date).toLocaleDateString()}
-          </p>
-        </div>
-      )}
+      <div className="selected-book-info">
+        {selectedBook ? (
+          <>
+            <img src={selectedBook.book_cover} alt="책 포지" />
+            <h2>{selectedBook.book_title}</h2>
+            <p>저자: {selectedBook.book_author}</p>
+            <p>평점: {selectedBook.average_rating}</p>
+            <p>리뷰 수: {selectedBook.review_count}</p>
+            <p>출판사: {selectedBook.book_publisher}</p>
+            <p>
+              출판일: {new Date(selectedBook.publish_date).toLocaleDateString()}
+            </p>
+          </>
+        ) : (
+          <p>도서를 선택해주세요.</p> // 기본 메시지
+        )}
+      </div>
 
       {loading ? (
         <p>Loading...</p>

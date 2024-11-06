@@ -1,43 +1,137 @@
 import React, { useEffect, useState } from 'react';
 import './Community_detail.css';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCommunityPostDetail } from '../../redux/features/auth/apiSlice';
+import {
+  fetchCommunityPostDetail,
+  addCommentToPost,
+  fetchCommentsByPostId,
+  updateCommunityPostData,
+  deleteCommunityPostData,
+  deleteCommentData,
+} from '../../redux/features/auth/apiSlice';
 import publicIcon from '../../assets/images/public-icon.png';
 import vectorIcon from '../../assets/images/Vector.png';
 import meIcon from '../../assets/images/only-me-icon.png';
 import documentIcon from '../../assets/images/document.png';
 import chartIcon from '../../assets/images/chart.png';
-import rank1Icon from '../../assets/images/rank1-icon.png'; // 1등 이모티콘
-import rank2Icon from '../../assets/images/rank2-icon.png'; // 2등 이모티콘
-import rank3Icon from '../../assets/images/rank3-icon.png'; // 3등 이모티콘
+import rank1Icon from '../../assets/images/rank1-icon.png';
+import rank2Icon from '../../assets/images/rank2-icon.png';
+import rank3Icon from '../../assets/images/rank3-icon.png';
+import deleteIcon from '../../assets/images/delete.png';
 
 const CommunityDetail = () => {
   const { postId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [commentText, setCommentText] = useState('');
   const [commentLength, setCommentLength] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
 
   // Redux state에서 postDetail을 가져올 때 구조를 확인하고 적절히 수정
   const postDetail = useSelector((state) => state.api.postDetail);
+  const comments = useSelector((state) => state.api.comments);
   const isLoading = useSelector((state) => state.api.isLoading);
   const isError = useSelector((state) => state.api.isError);
   const errorMessage = useSelector((state) => state.api.errorMessage);
+  const memberNum = useSelector((state) => state.auth.user?.memberNum);
 
   useEffect(() => {
     console.log('Current Post ID:', postId); // postId가 제대로 들어오는지 확인
     if (postId) {
       dispatch(fetchCommunityPostDetail(postId));
+      dispatch(fetchCommentsByPostId(postId));
     }
   }, [dispatch, postId]);
 
   useEffect(() => {
+    console.log('Comments:', comments); // 댓글 상태가 제대로 업데이트되는지 확인
+  }, [comments]);
+
+  useEffect(() => {
     console.log('Post Detail:', postDetail);
+    if (postDetail) {
+      setEditTitle(postDetail.post_title);
+      setEditContent(postDetail.post_content);
+    }
   }, [postDetail]);
 
   const handleCommentChange = (e) => {
     setCommentText(e.target.value);
     setCommentLength(e.target.value.length);
+  };
+
+  const handleCommentSubmit = async () => {
+    if (commentText.trim() === '') {
+      alert('댓글 내용을 입력해주세요.');
+      return;
+    }
+
+    if (!memberNum) {
+      alert('로그인 후 댓글을 작성하실 수 있습니다.');
+      return;
+    }
+
+    const newComment = {
+      posts_id: postId,
+      member_num: memberNum,
+      member_nickname: postDetail.member_nickname,
+      comment_content: commentText,
+      comment_created_at: new Date().toISOString(),
+    };
+
+    try {
+      // 댓글 작성 액션 호출
+      await dispatch(addCommentToPost(newComment));
+      // 댓글 작성 후 최신 게시글 정보를 다시 가져옴
+      dispatch(fetchCommunityPostDetail(postId));
+      dispatch(fetchCommentsByPostId(postId));
+      // 작성 후 텍스트 및 길이 초기화
+      setCommentText('');
+      setCommentLength(0);
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+    }
+  };
+
+  const handleDeleteComment = (commentId) => {
+    if (window.confirm('이 댓글을 삭제하시겠습니까?')) {
+      dispatch(deleteCommentData(commentId)).then(() => {
+        dispatch(fetchCommentsByPostId(postId));
+      });
+    }
+  };
+
+  const handleEditClick = () => {
+    if (window.confirm('이 게시글을 수정하시겠습니까?')) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = () => {
+    const updatedData = {
+      ...(editTitle && { post_title: editTitle }),
+      ...(editContent && { post_content: editContent }),
+    };
+
+    dispatch(updateCommunityPostData({ postId, updatedData })).then(() => {
+      setIsEditing(false);
+      dispatch(fetchCommunityPostDetail(postId));
+    });
+  };
+
+  const handleDeletePost = () => {
+    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+      dispatch(deleteCommunityPostData(postId)).then(() => {
+        navigate('/community');
+      });
+    }
   };
 
   const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
@@ -60,32 +154,80 @@ const CommunityDetail = () => {
       <div className="content-wrapper">
         <div className="main-content">
           <h1 className="community-title">COMMUNITY</h1>
-          <div className="post-title">{postDetail.post_title}</div>
-          <div className="post-meta">
-            <span className="post-author">{postDetail.member_nickname}</span>
-            <span className="post-date">
-              {new Date(postDetail.post_created_at).toLocaleString()}
-            </span>
-            <img
-              src={postDetail.visibility ? publicIcon : meIcon}
-              alt={postDetail.visibility ? 'Public' : 'Only me'}
-              className="icon"
-            />
-          </div>
-          <div className="post-content">{postDetail.post_content}</div>
+          {isEditing ? (
+            <div>
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+              />
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+              ></textarea>
+              <button onClick={handleSaveEdit}>저장</button>
+              <button onClick={handleCancelEdit}>취소</button>
+            </div>
+          ) : (
+            <>
+              <div className="post-title">{postDetail.post_title}</div>
+              <div className="post-meta">
+                <span className="post-author">
+                  {postDetail.member_nickname}
+                </span>
+                <span className="post-date">
+                  {new Date(postDetail.post_created_at).toLocaleString()}
+                </span>
+                <img
+                  src={postDetail.visibility ? publicIcon : meIcon}
+                  alt={postDetail.visibility ? 'Public' : 'Only me'}
+                  className="icon"
+                />
+              </div>
+              <div className="post-content">
+                {postDetail.post_content}
+                {postDetail.member_num === memberNum && (
+                  <div className="post-edit-delete-buttons">
+                    <button
+                      className="post-edit-button"
+                      onClick={handleEditClick}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className="post-delete-button"
+                      onClick={handleDeletePost}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
           <div className="comment-section">
             <h2>전체 댓글</h2>
           </div>
           <div className="comments-list">
-            {postDetail.comments?.map((comment) => (
+            {comments?.map((comment) => (
               <div key={comment.comment_id} className="comment">
-                <span className="comment-author">
-                  {comment.member_nickname}
-                </span>
-                <span className="comment-text">{comment.comment_text}</span>
-                <span className="comment-date">
-                  {new Date(comment.comment_created_at).toLocaleString()}
-                </span>
+                <div className="comment-header">
+                  <span className="comment-author">
+                    {comment.member_nickname}
+                  </span>
+                  <span className="comment-date">
+                    {new Date(comment.comment_created_at).toLocaleString()}
+                  </span>
+                </div>
+                <div className="comment-text">{comment.comment_content}</div>
+                {comment.member_num === memberNum && (
+                  <button
+                    className="comment-delete-button"
+                    onClick={() => handleDeleteComment(comment.comment_id)}
+                  >
+                    <img src={deleteIcon} alt="Delete Comment" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -170,7 +312,9 @@ const CommunityDetail = () => {
           </div>
           <div className="comment-length-button-wrapper">
             <span className="comment-length">({commentLength}/300)</span>
-            <button className="comment-button">Leave a Comment</button>
+            <button className="comment-button" onClick={handleCommentSubmit}>
+              Leave a Comment
+            </button>
           </div>
         </div>
         <Link to="/community" className="to-list-button">

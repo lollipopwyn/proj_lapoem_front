@@ -32,5 +32,9 @@ export const CREATE_COMMUNITY_POST_API_URL = `${BASE_URL}/community`; // 커뮤�
 export const CREATE_BOOK_REVIEW_API_URL = (bookId) =>
   `${BASE_URL}/book-list/${bookId}/reviews`; //책 리뷰 작성
 
+// DELETE 요청 URL
+export const DELETE_COMMENT_API_URL = (commentId) =>
+  `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
+
 // FastAPI WebSocket URL
 export const WEBSOCKET_CHAT_URL = `${FASTAPI_BASE_URL}/ws/chat`;

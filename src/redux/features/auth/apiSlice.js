@@ -4,7 +4,7 @@ import {
   //get
   GET_BOOK_LIST_API_URL,
   GET_BOOK_REVIEWS_API_URL,
-
+  GET_REVIEW_BY_ID_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
@@ -74,6 +74,13 @@ export const fetchBookDetailData = createApiThunk(
 export const fetchBookReviewsData = createApiThunk(
   'api/fetchGetBookReviews',
   async (bookId) => GET_BOOK_REVIEWS_API_URL(bookId),
+  getRequest
+);
+
+// 북 리뷰 ID조회 Thunks
+export const fetchReviewByIdData = createApiThunk(
+  'api/fetchReviewById',
+  async (bookId,reviewId) => GET_REVIEW_BY_ID_API_URL(bookId,reviewId),
   getRequest
 );
 
@@ -443,6 +450,7 @@ const apiSlice = createSlice({
     fetchGetBookList: [],
     fetchGetBookDetail: null,
     fetchGetBookReviews: [],
+    fetchReviewById:null,
     fetchDeleteReview:null,
     fetchSearchBooks: null,
     fetchBookByCategory: null,
@@ -477,6 +485,12 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookReviews')
       )
       .addCase(fetchBookReviewsData.rejected, handleRejected)
+    // 북 리뷰 id로 조회-----------------------------------------------------
+    .addCase(
+      fetchReviewByIdData.fulfilled,
+      handleFullfilled('etchReviewById')
+    )
+    .addCase(fetchReviewByIdData.rejected, handleRejected)
 
       // 북 리뷰 작성-----------------------------------------------------
       .addCase(

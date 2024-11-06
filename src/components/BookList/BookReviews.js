@@ -2,21 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { GET_BOOK_REVIEWS_API_URL,DELETE_REVIEW_API_URL,GET_REVIEW_BY_ID_API_URL } from '../../util/apiUrl';
+import { GET_BOOK_REVIEWS_API_URL,DELETE_REVIEW_API_URL, GET_REVIEW_BY_ID_API_URL } from '../../util/apiUrl';
 import './BookDetail.css';
 
 const BookReviews = () => {
-  const { bookId, reviewId} = useParams(); // bookId를 여기서 가져옵니다.
+  const { bookId, reviewId} = useParams(); 
   console.log('Fetched bookId:', bookId); // 콘솔에 bookId 출력
+  console.log('Fetched bookId:', reviewId); // 콘솔에 bookId 출력
+
   const dispatch = useDispatch();
   const member_num = useSelector((state) => state.auth.user?.memberNum);
   const [reviews, setReviews] = useState([]); // 리뷰 상태 초기화
   const [loading, setLoading] = useState(true); // 로딩 상태 초기화
   const [error, setError] = useState(null); // 에러 상태 초기화
 
+  
+
   useEffect(() => {
     fetchReviews(); // bookId가 변경될 때마다 리뷰를 가져오는 함수 호출
-  }, [bookId]);
+  }, [bookId,reviewId]);
 
   const fetchReviews = async () => {
     if (!bookId) {
@@ -42,10 +46,29 @@ const BookReviews = () => {
   };
 
   const handleDeleteReview = async (reviewId) => {
+
     try {
-      const response = await axios.delete(DELETE_REVIEW_API_URL(bookId, reviewId)); // DELETE 요청 전송
-      if (response.status === 200) {
+      const response = await axios.get(GET_REVIEW_BY_ID_API_URL(bookId, reviewId), { withCredentials: true });
+      const reviewToDelete = response.data;
+
+      // 2. 리뷰가 유효한지 확인합니다.
+      if (!reviewToDelete) {
+        alert('해당 리뷰를 찾을 수 없습니다.');
+        return;
+      }
+
+      // 3. 리뷰 작성자가 맞는지 확인
+      if (reviewToDelete.member_num !== member_num) {
+        alert('삭제 권한이 없습니다.');
+        return;
+      }
+
+
+      const deleteResponse = await axios.delete(DELETE_REVIEW_API_URL(bookId, reviewId),{withCredentials: true}); // DELETE 요청 전송
+      if (deleteResponse.status === 200) {
         setReviews((prevReviews) => prevReviews.filter((review) => review.review_num !== reviewId)); // UI에서 리뷰 제거
+        alert('리뷰가 삭제되었습니다.');
+
       }
     } catch (error) {
       console.error('리뷰 삭제 중 오류 발생:', error);

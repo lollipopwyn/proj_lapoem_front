@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 // API 요청에 사용될 엔드포인트 URL을 import함
 import {
   GET_BOOK_LIST_API_URL,
+  GET_BOOK_REVIEWS_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
@@ -10,12 +11,16 @@ import {
   GET_BEST_BOOK_API_URL,
   GET_COMMUNITY_POSTS_API_URL,
   CREATE_COMMUNITY_POST_API_URL,
+  CREATE_COMMENT_API_URL,
+  DELETE_COMMENT_API_URL,
+  CREATE_BOOK_REVIEW_API_URL,
+
   // 다른 엔드포인트 URL
 } from '../../../util/apiUrl';
 import {
   postRequest,
   getRequest,
-  putRequest,
+  patchRequest,
   deleteRequest,
 } from '../../../util/requestMethods';
 
@@ -47,6 +52,20 @@ export const fetchBookDetailData = createApiThunk(
   'api/fetchGetBookDetail',
   async (bookId) => GET_BOOK_DETAIL_API_URL(bookId),
   getRequest
+);
+
+// 북 리뷰 Thunks
+export const fetchBookReviewsData = createApiThunk(
+  'api/fetchGetBookReviews',
+  async (bookId) => GET_BOOK_REVIEWS_API_URL(bookId),
+  getRequest
+);
+
+// 북 리뷰 작성 Thunks
+export const fetchCreateReviewData = createApiThunk(
+  'api/fetchCreateReview',
+  async (bookId) => CREATE_BOOK_REVIEW_API_URL(bookId),
+  postRequest
 );
 
 // 검색 관련 Thunks
@@ -157,6 +176,128 @@ export const createCommunityPostData = createAsyncThunk(
   }
 );
 
+// 게시글 수정 Thunk
+export const updateCommunityPostData = createAsyncThunk(
+  'api/updateCommunityPost',
+  async ({ postId, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await patchRequest(
+        `${GET_COMMUNITY_POSTS_API_URL}/${postId}`,
+        updatedData
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update post');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 게시글 삭제 Thunk
+export const deleteCommunityPostData = createAsyncThunk(
+  'api/deleteCommunityPost',
+  async (postId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${GET_COMMUNITY_POSTS_API_URL}/${postId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete post');
+      }
+
+      return postId; // 삭제된 게시글의 ID 반환
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 커뮤니티 댓글 생성 Thunk
+export const addCommentToPost = createAsyncThunk(
+  'api/addCommentToPost',
+  async (commentData, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      const member_num = auth.user?.memberNum;
+
+      // member_num이 commentData에 포함되지 않은 경우 추가
+      const requestData = {
+        ...commentData,
+        member_num: commentData.member_num || member_num,
+      };
+
+      console.log('Sending comment data to server:', requestData); // 서버에 보내는 데이터 확인
+
+      // 서버에 전송할 때 member_num이 포함되어 있는지 확인하세요.
+      if (!requestData.member_num) {
+        console.error('Error: member_num is missing in requestData');
+      }
+
+      // postRequest 함수 호출
+      const data = await postRequest(CREATE_COMMENT_API_URL, requestData);
+      return data;
+    } catch (error) {
+      console.error('Error creating comment:', error.message);
+      return rejectWithValue(
+        error.message || 'Network error or failed to parse response.'
+      );
+    }
+  }
+);
+
+// 댓글 목록 가져오기 Thunk
+export const fetchCommentsByPostId = createAsyncThunk(
+  'community/fetchCommentsByPostId',
+  async (postId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `${GET_COMMUNITY_POSTS_API_URL}/${postId}/comments`
+      );
+
+      if (response.status === 404) {
+        // 댓글이 없는 경우 빈 배열 반환
+        return [];
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// 댓글 삭제 Thunk
+export const deleteCommentData = createAsyncThunk(
+  'community/deleteComment',
+  async (commentId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(DELETE_COMMENT_API_URL(commentId), {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('댓글 삭제에 실패했습니다.');
+      }
+
+      return commentId; // 삭제된 댓글 ID 반환
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchCommunityPostDetail = createAsyncThunk(
   'community/fetchPostDetail',
   async (postId, thunkAPI) => {
@@ -216,6 +357,7 @@ const apiSlice = createSlice({
   initialState: {
     fetchGetBookList: [],
     fetchGetBookDetail: null,
+    fetchGetBookReviews: [],
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
@@ -223,9 +365,13 @@ const apiSlice = createSlice({
     fetchBestBookData: [],
     fetchCommunityPosts: [],
     postDetail: null,
+    comments: [], // 초기 상태를 빈 배열로 설정
     createCommunityPost: null,
+    fetchCreateReview: null,
+    addComment: null,
     isLoading: false,
     // 다른 api슬라이스 초기 상태 지정
+    isLoading: false,
     isError: false,
     errorMessage: '',
   },
@@ -239,6 +385,18 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookList')
       )
       .addCase(fetchBookListData.rejected, handleRejected)
+      // 북 리뷰-----------------------------------------------------
+      .addCase(
+        fetchBookReviewsData.fulfilled,
+        handleFullfilled('fetchGetBookReviews')
+      )
+      .addCase(fetchBookReviewsData.rejected, handleRejected)
+      // 북 리뷰 작성-----------------------------------------------------
+      .addCase(
+        fetchCreateReviewData.fulfilled,
+        handleFullfilled('fetchCreateReview')
+      )
+      .addCase(fetchCreateReviewData.rejected, handleRejected)
       // 북 상세페이지-----------------------------------------------------
       .addCase(
         fetchBookDetailData.fulfilled,
@@ -286,12 +444,59 @@ const apiSlice = createSlice({
         handleFullfilled('createCommunityPost')
       )
       .addCase(createCommunityPostData.rejected, handleRejected)
+
       .addCase(fetchCommunityPostDetail.pending, handlePending)
       .addCase(
         fetchCommunityPostDetail.fulfilled,
         handleFullfilled('postDetail')
       )
-      .addCase(fetchCommunityPostDetail.rejected, handleRejected);
+      .addCase(fetchCommunityPostDetail.rejected, handleRejected)
+
+      // 댓글 목록 가져오기 처리
+      .addCase(fetchCommentsByPostId.pending, handlePending)
+      .addCase(fetchCommentsByPostId.fulfilled, (state, action) => {
+        state.comments = action.payload; // 댓글 목록 상태 업데이트
+        state.isLoading = false;
+      })
+      .addCase(fetchCommentsByPostId.rejected, handleRejected)
+
+      // 댓글 추가 처리
+      .addCase(addCommentToPost.pending, handlePending)
+      .addCase(addCommentToPost.fulfilled, (state, action) => {
+        state.comments.push(action.payload); // comments 배열에 새 댓글 추가
+        state.isLoading = false;
+      })
+      .addCase(addCommentToPost.rejected, handleRejected)
+      .addCase(updateCommunityPostData.pending, handlePending)
+      .addCase(updateCommunityPostData.fulfilled, (state, action) => {
+        // 수정된 게시글을 postDetail에 업데이트
+        if (
+          state.postDetail &&
+          state.postDetail.posts_id === action.payload.posts_id
+        ) {
+          state.postDetail = { ...state.postDetail, ...action.payload };
+        }
+        state.isLoading = false;
+      })
+      .addCase(updateCommunityPostData.rejected, handleRejected)
+
+      .addCase(deleteCommunityPostData.pending, handlePending)
+      .addCase(deleteCommunityPostData.fulfilled, (state, action) => {
+        // 삭제된 게시글을 커뮤니티 목록에서 제거
+        state.fetchCommunityPosts = state.fetchCommunityPosts.filter(
+          (post) => post.posts_id !== action.payload
+        );
+        state.isLoading = false;
+      })
+      .addCase(deleteCommunityPostData.rejected, handleRejected)
+      .addCase(deleteCommentData.pending, handlePending)
+      .addCase(deleteCommentData.fulfilled, (state, action) => {
+        state.comments = state.comments.filter(
+          (comment) => comment.comment_id !== action.payload
+        );
+        state.isLoading = false;
+      })
+      .addCase(deleteCommentData.rejected, handleRejected);
     // -----------------------------------------------------여기까지 커뮤니티
     // 다른 extraReducers 설정
   },

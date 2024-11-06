@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
 import Threadon_post from './components/ThreadOn/Threadon_post';
+import BookReviews from './components/BookList/BookReviews';
 
 function App() {
   const dispatch = useDispatch();
@@ -37,7 +38,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
           <Route path="/book_list/:bookId" element={<BookDetail />} />
-          <Route path="/chatstella" element={<Stella />} />
+          <Route path="/chatstella/" element={<Stella />} />
+          <Route path="/chatstella/:bookId" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/new_thread" element={<Threadon_post />} />
           <Route path="/community" element={<Community />} />

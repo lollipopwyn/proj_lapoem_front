@@ -253,7 +253,17 @@
   color: #555;
 }
 
+.my-comment-stat-title {
+  font-size: 14px;
+  color: #555;
+}
+
 .my-forums-stat-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.my-comment-stat-value {
   font-size: 24px;
   font-weight: bold;
 }

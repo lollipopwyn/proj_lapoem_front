@@ -1,0 +1,71 @@
+.stella_container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.stella_chat_box {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+  height: 700px;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+}
+
+.stella_chat_message {
+  max-width: 55%;
+  margin: 5px 0;
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.stella_user {
+  align-self: flex-end;
+  background-color: #443322;
+  color: #ffffff;
+}
+
+.stella_bot {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: #000000;
+}
+
+.stella_typing {
+  align-self: flex-start;
+  font-style: italic;
+  color: #888888;
+  margin: 5px 0;
+}
+
+.stella_input_container {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #e1e1e1;
+  background-color: #ffffff;
+}
+
+.stella_input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #e1e1e1;
+  outline: none;
+  margin-right: 10px;
+}
+
+.stella_send_button {
+  background-color: #443322;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+}

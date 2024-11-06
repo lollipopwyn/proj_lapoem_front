@@ -1,8 +1,8 @@
 // Releases.js
-import React, { useEffect, useState } from "react";
-import BookCard from "../Bookcard";
-import "./booksection.css"; // 공통 CSS 파일
-import { GET_NEW_BOOK_API_URL } from "../../util/apiUrl";
+import React, { useEffect, useState } from 'react';
+import BookCard from '../Bookcard';
+import './booksection.css'; // 공통 CSS 파일
+import { GET_NEW_BOOK_API_URL } from '../../util/apiUrl';
 
 function Releases() {
   const [newBooks, setNewBooks] = useState([]);
@@ -14,7 +14,7 @@ function Releases() {
         const data = await response.json();
         setNewBooks(data);
       } catch (error) {
-        console.error("Error fetching new books:", error);
+        console.error('Error fetching new books:', error);
       }
     };
 
@@ -31,6 +31,7 @@ function Releases() {
         {newBooks.map((book) => (
           <BookCard
             key={book.book_id}
+            bookId={book.book_id}
             thumbnail={book.book_cover}
             title={book.book_title}
             author={book.book_author}

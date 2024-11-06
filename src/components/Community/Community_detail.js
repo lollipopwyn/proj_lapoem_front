@@ -9,6 +9,9 @@ import {
   updateCommunityPostData,
   deleteCommunityPostData,
   deleteCommentData,
+  fetchUserStats,
+  fetchHotTopics,
+  fetchTopUsers,
 } from '../../redux/features/auth/apiSlice';
 import publicIcon from '../../assets/images/public-icon.png';
 import vectorIcon from '../../assets/images/Vector.png';
@@ -29,6 +32,12 @@ const CommunityDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [userStats, setUserStats] = useState({
+    totalPosts: 0,
+    totalComments: 0,
+  });
+  const [hotTopics, setHotTopics] = useState([]);
+  const [topUsers, setTopUsers] = useState([]);
 
   // Redux state에서 postDetail을 가져올 때 구조를 확인하고 적절히 수정
   const postDetail = useSelector((state) => state.api.postDetail);
@@ -37,6 +46,30 @@ const CommunityDetail = () => {
   const isError = useSelector((state) => state.api.isError);
   const errorMessage = useSelector((state) => state.api.errorMessage);
   const memberNum = useSelector((state) => state.auth.user?.memberNum);
+
+  const { user: currentUser, authInitialized } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    console.log('Current user state:', currentUser);
+  }, [currentUser]);
+
+  useEffect(() => {
+    dispatch(fetchHotTopics()).then((result) => {
+      if (result.payload) {
+        setHotTopics(result.payload);
+      }
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchTopUsers()).then((result) => {
+      if (result.payload) {
+        setTopUsers(result.payload);
+      }
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     console.log('Current Post ID:', postId); // postId가 제대로 들어오는지 확인
@@ -57,6 +90,23 @@ const CommunityDetail = () => {
       setEditContent(postDetail.post_content);
     }
   }, [postDetail]);
+
+  useEffect(() => {
+    if (authInitialized && currentUser?.memberNum) {
+      const memberNum = currentUser.memberNum;
+      console.log('Fetching stats for member_num:', memberNum);
+      dispatch(fetchUserStats(memberNum)).then((result) => {
+        if (result.error) {
+          console.error('Error fetching user stats:', result.error);
+        } else if (result.payload) {
+          setUserStats({
+            totalPosts: result.payload.total_posts,
+            totalComments: result.payload.total_comments,
+          });
+        }
+      });
+    }
+  }, [authInitialized, currentUser, dispatch]);
 
   const handleCommentChange = (e) => {
     setCommentText(e.target.value);
@@ -133,9 +183,6 @@ const CommunityDetail = () => {
       });
     }
   };
-
-  const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
-  const topUsers = ['User1', 'User2', 'User3'];
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -232,19 +279,26 @@ const CommunityDetail = () => {
             ))}
           </div>
         </div>
+        {/* Sidebar */}
         <div className="sidebar">
           <div className="my-forums-section">
-            <div className="my-forums-header">소라소라게 님</div>
+            <div className="my-forums-header">
+              {currentUser?.nickname || currentUser?.name || 'User'} 님
+            </div>
             <div className="my-forums-stats">
               <div className="my-forums-stat">
                 <img src={documentIcon} alt="My Forums Icon" />
                 <div className="my-forums-stat-title">My Forums</div>
-                <div className="my-forums-stat-value">24</div>
+                <div className="my-forums-stat-value">
+                  {userStats.totalPosts}
+                </div>
               </div>
               <div className="my-forums-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
-                <div className="my-forums-stat-title">Total Views</div>
-                <div className="my-forums-stat-value">1,107</div>
+                <div className="my-comment-stat-title">Total Comment</div>
+                <div className="my-comment-stat-value">
+                  {userStats.totalComments}
+                </div>
               </div>
             </div>
           </div>
@@ -252,7 +306,11 @@ const CommunityDetail = () => {
             <h2>Today's Hot Forums</h2>
             <div className="hot-topics">
               {hotTopics.map((topic, index) => (
-                <div key={index} className="topic-item">
+                <div
+                  key={topic.posts_id}
+                  className="topic-item"
+                  onClick={() => navigate(`/community/${topic.posts_id}`)}
+                >
                   <img
                     src={
                       index === 0
@@ -264,12 +322,11 @@ const CommunityDetail = () => {
                     alt={`Rank ${index + 1} Icon`}
                     className="topic-icon"
                   />
-                  <span>{topic}</span>
+                  <span>{topic.post_title}</span>
                 </div>
               ))}
             </div>
           </div>
-
           <div className="sidebar-section">
             <h2>Today's People</h2>
             <div className="top-users">
@@ -286,7 +343,7 @@ const CommunityDetail = () => {
                     alt={`Rank ${index + 1} Icon`}
                     className="user-icon"
                   />
-                  <span>{user}</span>
+                  <span>{user.member_nickname}</span>
                 </div>
               ))}
             </div>

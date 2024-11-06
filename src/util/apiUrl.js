@@ -20,6 +20,9 @@ export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`;
 export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`;
 export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`;
 export const GET_COMMUNITY_POSTS_API_URL = `${BASE_URL}/community`; // 커뮤니티 게시글 목록 조회
+export const GET_USER_STATS_API_URL = `${BASE_URL}/user/stats`;
+export const GET_HOT_TOPICS_API_URL = `${BASE_URL}/hot-topics`;
+export const GET_TOP_USERS_API_URL = `${BASE_URL}/top-users`;
 export const GET_NEW_BOOK_API_URL = `${BASE_URL}/new-book`;
 export const GET_BEST_BOOK_API_URL = `${BASE_URL}/best-book`;
 

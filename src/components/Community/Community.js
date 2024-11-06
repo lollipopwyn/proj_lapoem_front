@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCommunityPostsData } from '../../redux/features/auth/apiSlice';
+import {
+  fetchCommunityPostsData,
+  fetchUserStats,
+  fetchHotTopics,
+  fetchTopUsers,
+} from '../../redux/features/auth/apiSlice';
 import './Community.css';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
@@ -15,6 +20,13 @@ const Community = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [viewType, setViewType] = useState('Public'); // Public or Only me
+  const [userStats, setUserStats] = useState({
+    totalPosts: 0,
+    totalComments: 0,
+  });
+  const [hotTopics, setHotTopics] = useState([]);
+  const [topUsers, setTopUsers] = useState([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
 
   const {
     fetchCommunityPosts: communityPosts,
@@ -30,21 +42,25 @@ const Community = () => {
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (viewType === 'Public') {
-      // 로그인 여부와 상관없이 Public 게시글을 요청
-      dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
-    } else if (viewType === 'Only me' && isLoggedIn && currentUser?.memberNum) {
-      // Only me 게시글은 로그인한 사용자만 요청
-      dispatch(
-        fetchCommunityPostsData({
-          viewType: 'Only me',
-          member_num: currentUser.memberNum,
-        })
-      );
-    }
-  }, [viewType, isLoggedIn, currentUser, dispatch]);
+    console.log('Current user state:', currentUser);
+  }, [currentUser]);
 
-  // 공지사항 (하드코딩된 데이터)
+  useEffect(() => {
+    dispatch(fetchHotTopics()).then((result) => {
+      if (result.payload) {
+        setHotTopics(result.payload);
+      }
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchTopUsers()).then((result) => {
+      if (result.payload) {
+        setTopUsers(result.payload);
+      }
+    });
+  }, [dispatch]);
+
   const notices = [
     {
       id: 1,
@@ -63,23 +79,45 @@ const Community = () => {
     },
   ];
 
-  const hotTopics = ['샘플 핫토픽 1', '샘플 핫토픽 2', '샘플 핫토픽 3'];
-  const topUsers = ['User1', 'User2', 'User3'];
+  useEffect(() => {
+    if (authInitialized && currentUser?.memberNum) {
+      const memberNum = currentUser.memberNum;
+      console.log('Fetching stats for member_num:', memberNum);
+      dispatch(fetchUserStats(memberNum)).then((result) => {
+        if (result.error) {
+          console.error('Error fetching user stats:', result.error);
+        } else if (result.payload) {
+          setUserStats({
+            totalPosts: result.payload.total_posts,
+            totalComments: result.payload.total_comments,
+          });
+        }
+      });
+    }
+  }, [authInitialized, currentUser, dispatch]);
 
-  const handleViewChange = (type) => {
-    setViewType(type);
-    if (authInitialized) {
-      if (type === 'Public') {
-        dispatch(fetchCommunityPostsData({ viewType: 'Public' }));
-      } else if (type === 'Only me' && isLoggedIn && currentUser?.memberNum) {
+  useEffect(() => {
+    if (authInitialized && currentUser?.memberNum) {
+      setIsLoadingPosts(true);
+      if (viewType === 'Public') {
+        dispatch(fetchCommunityPostsData({ viewType: 'Public' })).then(() => {
+          setIsLoadingPosts(false);
+        });
+      } else if (viewType === 'Only me' && isLoggedIn) {
         dispatch(
           fetchCommunityPostsData({
             viewType: 'Only me',
             member_num: currentUser.memberNum,
           })
-        );
+        ).then(() => {
+          setIsLoadingPosts(false);
+        });
       }
     }
+  }, [viewType, authInitialized, isLoggedIn, currentUser, dispatch]);
+
+  const handleViewChange = (type) => {
+    setViewType(type);
   };
 
   // 필터링된 게시글
@@ -95,7 +133,9 @@ const Community = () => {
     return false;
   });
 
-  console.log('Filtered Posts:', filteredPosts);
+  if (filteredPosts.length > 0) {
+    console.log('Filtered Posts:', filteredPosts);
+  }
 
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
@@ -110,14 +150,14 @@ const Community = () => {
             <div className="view-options">
               <button
                 className={viewType === 'Public' ? 'active' : ''}
-                onClick={() => setViewType('Public')}
+                onClick={() => handleViewChange('Public')}
               >
                 <img src={publicIcon} alt="Public" className="icon" />
                 Public
               </button>
               <button
                 className={viewType === 'Only me' ? 'active' : ''}
-                onClick={() => setViewType('Only me')}
+                onClick={() => handleViewChange('Only me')}
               >
                 <img src={meIcon} alt="Only me" className="icon" />
                 Only me
@@ -140,8 +180,8 @@ const Community = () => {
             ))}
 
             {/* 작성된 게시글 표시 */}
-            {isLoading ? (
-              <div>Loading...</div>
+            {isLoadingPosts ? (
+              <div>Loading posts...</div>
             ) : isError ? (
               <p>{errorMessage}</p>
             ) : filteredPosts.length === 0 ? (
@@ -178,17 +218,23 @@ const Community = () => {
         {/* Sidebar */}
         <div className="sidebar">
           <div className="my-forums-section">
-            <div className="my-forums-header">소라소라게 님</div>
+            <div className="my-forums-header">
+              {currentUser?.nickname || currentUser?.name || 'User'} 님
+            </div>
             <div className="my-forums-stats">
               <div className="my-forums-stat">
                 <img src={documentIcon} alt="My Forums Icon" />
                 <div className="my-forums-stat-title">My Forums</div>
-                <div className="my-forums-stat-value">24</div>
+                <div className="my-forums-stat-value">
+                  {userStats.totalPosts}
+                </div>
               </div>
               <div className="my-forums-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
                 <div className="my-comment-stat-title">Total Comment</div>
-                <div className="my-comment-stat-value">1,107</div>
+                <div className="my-comment-stat-value">
+                  {userStats.totalComments}
+                </div>
               </div>
             </div>
           </div>
@@ -196,7 +242,11 @@ const Community = () => {
             <h2>Today's Hot Forums</h2>
             <div className="hot-topics">
               {hotTopics.map((topic, index) => (
-                <div key={index} className="topic-item">
+                <div
+                  key={topic.posts_id}
+                  className="topic-item"
+                  onClick={() => navigate(`/community/${topic.posts_id}`)}
+                >
                   <img
                     src={
                       index === 0
@@ -208,7 +258,7 @@ const Community = () => {
                     alt={`Rank ${index + 1} Icon`}
                     className="topic-icon"
                   />
-                  <span>{topic}</span>
+                  <span>{topic.post_title}</span>
                 </div>
               ))}
             </div>
@@ -229,7 +279,7 @@ const Community = () => {
                     alt={`Rank ${index + 1} Icon`}
                     className="user-icon"
                   />
-                  <span>{user}</span>
+                  <span>{user.member_nickname}</span>
                 </div>
               ))}
             </div>

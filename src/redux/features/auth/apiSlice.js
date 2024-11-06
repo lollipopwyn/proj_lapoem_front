@@ -14,7 +14,9 @@ import {
   CREATE_COMMENT_API_URL,
   DELETE_COMMENT_API_URL,
   CREATE_BOOK_REVIEW_API_URL,
-
+  GET_USER_STATS_API_URL,
+  GET_HOT_TOPICS_API_URL,
+  GET_TOP_USERS_API_URL,
   // 다른 엔드포인트 URL
 } from '../../../util/apiUrl';
 import {
@@ -31,9 +33,15 @@ import {
 const createApiThunk = (actionType, apiURL, requestMethod) => {
   return createAsyncThunk(actionType, async (params) => {
     const options = {
+      method: requestMethod === getRequest ? 'GET' : requestMethod.method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       ...(requestMethod === getRequest ? {} : { body: JSON.stringify(params) }),
+      credentials: 'include',
     };
-    return await requestMethod(apiURL, options);
+    const url = typeof apiURL === 'function' ? apiURL(params) : apiURL;
+    return await requestMethod(url, options);
   });
 };
 
@@ -120,7 +128,13 @@ export const fetchCommunityPostsData = createAsyncThunk(
     );
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
       if (!response.ok) {
         console.error(
@@ -325,15 +339,64 @@ export const fetchCommunityPostDetail = createAsyncThunk(
     }
   }
 );
+// 사용자 통계 가져오기 Thunk
+export const fetchUserStats = createAsyncThunk(
+  'api/fetchUserStats',
+  async (memberNum, { rejectWithValue }) => {
+    try {
+      // 여기서 memberNum이 객체가 아닌 숫자나 문자열인지 확인하세요.
+      console.log('Member number passed to fetchUserStats:', memberNum);
+      if (typeof memberNum !== 'number' && typeof memberNum !== 'string') {
+        throw new Error('Invalid member number provided');
+      }
+
+      const response = await getRequest(
+        `${GET_USER_STATS_API_URL}?member_num=${memberNum}`
+      );
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch user stats:', error);
+      return rejectWithValue('Failed to fetch user stats');
+    }
+  }
+);
+
+export const fetchHotTopics = createAsyncThunk(
+  'api/fetchHotTopics',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(GET_HOT_TOPICS_API_URL);
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch hot topics:', error);
+      return rejectWithValue('Failed to fetch hot topics');
+    }
+  }
+);
+
+export const fetchTopUsers = createAsyncThunk(
+  'api/fetchTopUsers',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(GET_TOP_USERS_API_URL);
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch top users:', error);
+      return rejectWithValue('Failed to fetch top users');
+    }
+  }
+);
 
 // 다른 관련 Thunks생성
 
 // 3. 비동기 API 호출 처리------------------------------
 // fulfilled 상태를 처리하는 핸들러 함수 생성
 const handleFullfilled = (stateKey) => (state, action) => {
-  state[stateKey] = Array.isArray(action.payload)
-    ? action.payload //배열일 경우 그대로 state[stateKey]에 할당
-    : action.payload.data || action.payload; //객체일 경우 data 속성을 우선적으로 할당하고, 만약 data가 없다면 action.payload 자체를 할당
+  if (Array.isArray(action.payload)) {
+    state[stateKey] = action.payload;
+  } else if (action.payload && typeof action.payload === 'object') {
+    state[stateKey] = action.payload.data || action.payload;
+  }
   state.isLoading = false;
 };
 
@@ -355,6 +418,12 @@ const handlePending = (state) => {
 const apiSlice = createSlice({
   name: 'api',
   initialState: {
+    userStats: {
+      totalPosts: null,
+      totalComments: null,
+    },
+    hotTopics: [],
+    topUsers: [],
     fetchGetBookList: [],
     fetchGetBookDetail: null,
     fetchGetBookReviews: [],
@@ -431,6 +500,27 @@ const apiSlice = createSlice({
         handleFullfilled('fetchBestBookData')
       )
       .addCase(fetchBestBookData.rejected, handleRejected)
+      // 여기부터 사이드바 처리
+      .addCase(fetchUserStats.pending, handlePending)
+      .addCase(fetchUserStats.fulfilled, (state, action) => {
+        state.userStats = action.payload; // 사용자 통계를 상태에 저장
+        state.isLoading = false;
+      })
+      .addCase(fetchUserStats.rejected, handleRejected)
+      // 핫토픽 가져오기
+      .addCase(fetchHotTopics.pending, handlePending)
+      .addCase(fetchHotTopics.fulfilled, (state, action) => {
+        state.hotTopics = action.payload; // 핫토픽 데이터를 상태에 저장
+        state.isLoading = false;
+      })
+      .addCase(fetchHotTopics.rejected, handleRejected)
+      // 상위 사용자 가져오기
+      .addCase(fetchTopUsers.pending, handlePending)
+      .addCase(fetchTopUsers.fulfilled, (state, action) => {
+        state.topUsers = action.payload; // 상위 사용자 데이터를 상태에 저장
+        state.isLoading = false;
+      })
+      .addCase(fetchTopUsers.rejected, handleRejected)
 
       // 여기부터 커뮤니티 게시글 처리
       .addCase(

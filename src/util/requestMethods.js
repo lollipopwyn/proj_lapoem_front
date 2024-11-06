@@ -31,23 +31,33 @@ export async function postRequest(url, data) {
 }
 
 /* ====== Common GET Request Function ====== */
-export async function getRequest(url) {
-  const response = await fetch(url, { credentials: 'include' });
-  let responseData;
-
+export const getRequest = async (url) => {
   try {
-    responseData = await response.json(); // 응답을 JSON 형식으로 파싱
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      throw new Error('Unexpected response type');
+    }
   } catch (error) {
-    throw new Error('Failed to parse response JSON.');
+    console.error('Error in getRequest:', error);
+    throw error;
   }
-
-  if (!response.ok) {
-    throw new Error(responseData.message || 'Network response was not ok');
-  }
-
-  return responseData;
-}
-
+};
 /* ====== Common Put Request Function ====== */
 export async function putRequest(url, data) {
   const defaultOptions = {

@@ -103,7 +103,7 @@ const Threadon_post = () => {
           )}
         </div>
 
-        <div className="selected-book-details ml-7 pt-8">
+        <div className="selected-book-details ml-7">
           {selectedBook ? (
             <>
               <h2>{selectedBook.book_title}</h2>
@@ -134,7 +134,7 @@ const Threadon_post = () => {
               </div>
             </>
           ) : (
-            <p>도서를 선택해주세요.</p>
+            <p className="select-waiting">도서를 선택해주세요.</p>
           )}
         </div>
       </div>

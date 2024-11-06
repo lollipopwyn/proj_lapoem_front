@@ -18,7 +18,7 @@
 
 .selected-book-container {
   display: flex;
-  /* align-items: center; */
+  align-items: center;
 }
 
 .selected-box {
@@ -70,6 +70,11 @@
 }
 
 .book-info-right {
+  font-size: var(--font-normal1);
+  font-weight: var(--font-regular-weight);
+}
+
+.select-waiting {
   font-size: var(--font-normal1);
   font-weight: var(--font-regular-weight);
 }

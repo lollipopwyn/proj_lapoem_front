@@ -7,14 +7,14 @@ const BASE_URL =
 // FastAPI 서버의 BASE URL (HTTP API 요청용)
 const FASTAPI_HTTP_BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'http://222.112.27.120:8000' // 배포용 HTTP API URL
-    : 'http://localhost:8000'; // 로컬 개발용 HTTP API URL
+    ? 'http://222.112.27.120:9002' // 배포용 HTTP API URL
+    : 'http://localhost:9002'; // 로컬 개발용 HTTP API URL
 
 // FastAPI WebSocket URL
 const FASTAPI_WEBSOCKET_BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'ws://222.112.27.120:8000' // 배포용 WebSocket URL
-    : 'ws://localhost:8000'; // 로컬 개발용 WebSocket URL
+    ? 'ws://222.112.27.120:9002' // 배포용 WebSocket URL
+    : 'ws://localhost:9002'; // 로컬 개발용 WebSocket URL
 
 // GET 요청 URL
 export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;

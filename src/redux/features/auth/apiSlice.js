@@ -11,6 +11,7 @@ import {
   GET_BEST_BOOK_API_URL,
   GET_COMMUNITY_POSTS_API_URL,
   CREATE_COMMUNITY_POST_API_URL,
+  CREATE_BOOK_REVIEW_API_URL,
   // 다른 엔드포인트 URL
 } from '../../../util/apiUrl';
 import {
@@ -55,6 +56,13 @@ export const fetchBookReviewsData = createApiThunk(
   'api/fetchGetBookReviews',
   async (bookId) => GET_BOOK_REVIEWS_API_URL(bookId),
   getRequest
+);
+
+// 북 리뷰 작성 Thunks
+export const fetchCreateReviewData = createApiThunk(
+  'api/fetchCreateReview',
+  async (bookId) => CREATE_BOOK_REVIEW_API_URL(bookId),
+  postRequest
 );
 
 // 검색 관련 Thunks
@@ -233,8 +241,9 @@ const apiSlice = createSlice({
     fetchCommunityPosts: [],
     postDetail: null,
     createCommunityPost: null,
-    isLoading: false,
+    fetchCreateReview: null,
     // 다른 api슬라이스 초기 상태 지정
+    isLoading: false,
     isError: false,
     errorMessage: '',
   },
@@ -254,6 +263,12 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookReviews')
       )
       .addCase(fetchBookReviewsData.rejected, handleRejected)
+      // 북 리뷰 작성-----------------------------------------------------
+      .addCase(
+        fetchCreateReviewData.fulfilled,
+        handleFullfilled('fetchCreateReview')
+      )
+      .addCase(fetchCreateReviewData.rejected, handleRejected)
       // 북 상세페이지-----------------------------------------------------
       .addCase(
         fetchBookDetailData.fulfilled,

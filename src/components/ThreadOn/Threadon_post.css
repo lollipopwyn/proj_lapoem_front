@@ -2,5 +2,78 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+}
+
+.post-thread-button {
+  background-color: var(--text-point);
+  color: #fff;
+  font-size: var(--font-smallest);
+  font-weight: var(--font-regular-weight);
+  padding: 10px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.selected-book-container {
+  display: flex;
+  align-items: center;
+}
+
+.selected-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.selected-book {
+  width: 150px;
+  /* height: auto; */
+  /* margin-right: 30px; */
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.selected-book > img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.placeholder-image {
+  width: 150px;
+  height: 220px;
+  background-color: var(--text-gray-light);
+  border-radius: 8px;
+}
+
+.selected-book-details > h2 {
+  font-size: var(--font-normal3);
+  font-weight: var(--font-bold-weight);
+}
+
+.thread-star {
+  padding-bottom: 10px;
+}
+
+.book-info-row {
+  display: flex;
+  gap: 14px 20px;
+}
+
+.book-info-left {
+  font-size: var(--font-normal1);
+  font-weight: var(--font-bold-weight);
+}
+
+.book-info-right {
+  font-size: var(--font-normal1);
+  font-weight: var(--font-regular-weight);
+}
+
+.thread-book-list {
+  margin-top: 60px;
 }

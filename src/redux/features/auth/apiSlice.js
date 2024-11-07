@@ -4,7 +4,6 @@ import {
   //get
   GET_BOOK_LIST_API_URL,
   GET_BOOK_REVIEWS_API_URL,
-  GET_REVIEW_BY_ID_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
@@ -24,7 +23,6 @@ import {
   GET_USER_STATS_API_URL,
   GET_HOT_TOPICS_API_URL,
   GET_TOP_USERS_API_URL,
-
 } from '../../../util/apiUrl';
 
 import {
@@ -77,13 +75,6 @@ export const fetchBookReviewsData = createApiThunk(
   getRequest
 );
 
-// 북 리뷰 ID조회 Thunks
-export const fetchReviewByIdData = createApiThunk(
-  'api/fetchReviewById',
-  async (bookId,reviewId) => GET_REVIEW_BY_ID_API_URL(bookId,reviewId),
-  getRequest
-);
-
 // 북 리뷰 작성 Thunks
 export const fetchCreateReviewData = createApiThunk(
   'api/fetchCreateReview',
@@ -94,10 +85,9 @@ export const fetchCreateReviewData = createApiThunk(
 //북 리뷰 삭제 썬크
 export const fetchDeleteReviewData = createApiThunk(
   'api/fetchDeleteReview',
-  async (bookId,reviewId) => DELETE_REVIEW_API_URL(bookId,reviewId),
+  async (bookId, reviewId) => DELETE_REVIEW_API_URL(bookId, reviewId),
   deleteRequest
 );
-
 
 // 검색 관련 Thunks
 export const fetchSearchBooksData = createApiThunk(
@@ -450,8 +440,7 @@ const apiSlice = createSlice({
     fetchGetBookList: [],
     fetchGetBookDetail: null,
     fetchGetBookReviews: [],
-    fetchReviewById:null,
-    fetchDeleteReview:null,
+    fetchDeleteReview: null,
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
@@ -464,7 +453,7 @@ const apiSlice = createSlice({
     fetchCreateReview: null,
     addComment: null,
     isLoading: false,
-  
+
     isLoading: false,
     isError: false,
     errorMessage: '',
@@ -485,12 +474,6 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookReviews')
       )
       .addCase(fetchBookReviewsData.rejected, handleRejected)
-    // 북 리뷰 id로 조회-----------------------------------------------------
-    .addCase(
-      fetchReviewByIdData.fulfilled,
-      handleFullfilled('etchReviewById')
-    )
-    .addCase(fetchReviewByIdData.rejected, handleRejected)
 
       // 북 리뷰 작성-----------------------------------------------------
       .addCase(

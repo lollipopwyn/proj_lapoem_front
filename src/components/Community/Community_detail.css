@@ -91,6 +91,7 @@
 
 .comment-section h2 {
   font-size: 20px;
+  margin-right: 20px;
 }
 
 .comment {
@@ -222,6 +223,16 @@
   border-radius: 16px;
   cursor: pointer;
   font-size: 14px;
+}
+
+.comment-icon2 {
+  width: 20px;
+  height: 20px;
+}
+
+.comment-count2 {
+  font-size: 18px;
+  padding-bottom: 2px;
 }
 
 .to-list-button {

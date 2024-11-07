@@ -11,7 +11,7 @@ import login from '../assets/images/login.png';
 function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // useNavigate 훅 호출
-  const { isLoggedIn, user, message } = useSelector((state) => state.auth);
+  const { isLoggedIn, message } = useSelector((state) => state.auth);
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴 열림 상태 관리
 

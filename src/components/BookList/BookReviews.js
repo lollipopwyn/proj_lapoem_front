@@ -26,9 +26,9 @@ const BookReviews = () => {
   const fetchReviews = async () => {
     if (!bookId) {
       // bookId가 유효한지 확인
-      setError('유효하지 않은 책 ID입니다.'); // 에러 메시지 설정
-      setLoading(false); // 로딩 해제
-      return; // 함수 종료
+      setError('유효하지 않은 책 ID입니다.');
+      setLoading(false);
+      return;
     }
 
     setLoading(true); // 데이터 요청 시작 시 로딩 상태 설정
@@ -38,13 +38,13 @@ const BookReviews = () => {
       const response = await axios.get(GET_BOOK_REVIEWS_API_URL(bookId), {
         withCredentials: true,
       }); // API 호출
-      console.log('Fetched reviews:', response.data); // 가져온 데이터 콘솔에 출력
+      console.log('Fetched reviews:', response.data);
       setReviews(response.data); // 가져온 리뷰 데이터를 상태에 저장
     } catch (error) {
-      console.error('Error fetching book reviews:', error); // 에러 콘솔에 출력
-      setError('리뷰를 가져오는 중 오류가 발생했습니다.'); // 에러 메시지 상태 설정
+      console.error('Error fetching book reviews:', error);
+      setError('리뷰를 가져오는 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false); // 데이터 요청 완료 후 로딩 상태 해제
+      setLoading(false);
     }
   };
 
@@ -53,11 +53,11 @@ const BookReviews = () => {
       const deleteResponse = await axios.delete(
         DELETE_REVIEW_API_URL(bookId, reviewId),
         { withCredentials: true }
-      ); // DELETE 요청 전송
+      );
       if (deleteResponse.status === 200) {
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review.review_num !== reviewId)
-        ); // UI에서 리뷰 제거
+        );
         alert('리뷰가 삭제되었습니다.');
       }
     } catch (error) {

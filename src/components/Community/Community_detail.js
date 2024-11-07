@@ -265,11 +265,11 @@ const CommunityDetail = () => {
             <h2>전체 댓글</h2>
             <div className="comment-count-wrapper">
               <img
-                src={require('../../assets/images/comment.png')}
+                src={require('../../assets/images/comment 2.png')}
                 alt="Comment count icon"
-                className="comment-icon"
+                className="comment-icon2"
               />
-              <span className="comment-count">
+              <span className="comment-count2">
                 {postDetail.comments_count || 0}
               </span>
             </div>

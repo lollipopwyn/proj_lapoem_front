@@ -14,7 +14,7 @@ function ThreadCard({ cover, title, author, publisher, participantsCount }) {
 
         <div className="thread-info-wrapper">
           <div className="thread-tag">
-            현재 {participantsCount || 1}명 참여 중
+            현재 {participantsCount || 0}명 참여 중
           </div>
           <img src={Thread_i} alt="아이콘" className="thread-icon" />
 

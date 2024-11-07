@@ -321,7 +321,9 @@ const CommunityDetail = () => {
         <div className="sidebar">
           <div className="my-forums-section">
             <div className="my-forums-header">
-              {currentUser?.nickname || currentUser?.name || 'User'} 님
+              {isLoggedIn
+                ? currentUser?.nickname || currentUser?.name || 'User'
+                : '로그아웃 상태'}{' '}
             </div>
             <div className="my-forums-stats">
               <div className="my-forums-stat">

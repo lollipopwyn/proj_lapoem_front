@@ -122,8 +122,14 @@ const CommunityDetail = () => {
     }
 
     if (!memberNum) {
-      alert('로그인 후 댓글을 작성하실 수 있습니다.');
-      return;
+      if (
+        window.confirm(
+          '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
+        )
+      ) {
+        navigate('/login'); // 로그인 페이지로 이동
+      }
+      return; // 취소를 누르면 여기서 함수 종료
     }
 
     const newComment = {
@@ -149,7 +155,11 @@ const CommunityDetail = () => {
   };
 
   const handleDeleteComment = (commentId) => {
-    if (window.confirm('이 댓글을 삭제하시겠습니까?')) {
+    if (
+      window.confirm(
+        '정말로 삭제 하시겠습니까? 삭제 후에는 복구가 불가능합니다.'
+      )
+    ) {
       dispatch(deleteCommentData(commentId)).then(() => {
         dispatch(fetchCommentsByPostId(postId));
       });
@@ -181,12 +191,21 @@ const CommunityDetail = () => {
   const handleNewForumClick = (e) => {
     if (!isLoggedIn) {
       e.preventDefault(); // 기본 링크 동작 막기
-      alert('로그인 후 게시글을 작성하실 수 있습니다.');
+      const confirmLogin = window.confirm(
+        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
+      );
+      if (confirmLogin) {
+        navigate('/login'); // 확인을 누르면 로그인 페이지로 이동
+      }
     }
   };
 
   const handleDeletePost = () => {
-    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+    if (
+      window.confirm(
+        '정말로 삭제 하시겠습니까? 삭제 후에는 복구가 불가능합니다.'
+      )
+    ) {
       dispatch(deleteCommunityPostData(postId)).then(() => {
         navigate('/community');
       });

@@ -144,7 +144,12 @@ const Community = () => {
   const handleNewForumClick = (e) => {
     if (!isLoggedIn) {
       e.preventDefault(); // 기본 링크 동작 막기
-      alert('로그인 후 게시글을 작성하실 수 있습니다.');
+      const confirmLogin = window.confirm(
+        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
+      );
+      if (confirmLogin) {
+        navigate('/login'); // 확인을 누르면 로그인 페이지로 이동
+      }
     }
   };
 

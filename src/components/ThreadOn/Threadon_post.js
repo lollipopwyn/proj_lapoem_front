@@ -12,6 +12,7 @@ import Pagination from "../PageNation";
 import BookCard from "../Bookcard";
 import "./Threadon_post.css";
 import small_star from "../../assets/images/small_star.png";
+import { Link } from "react-router-dom";
 
 const Threadon_post = () => {
   const [books, setBooks] = useState([]);
@@ -50,7 +51,6 @@ const Threadon_post = () => {
     }
   };
 
-  // 검색 결과를 처리하는 함수
   const handleSearch = (data) => {
     setBooks(data.data.slice(0, limit)); // 검색 결과 중 상위 5개만 도서 목록 업데이트
     setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
@@ -58,7 +58,6 @@ const Threadon_post = () => {
     setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
   };
 
-  // 카테고리 선택 핸들러
   const handleCategoryChange = (category) => {
     setSelectedCategory(category); // 선택한 카테고리 ID로 상태 업데이트
     setCurrentPage(1); // 필터 변경 시 페이지를 1로 초기화
@@ -72,7 +71,6 @@ const Threadon_post = () => {
     }
   };
 
-  // 선택된 도서를 상태에 저장하는 함수
   const handleBookSelect = async (book) => {
     try {
       const response = await axios.get(
@@ -82,7 +80,6 @@ const Threadon_post = () => {
         alert("이미 해당 책에 대한 스레드가 존재합니다.");
         return; // 스레드가 존재할 경우 선택하지 않음
       }
-      // 스레드가 존재하지 않을 경우에만 책 선택
       setSelectedBook(book);
     } catch (error) {
       console.error("Error checking thread existence:", error);
@@ -112,14 +109,11 @@ const Threadon_post = () => {
       thread_content: threadComment,
     };
 
-    console.log("Request data being sent:", requestData);
-
     try {
       const response = await axios.post(
         "http://localhost:8002/threads",
         requestData
       );
-      console.log("Thread created:", response.data);
       setThreadComment("");
       setSelectedBook(null);
       closeModal();
@@ -129,9 +123,12 @@ const Threadon_post = () => {
     }
   };
 
+  // 한 행에 표시할 아이템 수와 빈 카드 수 계산
+  const itemsPerRow = 5;
+  const emptyCardCount = itemsPerRow - (books.length % itemsPerRow);
+
   return (
     <div className="thread-container">
-      {/* <h1 className="thread-header">THREAD ON</h1> */}
       <div className="new_thread_book_search">
         <div className="flex">
           <CategoryFilter onCategoryChange={handleCategoryChange} />
@@ -140,9 +137,11 @@ const Threadon_post = () => {
             onSearch={handleSearch}
           />
         </div>
+        <Link to="/thread_on">
+          <button className="post-thread-button">To Thread List</button>
+        </Link>
       </div>
 
-      {/* 선택한 도서 정보 영역 */}
       <div className="selected-book-container">
         <div>
           {selectedBook ? (
@@ -231,8 +230,8 @@ const Threadon_post = () => {
             {books.map((book) => (
               <div
                 key={book.book_id}
-                onClick={() => handleBookSelect(book)} // 감싸는 div에 클릭 이벤트 추가
-                style={{ cursor: "pointer" }} // 포인터 커서 추가
+                onClick={() => handleBookSelect(book)}
+                style={{ cursor: "pointer" }}
               >
                 <BookCard
                   thumbnail={book.book_cover}
@@ -242,9 +241,20 @@ const Threadon_post = () => {
                   rating={book.average_rating}
                   reviewCount={book.review_count}
                   bookId={book.book_id}
-                  disableLink={true} // Link 비활성화
+                  disableLink={true}
                 />
               </div>
+            ))}
+            {/* 빈 카드 추가 */}
+            {Array.from({ length: emptyCardCount }).map((_, index) => (
+              <div
+                key={`empty-${index}`}
+                style={{
+                  width: "280px",
+                  aspectRatio: "3 / 4",
+                  visibility: "hidden",
+                }}
+              />
             ))}
           </div>
           <div className="pagination">

@@ -1,3 +1,8 @@
+.thread-container {
+  min-height: 100vh;
+  padding: 180px 180px 0;
+}
+
 .new_thread_book_search {
   display: flex;
   align-items: center;
@@ -9,7 +14,7 @@
   background-color: var(--text-point);
   color: #fff;
   font-size: var(--font-smallest);
-  font-weight: var(--font-regular-weight);
+  font-weight: var(--font-medium-weight);
   padding: 10px 18px;
   border-radius: 30px;
   cursor: pointer;
@@ -149,4 +154,10 @@
   background-color: #3c2a21;
   color: #fff;
   cursor: pointer;
+}
+
+/* 간격 유지용 빈칸 */
+.booklist_content > div {
+  width: 280px;
+  aspect-ratio: 3 / 4;
 }

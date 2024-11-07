@@ -29,8 +29,8 @@
 }
 
 .booklist_content {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 columns */
-  row-gap: 100px;
-  /* padding-bottom: 100px; */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px 0;
 }

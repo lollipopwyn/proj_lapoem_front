@@ -66,7 +66,7 @@ const BookList = () => {
 
   return (
     <div className="booklist_container">
-      <h1 className="booklist_pagetitle">Book List</h1>
+      <h1 className="booklist_pagetitle">BOOK LIST</h1>
       <div className="booklist_search">
         <CategoryFilter onCategoryChange={handleCategoryChange} />
         <SearchBar

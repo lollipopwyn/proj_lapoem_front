@@ -1,137 +1,129 @@
 .mypage_container {
   min-height: 100vh;
-  padding: 40px 0 320px 180px;
+  padding: 180px;
   box-sizing: border-box;
-  font-family: var(--font-kr-bold);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  border-radius: 10px;
   align-items: center;
-  /* Ensures content is centered horizontally */
+  justify-content: center;
 }
 
-.main_page_top {
+.my_page_top {
   text-align: center;
-  margin-bottom: 30px;
-  margin-top: 100px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
+  margin-bottom: 20px;
 }
 
-.main_page_title {
-  display: flex;
-  justify-content: center;
+.my_page_title {
   font-size: 38px;
-  padding: 0;
-  margin: 0;
-  width: 264px;
-  height: 63px;
-  font-weight: bold;
   line-height: 63px;
-  color: var(--font-kr-bold);
-  text-align: center;
-  margin-bottom: 30px;
-  /* Ensures some spacing between the title and content */
+  margin: 0;
+  font-family: var( --font-kr);
+  font-weight: bold;
 }
 
-.main_page_desc {
-  font-size: 16px;
-  color: #7a7a7a;
+.my_page_desc {
+  font-family: var( --font-kr);
+  font-size: var(--font-smallest);
+  color: var( --text-gray-dark);
   margin-top: 10px;
-  text-align: center;
+  justify-content: left;
+  margin-left: 10px; /* 타이틀과 간격을 조정 */
+  /* vertical-align: middle; */
 }
 
-.main_page_content {
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 800px;
-  margin-bottom: 30px;
-  /* Adds space between content and buttons */
+.my_page_content {
+  font-family: var( --font-kr);
+  width: 100%;
+  max-width: 700px;
+  border-top: 1px solid var(--text-gray-light);
+  margin-top: 20px;
+  padding-top: 30px;
 }
 
-.main_page_content_title {
+.my_page_content_title {
   font-size: 18px;
-  font-weight: 500;
-  color: #4a4a4a;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 10px;
-}
-
-.main_page_content_info {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  font-size: 14px;
-  color: #4a4a4a;
-  margin-bottom: 20px;
-}
-
-.main_page_content_info div {
-  display: flex;
+  font-weight: bold;
   margin-bottom: 10px;
+  color: #333;
 }
 
-.main_page_content_info input[type="text"],
-.main_page_content_info input[type="email"],
-.main_page_content_info input[type="checkbox"] {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.my-leave-account {
+.my_page_content_info > div {
   display: flex;
-  justify-content: flex-start;
-  /* Align to the left */
-  margin-bottom: 20px;
-  width: 100%;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-.main_page_button {
-  display: flex;
-  justify-content: flex-end;
-  /* Align buttons to the right */
-  gap: 15px;
+.my_page_content_info label {
+  flex: 1;
+  font-size: var(--font-normal1);
+  font-weight: 400;
+  color: var(--text-black);
+}
+
+.my_page_content_info input[type="text"],
+.my_page_content_info input[type="email"],
+.my_page_content_info input[type="date"] 
+.my_page_content_info input[type="checkbox"]
+{
+  flex: 2;
+  padding: 13px;
+  border: 1px solid var( --text-gray-light);
+  border-radius: 7px;
+  font-size: var( --font-small);
+  color: var(--text-black);
+}
+
+
+.marketing-container {
+  
+  margin-top: 20px; 
+}
+
+#marketingConsent {
+  margin-top: 2px;
+  margin-right: 10px;
+}
+
+
+.my_page_content_info input[disabled] {
+  background-color: var(--text-gray-bg);
+}
+
+
+
+.my_page_button {
   width: 100%;
+  max-width: 700px;
+  display: flex;
+  justify-content: space-between; /* 버튼 정렬 설정 */
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--text-gray-light);
+}
+
+.my_page_button button {
+  padding: 10px 20px;
+  font-size: var(--font-small);
+  font-weight: bold;
+  border-radius: 15px;
+  border: 1px solid var(--text-gray-medium);
+  cursor: pointer;
+  margin-left: 10px; /* 버튼 간격 조정 */
 }
 
 #deleteBtn {
-  background-color: #e74c3c;
-  justify-content: flex-start;
+  background-color: var(--text-red); /* 빨간색으로 설정 */
+  border: 1px solid var(--text-red);
+  color: #fff;
 }
 
-button {
-  background-color: #4a4a4a;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+#saveBtn {
+  background-color:var( --text-point) ;
+  color: #fff;
 }
 
-button:hover {
-  background-color: #333;
-}
-
-#deleteBtn:hover {
-  background-color: #c0392b;
-}
-
-footer {
-  background-color: #333;
-  color: white;
-  padding: 20px;
-  text-align: center;
-  font-size: 14px;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+#cancelBtn {
+  background-color: #fff;
+  color: var(--text-black);
 }

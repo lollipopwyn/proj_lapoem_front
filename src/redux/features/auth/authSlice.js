@@ -101,6 +101,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log("User data received in fulfilled:", action.payload.user);
         state.user = action.payload.user;
         state.isLoggedIn = true;
         state.error = null;
@@ -108,6 +109,9 @@ const authSlice = createSlice({
         // 로그인 성공 후 인증 상태 초기화
         localStorage.setItem("user", JSON.stringify(action.payload.user));
         state.isAuthInitializing = true; // 초기화 중 상태로 설정
+
+        // Redux state에 저장된 user 정보 확인
+        console.log("User data saved in Redux state:", state.user);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;

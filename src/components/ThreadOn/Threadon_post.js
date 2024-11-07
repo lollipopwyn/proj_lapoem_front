@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import SearchBar from "../Common/SearchBar";
 import {
@@ -21,6 +22,11 @@ const Threadon_post = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [selectedBook, setSelectedBook] = useState(null); // 선택된 도서 상태 추가
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [threadComment, setThreadComment] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const memberNum = useSelector((state) => state.auth.user?.memberNum); // Redux에서 memberNum 가져오기
 
   useEffect(() => {
     fetchBooks(currentPage, selectedCategory);
@@ -67,9 +73,60 @@ const Threadon_post = () => {
   };
 
   // 선택된 도서를 상태에 저장하는 함수
-  const handleBookSelect = (book) => {
-    console.log("Selected book:", book); // 클릭된 도서의 객체 데이터 확인
-    setSelectedBook(book);
+  const handleBookSelect = async (book) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8002/threads/exists/${book.book_id}`
+      );
+      if (response.data.exists) {
+        alert("이미 해당 책에 대한 스레드가 존재합니다.");
+        return; // 스레드가 존재할 경우 선택하지 않음
+      }
+      // 스레드가 존재하지 않을 경우에만 책 선택
+      setSelectedBook(book);
+    } catch (error) {
+      console.error("Error checking thread existence:", error);
+    }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    setErrorMessage("");
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setThreadComment("");
+    setErrorMessage("");
+  };
+
+  const handlePostThread = async () => {
+    if (!threadComment.trim()) {
+      setErrorMessage("첫 댓글을 입력하지 않으면 스레드를 생성할 수 없습니다.");
+      return;
+    }
+
+    const requestData = {
+      book_id: selectedBook.book_id,
+      member_num: memberNum,
+      thread_content: threadComment,
+    };
+
+    console.log("Request data being sent:", requestData);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8002/threads",
+        requestData
+      );
+      console.log("Thread created:", response.data);
+      setThreadComment("");
+      setSelectedBook(null);
+      closeModal();
+    } catch (error) {
+      console.error("Error creating thread:", error);
+      setErrorMessage("스레드 생성 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -96,7 +153,9 @@ const Threadon_post = () => {
                 alt="책 표지"
                 onClick={() => setSelectedBook(null)}
               />
-              <button className="post-thread-button">Post Thread</button>
+              <button className="post-thread-button" onClick={openModal}>
+                Post Thread
+              </button>
             </div>
           ) : (
             <div className="placeholder-image" />
@@ -138,6 +197,31 @@ const Threadon_post = () => {
           )}
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="modal-close" onClick={closeModal}>
+              ×
+            </button>
+            <h2>Start a New Thread</h2>
+            <p>스레드를 열어보세요</p>
+            <p>새로운 스레드를 시작하려면 첫 번째 댓글을 남겨주세요.</p>
+            <textarea
+              className="thread-comment-input"
+              placeholder="댓글을 입력하세요..."
+              value={threadComment}
+              onChange={(e) => setThreadComment(e.target.value)}
+              maxLength={300}
+            />
+            <p className="comment-count">{threadComment.length}/300</p>
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+            <button className="post-thread-button" onClick={handlePostThread}>
+              Post Thread
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <p>Loading...</p>

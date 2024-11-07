@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 // API 요청에 사용될 엔드포인트 URL을 import함
 import {
+  //get
   GET_BOOK_LIST_API_URL,
   GET_BOOK_REVIEWS_API_URL,
+  GET_REVIEW_BY_ID_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
@@ -10,15 +12,21 @@ import {
   GET_NEW_BOOK_API_URL,
   GET_BEST_BOOK_API_URL,
   GET_COMMUNITY_POSTS_API_URL,
+
+  //post
   CREATE_COMMUNITY_POST_API_URL,
   CREATE_COMMENT_API_URL,
+
+  //delete
   DELETE_COMMENT_API_URL,
+  DELETE_REVIEW_API_URL,
   CREATE_BOOK_REVIEW_API_URL,
   GET_USER_STATS_API_URL,
   GET_HOT_TOPICS_API_URL,
   GET_TOP_USERS_API_URL,
-  // 다른 엔드포인트 URL
+
 } from '../../../util/apiUrl';
+
 import {
   postRequest,
   getRequest,
@@ -69,12 +77,27 @@ export const fetchBookReviewsData = createApiThunk(
   getRequest
 );
 
+// 북 리뷰 ID조회 Thunks
+export const fetchReviewByIdData = createApiThunk(
+  'api/fetchReviewById',
+  async (bookId,reviewId) => GET_REVIEW_BY_ID_API_URL(bookId,reviewId),
+  getRequest
+);
+
 // 북 리뷰 작성 Thunks
 export const fetchCreateReviewData = createApiThunk(
   'api/fetchCreateReview',
   async (bookId) => CREATE_BOOK_REVIEW_API_URL(bookId),
   postRequest
 );
+
+//북 리뷰 삭제 썬크
+export const fetchDeleteReviewData = createApiThunk(
+  'api/fetchDeleteReview',
+  async (bookId,reviewId) => DELETE_REVIEW_API_URL(bookId,reviewId),
+  deleteRequest
+);
+
 
 // 검색 관련 Thunks
 export const fetchSearchBooksData = createApiThunk(
@@ -427,6 +450,8 @@ const apiSlice = createSlice({
     fetchGetBookList: [],
     fetchGetBookDetail: null,
     fetchGetBookReviews: [],
+    fetchReviewById:null,
+    fetchDeleteReview:null,
     fetchSearchBooks: null,
     fetchBookByCategory: null,
     fetchBookAllCategories: [],
@@ -439,7 +464,7 @@ const apiSlice = createSlice({
     fetchCreateReview: null,
     addComment: null,
     isLoading: false,
-    // 다른 api슬라이스 초기 상태 지정
+  
     isLoading: false,
     isError: false,
     errorMessage: '',
@@ -460,12 +485,25 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookReviews')
       )
       .addCase(fetchBookReviewsData.rejected, handleRejected)
+    // 북 리뷰 id로 조회-----------------------------------------------------
+    .addCase(
+      fetchReviewByIdData.fulfilled,
+      handleFullfilled('etchReviewById')
+    )
+    .addCase(fetchReviewByIdData.rejected, handleRejected)
+
       // 북 리뷰 작성-----------------------------------------------------
       .addCase(
         fetchCreateReviewData.fulfilled,
         handleFullfilled('fetchCreateReview')
       )
       .addCase(fetchCreateReviewData.rejected, handleRejected)
+      //북 리뷰 삭제------------------------------------------------------
+      .addCase(
+        fetchDeleteReviewData.fulfilled,
+        handleFullfilled('fetchDeleteReview')
+      )
+      .addCase(fetchDeleteReviewData.rejected, handleRejected)
       // 북 상세페이지-----------------------------------------------------
       .addCase(
         fetchBookDetailData.fulfilled,

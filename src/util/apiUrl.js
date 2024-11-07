@@ -20,9 +20,11 @@ const FASTAPI_WEBSOCKET_BASE_URL =
 export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;
 export const GET_BOOK_DETAIL_API_URL = (bookId) => `${BASE_URL}/book-list/${bookId}`;
 export const GET_BOOK_REVIEWS_API_URL = (bookId) => `${BASE_URL}/book-list/${bookId}/reviews`;
+export const GET_REVIEW_BY_ID_API_URL = (bookId,reviewId) => `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`;
 export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`;
 export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`;
 export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`;
+
 export const GET_COMMUNITY_POSTS_API_URL = `${BASE_URL}/community`; // 커뮤니티 게시글 목록 조회
 export const GET_USER_STATS_API_URL = `${BASE_URL}/user/stats`;
 export const GET_HOT_TOPICS_API_URL = `${BASE_URL}/hot-topics`;
@@ -41,6 +43,7 @@ export const CREATE_BOOK_REVIEW_API_URL = (bookId) => `${BASE_URL}/book-list/${b
 
 // DELETE 요청 URL
 export const DELETE_COMMENT_API_URL = (commentId) => `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
+export const DELETE_REVIEW_API_URL = (bookId,reviewId) => `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`;//리뷰 삭제
 
 export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/api/chat`; // HTTP API URL
 export const WEBSOCKET_CHAT_URL = `${FASTAPI_WEBSOCKET_BASE_URL}/ws/chat`; // WebSocket URL

@@ -7,7 +7,7 @@
 
 .community-container {
   min-height: 100vh;
-  padding: 180px 0 320px 180px; /* Space for navbar and footer */
+  padding: 180px 0 320px 180px;
   box-sizing: border-box;
 }
 
@@ -53,29 +53,29 @@
 
 .view-options button {
   padding: 8px 16px;
-  border: none; /* 기본 테두리 제거 */
-  background: none; /* 배경 제거 */
+  border: none;
+  background: none;
   display: flex;
   align-items: center;
-  gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+  gap: 8px;
   cursor: pointer;
   font-size: 16px;
-  color: #999999; /* 기본 버튼 텍스트 색상 */
+  color: #999999;
 }
 
 .view-options button img.icon {
-  width: 20px; /* 아이콘의 크기 */
+  width: 20px;
   height: 20px;
 }
 
 .view-options button.active {
-  color: #222222; /* 선택된 버튼 텍스트 색상 */
+  color: #222222;
   font-weight: bold;
-  border-bottom: 2px solid #333; /* 선택된 버튼 밑줄 */
+  border-bottom: 2px solid #333;
 }
 
 .view-options button:hover {
-  color: #777777; /* 호버 시 텍스트 색상 변경 */
+  color: #777777;
 }
 
 .posts-container {
@@ -157,13 +157,38 @@
 .post-footer {
   display: flex;
   font-size: 0.8em;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 48px;
+}
+
+.post-info-left {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-count-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 10px;
+}
+
+.comment-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+}
+
+.comment-count {
+  font-size: 0.9em;
+  color: #999999;
 }
 
 /* Sidebar styles */
 .sidebar {
   width: 340px;
-  min-height: 700px; /* 최소 높이 설정 */
+  min-height: 700px;
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -172,7 +197,7 @@
   top: 140px;
   align-self: flex-start;
   margin-right: 0;
-  overflow-y: auto; /* 내용이 너무 길 경우 스크롤 추가 */
+  overflow-y: auto;
 }
 
 .sidebar-section {

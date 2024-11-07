@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { CREATE_BOOK_REVIEW_API_URL } from '../../util/apiUrl';
 // 별점 처리 이미지
 import heartRating from '../../assets/images/heart-rating.png';
@@ -11,7 +10,7 @@ import heartRatingEmpty from '../../assets/images/heart-rating-empty.png';
 
 import './Booklist.css';
 
-const BookCreateReview = ({}) => {
+const BookCreateReview = ({ handleAddReview }) => {
   const { bookId } = useParams();
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(0);
@@ -46,12 +45,41 @@ const BookCreateReview = ({}) => {
 
       console.log('Review successfully posted:', response.data);
 
+      // 날짜를 'DD.MM.YY (HH24:MI)' 형식으로 포맷팅하는 함수
+      const formatDate = (date) => {
+        const options = {
+          year: '2-digit',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        };
+        const formattedDate = date.toLocaleString('en-GB', options); // 'en-GB'를 사용하여 24시간 형식을 지원
+
+        // 문자열을 분리하여 형식에 맞게 조합
+        const [day, month, year, hour, minute] =
+          formattedDate.split(/[\/,\s:]+/);
+        return `${day}.${month}.${year} (${hour}:${minute})`;
+      };
+
+      // 서버에서 반환되는 데이터 구조 확인
+      const newReview = {
+        review_num: response.data.review_num, // 서버에서 제공되는 review ID
+        review_content: reviewContent,
+        rating: rating,
+        review_created_at: formatDate(new Date()), // 서버가 반환하는 시간 형식에 맞춰서 저장
+        member_nickname: response.data.member_nickname, // 서버가 반환하는 작성자 별명
+        member_num: member_num,
+      };
+
       setReviewContent(''); // 리뷰 내용 초기화
       setRating(0); // 평점 초기화
 
       if (reviewBoxRef.current) {
         reviewBoxRef.current.textContent = ''; //편집한 내용 초기화
       }
+      handleAddReview(newReview);
     } catch (error) {
       console.error('Error posting review:', error); // 에러 발생 시 콘솔 출력
     }

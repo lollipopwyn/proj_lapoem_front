@@ -6,12 +6,13 @@ import {
   GET_BOOK_REVIEWS_API_URL,
   DELETE_REVIEW_API_URL,
 } from '../../util/apiUrl';
+import BookCreateReview from './BookCreateReview';
 import './BookDetail.css';
 
 const BookReviews = () => {
   const { bookId, reviewId } = useParams();
-  console.log('Fetched bookId:', bookId); // 콘솔에 bookId 출력
-  console.log('Fetched bookId:', reviewId); // 콘솔에 bookId 출력
+  console.log('Fetched bookId:', bookId);
+  console.log('Fetched bookId:', reviewId);
 
   const dispatch = useDispatch();
   const member_num = useSelector((state) => state.auth.user?.memberNum);
@@ -48,6 +49,10 @@ const BookReviews = () => {
     }
   };
 
+  const handleAddReview = (newReview) => {
+    setReviews((prevReviews) => [newReview, ...prevReviews]); // Add the new review at the top
+  };
+
   const handleDeleteReview = async (reviewId) => {
     try {
       const deleteResponse = await axios.delete(
@@ -76,10 +81,11 @@ const BookReviews = () => {
     <div>
       <div className="book-review-list">
         <h2>Book Reviews</h2>
+        <div className="book-create-review"></div>
         {reviews.length > 0 ? ( // 리뷰가 있는지 체크
           <ul>
-            {reviews.map((review) => (
-              <li key={review.review_num}>
+            {reviews.map((review, index) => (
+              <li key={review.review_num || index}>
                 <h3>{review.member_nickname}</h3> {/* 리뷰 작성자의 별명 */}
                 <p>{review.review_content}</p> {/* 리뷰 내용 */}
                 <p>Rating: {review.rating}</p> {/* 평점 */}
@@ -93,8 +99,12 @@ const BookReviews = () => {
             ))}
           </ul>
         ) : (
-          <p>No reviews available.</p> // 리뷰가 없을 경우 메시지 출력
+          <p>
+            작성된 리뷰가 없습니다, 당신이 1등입니다, 이 책에 대한 리뷰를
+            남겨보세요!
+          </p>
         )}
+        <BookCreateReview handleAddReview={handleAddReview} />
       </div>
     </div>
   );

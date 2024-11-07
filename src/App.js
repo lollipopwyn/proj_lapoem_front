@@ -16,7 +16,6 @@ import { useEffect } from 'react';
 import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
 import Threadon_post from './components/ThreadOn/Threadon_post';
-import BookReviews from './components/BookList/BookReviews';
 
 function App() {
   const dispatch = useDispatch();

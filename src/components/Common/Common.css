@@ -1,6 +1,6 @@
-.pagination{
+.pagination {
   display: flex;
   justify-content: center;
-  padding-top: 50px;
+  padding-top: 60px;
   gap: 20px;
 }

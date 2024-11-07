@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // useNavigate import 추가
+import axios from "axios";
 import ThreadCard from "./ThreadCard";
 import SearchBar from "../Common/SearchBar";
 import PageNation from "../PageNation";
@@ -10,89 +11,49 @@ function Threadon() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
-    const data = [
-      {
-        id: 1,
-        cover: "",
-        title: "책제목1",
-        author: "저자1",
-        publisher: "출판사1",
-      },
-      {
-        id: 2,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-      {
-        id: 3,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-      {
-        id: 4,
-        cover: "",
-        title: "책제목1",
-        author: "저자1",
-        publisher: "출판사1",
-      },
-      {
-        id: 5,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-      {
-        id: 6,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-      {
-        id: 7,
-        cover: "",
-        title: "책제목1",
-        author: "저자1",
-        publisher: "출판사1",
-      },
-      {
-        id: 8,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-      {
-        id: 9,
-        cover: "",
-        title: "책제목2",
-        author: "저자2",
-        publisher: "출판사2",
-      },
-    ];
-    setThreads(data);
-  }, []);
+    fetchThreads();
+  }, [currentPage, searchTerm]); // currentPage나 searchTerm이 변경될 때마다 fetchThreads 호출
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
+  // 스레드 데이터를 불러오는 함수
+  const fetchThreads = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 서버에서 스레드 데이터를 요청
+      const response = await axios.get("http://localhost:8000/threads", {
+        params: {
+          page: currentPage,
+          limit: itemsPerPage,
+          query: searchTerm, // 검색어를 query 파라미터로 전달
+        },
+      });
+      setThreads(response.data.threads); // 서버에서 받은 스레드 데이터 설정
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching threads:", err);
+      setError("데이터를 불러오는 중 문제가 발생했습니다.");
+      setLoading(false);
+    }
   };
 
-  const filteredThreads = threads.filter(
-    (thread) =>
-      thread.title.includes(searchTerm) || thread.author.includes(searchTerm)
-  );
+  // 검색어가 변경될 때마다 searchTerm 업데이트
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    setCurrentPage(1); // 검색 시 페이지 초기화
+  };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredThreads.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = threads.slice(indexOfFirstItem, indexOfLastItem);
+
+  // 빈 카드 수 계산
+  const emptyCardCount = itemsPerPage - currentItems.length;
 
   return (
     <div className="thread-container">
@@ -108,16 +69,45 @@ function Threadon() {
         </button>
       </div>
 
-      <div className="thread-list">
-        {currentItems.map((thread) => (
-          <ThreadCard key={thread.id} thread={thread} />
-        ))}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <div className="thread-list">
+          {currentItems.map((thread) => (
+            <ThreadCard
+              key={thread.thread_num}
+              thread={{
+                cover: thread.book_cover,
+                title: thread.book_title,
+                author: thread.book_author,
+                publisher: thread.book_publisher,
+                participantCount: thread.participant_count,
+              }}
+            />
+          ))}
+          {/* 빈 카드 추가 */}
+          {Array.from({ length: emptyCardCount }).map((_, index) => (
+            <div
+              key={`empty-${index}`}
+              style={{
+                width: "280px",
+                aspectRatio: "3 / 4",
+                visibility: "hidden",
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <PageNation
         currentPage={currentPage}
-        totalPages={Math.ceil(filteredThreads.length / itemsPerPage)}
-        onPageChange={setCurrentPage}
+        totalPages={Math.ceil(threads.length / itemsPerPage)}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          fetchThreads();
+        }}
       />
     </div>
   );

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { GET_BOOK_REVIEWS_API_URL,DELETE_REVIEW_API_URL, GET_REVIEW_BY_ID_API_URL } from '../../util/apiUrl';
+import {
+  GET_BOOK_REVIEWS_API_URL,
+  DELETE_REVIEW_API_URL,
+  GET_REVIEW_BY_ID_API_URL,
+} from '../../util/apiUrl';
 import './BookDetail.css';
 
 const BookReviews = () => {
-  const { bookId, reviewId} = useParams(); 
+  const { bookId, reviewId } = useParams();
   console.log('Fetched bookId:', bookId); // 콘솔에 bookId 출력
   console.log('Fetched bookId:', reviewId); // 콘솔에 bookId 출력
 
@@ -16,11 +20,9 @@ const BookReviews = () => {
   const [loading, setLoading] = useState(true); // 로딩 상태 초기화
   const [error, setError] = useState(null); // 에러 상태 초기화
 
-  
-
   useEffect(() => {
     fetchReviews(); // bookId가 변경될 때마다 리뷰를 가져오는 함수 호출
-  }, [bookId,reviewId]);
+  }, [bookId, reviewId]);
 
   const fetchReviews = async () => {
     if (!bookId) {
@@ -34,7 +36,9 @@ const BookReviews = () => {
     setError(null); // 이전 에러 상태 초기화
 
     try {
-      const response = await axios.get(GET_BOOK_REVIEWS_API_URL(bookId), { withCredentials: true }); // API 호출
+      const response = await axios.get(GET_BOOK_REVIEWS_API_URL(bookId), {
+        withCredentials: true,
+      }); // API 호출
       console.log('Fetched reviews:', response.data); // 가져온 데이터 콘솔에 출력
       setReviews(response.data); // 가져온 리뷰 데이터를 상태에 저장
     } catch (error) {
@@ -46,9 +50,11 @@ const BookReviews = () => {
   };
 
   const handleDeleteReview = async (reviewId) => {
-
     try {
-      const response = await axios.get(GET_REVIEW_BY_ID_API_URL(bookId, reviewId), { withCredentials: true });
+      const response = await axios.get(
+        GET_REVIEW_BY_ID_API_URL(bookId, reviewId),
+        { withCredentials: true }
+      );
       const reviewToDelete = response.data;
 
       // 2. 리뷰가 유효한지 확인합니다.
@@ -63,15 +69,21 @@ const BookReviews = () => {
         return;
       }
 
-
-      const deleteResponse = await axios.delete(DELETE_REVIEW_API_URL(bookId, reviewId),{withCredentials: true}); // DELETE 요청 전송
+      const deleteResponse = await axios.delete(
+        DELETE_REVIEW_API_URL(bookId, reviewId),
+        { withCredentials: true }
+      ); // DELETE 요청 전송
       if (deleteResponse.status === 200) {
-        setReviews((prevReviews) => prevReviews.filter((review) => review.review_num !== reviewId)); // UI에서 리뷰 제거
+        setReviews((prevReviews) =>
+          prevReviews.filter((review) => review.review_num !== reviewId)
+        ); // UI에서 리뷰 제거
         alert('리뷰가 삭제되었습니다.');
-
       }
     } catch (error) {
-      console.error('리뷰 삭제 중 오류 발생:', error);
+      console.error('리뷰 삭제 중 오류 발생:', error.response || error);
+      if (error.response?.status === 401) {
+        alert('인증이 필요합니다. 다시 로그인해주세요.');
+      }
       setError('리뷰 삭제 중 오류가 발생했습니다.');
     }
   };
@@ -92,7 +104,10 @@ const BookReviews = () => {
                 <p>Rating: {review.rating}</p> {/* 평점 */}
                 <p>Date: {review.review_created_at}</p> {/* 작성 날짜 */}
                 {member_num === review.member_num && (
-                  <button onClick={() => handleDeleteReview(review.review_id)}>Delete</button>)}
+                  <button onClick={() => handleDeleteReview(review.review_num)}>
+                    Delete
+                  </button>
+                )}
               </li>
             ))}
           </ul>

@@ -65,17 +65,15 @@ const Community = () => {
     {
       id: 1,
       isNotice: true,
-      title: '커뮤니티 포럼 공지사항입니다. 커뮤니티 사용 전에 읽어주세요.',
-      date: '2024-10-24',
-      likes: 33,
+      title:
+        '라보엠 커뮤니티 공지사항입니다. 커뮤니티 사용 전에 꼭 읽어주세요.',
+      date: '2024-11-07',
     },
     {
       id: 2,
       isNotice: true,
-      title:
-        '그 밖을 하다보기만 하듯, 나는 가끔 뒤처의 자락이 하늘이 하다리는 글 받았다.',
-      date: '2024-10-24',
-      likes: 31,
+      title: '커뮤니티 기능 업데이트 공지',
+      date: '2024-11-07',
     },
   ];
 
@@ -141,6 +139,18 @@ const Community = () => {
     navigate(`/community/${postId}`);
   };
 
+  const truncateContent = (content, maxLength = 100) => {
+    if (content.length > maxLength) {
+      return (
+        <>
+          {content.substring(0, maxLength)}...
+          <span className="read-more">자세히 보기</span>
+        </>
+      );
+    }
+    return content;
+  };
+
   return (
     <div className="community-container">
       <div className="content-wrapper">
@@ -171,7 +181,7 @@ const Community = () => {
               <div key={notice.id} className="post-item notice-post">
                 <div className="post-header">
                   <span className="notice-tag">[공지]</span>
-                  <div className="post-contents">
+                  <div className="notice-contents">
                     <h3>{notice.title}</h3>
                   </div>
                   <span className="date">{notice.date}</span>
@@ -197,7 +207,7 @@ const Community = () => {
                   <div className="post-middle">
                     <div className="post-contents">
                       <h3>{post.post_title}</h3>
-                      <p>{post.post_content}</p>
+                      <p>{truncateContent(post.post_content, 200)}</p>
                     </div>
                     <div className="post-footer">
                       <span className="post-author">

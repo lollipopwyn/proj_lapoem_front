@@ -95,7 +95,7 @@
 .post-item {
   padding: 20px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 16px;
   background-color: #ececec;
   margin-bottom: 20px;
 }
@@ -104,9 +104,11 @@
   background-color: #ececec;
   font-weight: bold;
   height: 92px;
-  display: flex; /* Flexbox 사용 */
-  align-items: center; /* 수직 방향 중앙 정렬 */
-  padding: 0 20px; /* 수평 패딩 추가 (기존 padding을 변경) */
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  min-height: 92px;
+  box-sizing: border-box;
 }
 
 .notice-post .post-contents h3 {
@@ -131,6 +133,11 @@
   flex-grow: 1;
 }
 
+.notice-contents {
+  flex-grow: 1;
+  font-size: 24px;
+}
+
 .post-date {
   font-size: 12px;
   color: #999999;
@@ -143,29 +150,29 @@
 }
 
 .post-contents h3 {
-  margin: 0;
+  margin-bottom: 20px;
   font-size: 24px;
 }
 
 .post-footer {
   display: flex;
   font-size: 0.8em;
-  padding-top: 8px;
-  margin-top: 8px;
+  margin-top: 48px;
 }
 
 /* Sidebar styles */
 .sidebar {
   width: 340px;
-  height: 760px;
+  min-height: 700px; /* 최소 높이 설정 */
   background-color: white;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: sticky;
-  top: 140px; /* navbar height(120px) + 20px margin */
-  align-self: flex-start; /* Prevents the sidebar from stretching */
-  margin-right: 0; /* Ensure sidebar stays at the right edge */
+  top: 140px;
+  align-self: flex-start;
+  margin-right: 0;
+  overflow-y: auto; /* 내용이 너무 길 경우 스크롤 추가 */
 }
 
 .sidebar-section {
@@ -194,8 +201,12 @@
   align-items: center;
   gap: 10px;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #f5f5f5;
+}
+
+.topic-item {
+  cursor: pointer;
 }
 
 .new-forum-button {
@@ -204,7 +215,7 @@
   background-color: #4b433b;
   color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   text-align: center;
@@ -266,4 +277,9 @@
 .my-comment-stat-value {
   font-size: 24px;
   font-weight: bold;
+}
+
+.read-more {
+  color: #999999;
+  cursor: pointer;
 }

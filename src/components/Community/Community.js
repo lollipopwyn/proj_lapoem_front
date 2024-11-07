@@ -95,24 +95,26 @@ const Community = () => {
   }, [authInitialized, currentUser, dispatch]);
 
   useEffect(() => {
-    if (authInitialized && currentUser?.memberNum) {
-      setIsLoadingPosts(true);
-      if (viewType === 'Public') {
-        dispatch(fetchCommunityPostsData({ viewType: 'Public' })).then(() => {
-          setIsLoadingPosts(false);
-        });
-      } else if (viewType === 'Only me' && isLoggedIn) {
-        dispatch(
-          fetchCommunityPostsData({
-            viewType: 'Only me',
-            member_num: currentUser.memberNum,
-          })
-        ).then(() => {
-          setIsLoadingPosts(false);
-        });
-      }
+    setIsLoadingPosts(true);
+    if (viewType === 'Public') {
+      // 로그인 여부와 관계없이 Public 게시물 로드
+      dispatch(fetchCommunityPostsData({ viewType: 'Public' })).then(() => {
+        setIsLoadingPosts(false);
+      });
+    } else if (viewType === 'Only me' && isLoggedIn && currentUser?.memberNum) {
+      // 로그인된 사용자만 'Only me' 게시물 로드
+      dispatch(
+        fetchCommunityPostsData({
+          viewType: 'Only me',
+          member_num: currentUser.memberNum,
+        })
+      ).then(() => {
+        setIsLoadingPosts(false);
+      });
+    } else {
+      setIsLoadingPosts(false); // 로그인하지 않고 'Only me'인 경우에는 로딩 상태를 종료
     }
-  }, [viewType, authInitialized, isLoggedIn, currentUser, dispatch]);
+  }, [viewType, isLoggedIn, currentUser, dispatch]);
 
   const handleViewChange = (type) => {
     setViewType(type);
@@ -137,6 +139,13 @@ const Community = () => {
 
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
+  };
+
+  const handleNewForumClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // 기본 링크 동작 막기
+      alert('로그인 후 게시글을 작성하실 수 있습니다.');
+    }
   };
 
   const truncateContent = (content, maxLength = 100) => {
@@ -194,6 +203,8 @@ const Community = () => {
               <div>Loading posts...</div>
             ) : isError ? (
               <p>{errorMessage}</p>
+            ) : viewType === 'Only me' && !isLoggedIn ? (
+              <p>로그인 후 이용해주세요.</p>
             ) : filteredPosts.length === 0 ? (
               <p>No posts found.</p>
             ) : (
@@ -229,7 +240,9 @@ const Community = () => {
         <div className="sidebar">
           <div className="my-forums-section">
             <div className="my-forums-header">
-              {currentUser?.nickname || currentUser?.name || 'User'} 님
+              {isLoggedIn
+                ? currentUser?.nickname || currentUser?.name || 'User'
+                : '로그아웃 상태'}{' '}
             </div>
             <div className="my-forums-stats">
               <div className="my-forums-stat">
@@ -241,7 +254,7 @@ const Community = () => {
               </div>
               <div className="my-forums-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
-                <div className="my-comment-stat-title">Total Comment</div>
+                <div className="my-comment-stat-title">My Comment</div>
                 <div className="my-comment-stat-value">
                   {userStats.totalComments}
                 </div>
@@ -297,7 +310,7 @@ const Community = () => {
 
           {/* New Forums Button */}
           <div className="sidebar-section">
-            <Link to="/new_forum">
+            <Link to="/new_forum" onClick={handleNewForumClick}>
               <button className="new-forum-button">New Forum</button>
             </Link>
           </div>

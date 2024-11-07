@@ -229,40 +229,71 @@ const CommunityDetail = () => {
       <div className="content-wrapper">
         <div className="main-content">
           <h1 className="community-title">COMMUNITY</h1>
-          {isEditing ? (
-            <div>
+          <div className="post-title">
+            {isEditing ? (
               <input
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#f6f6f6',
+                  fontSize: '24px',
+                  border: '2px solid #ccc', // 테두리 색상과 두께
+                  borderRadius: '8px', // 모서리 둥글게
+                }}
               />
+            ) : (
+              postDetail.post_title
+            )}
+          </div>
+          <div className="post-meta">
+            <span className="post-author">{postDetail.member_nickname}</span>
+            <span className="post-date">
+              {new Date(postDetail.post_created_at).toLocaleString()}
+            </span>
+            <img
+              src={postDetail.visibility ? publicIcon : meIcon}
+              alt={postDetail.visibility ? 'Public' : 'Only me'}
+              className="icon"
+            />
+          </div>
+          <div className="post-content">
+            {isEditing ? (
               <textarea
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '200px',
+                  backgroundColor: '#f6f6f6',
+                  fontSize: '16px',
+                  border: '2px solid #ccc', // 테두리 색상과 두께
+                  borderRadius: '8px', // 모서리 둥글게
+                }}
               ></textarea>
-              <button onClick={handleSaveEdit}>저장</button>
-              <button onClick={handleCancelEdit}>취소</button>
-            </div>
-          ) : (
-            <>
-              <div className="post-title">{postDetail.post_title}</div>
-              <div className="post-meta">
-                <span className="post-author">
-                  {postDetail.member_nickname}
-                </span>
-                <span className="post-date">
-                  {new Date(postDetail.post_created_at).toLocaleString()}
-                </span>
-                <img
-                  src={postDetail.visibility ? publicIcon : meIcon}
-                  alt={postDetail.visibility ? 'Public' : 'Only me'}
-                  className="icon"
-                />
-              </div>
-              <div className="post-content">
-                {postDetail.post_content}
-                {postDetail.member_num === memberNum && (
-                  <div className="post-edit-delete-buttons">
+            ) : (
+              postDetail.post_content
+            )}
+            {postDetail.member_num === memberNum && (
+              <div className="post-edit-delete-buttons">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleSaveEdit}
+                      className="post-edit-button"
+                    >
+                      저장
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="post-delete-button"
+                    >
+                      취소
+                    </button>
+                  </>
+                ) : (
+                  <>
                     <button
                       className="post-edit-button"
                       onClick={handleEditClick}
@@ -275,11 +306,12 @@ const CommunityDetail = () => {
                     >
                       삭제
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
-            </>
-          )}
+            )}
+          </div>
+
           <div className="comment-section">
             <h2>전체 댓글</h2>
             <div className="comment-count-wrapper">

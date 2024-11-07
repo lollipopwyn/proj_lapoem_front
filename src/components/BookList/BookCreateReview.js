@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { CREATE_BOOK_REVIEW_API_URL } from '../../util/apiUrl';
+// 별점 처리 이미지
 import heartRating from '../../assets/images/heart-rating.png';
 import heartRatingHalf from '../../assets/images/heart-half-rating.png';
 import heartRatingEmpty from '../../assets/images/heart-rating-empty.png';
 
 import './Booklist.css';
 
-const BookCreateReview = () => {
+const BookCreateReview = ({}) => {
   const { bookId } = useParams();
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0); // Hovered rating
+  const [hoverRating, setHoverRating] = useState(0);
+  const navigate = useNavigate();
+  const reviewBoxRef = useRef(null);
 
   const member_num = useSelector((state) => state.auth.user?.memberNum);
 
@@ -40,11 +44,24 @@ const BookCreateReview = () => {
         { withCredentials: true }
       );
 
-      console.log('Review successfully posted:', response.data); // 리뷰 작성 성공 시 콘솔 출력
+      console.log('Review successfully posted:', response.data);
+
       setReviewContent(''); // 리뷰 내용 초기화
       setRating(0); // 평점 초기화
+
+      if (reviewBoxRef.current) {
+        reviewBoxRef.current.textContent = ''; //편집한 내용 초기화
+      }
     } catch (error) {
       console.error('Error posting review:', error); // 에러 발생 시 콘솔 출력
+    }
+  };
+
+  // 리뷰 입력창 클릭 이벤트 핸들러 추가
+  const handleReviewBoxClick = () => {
+    if (!member_num) {
+      alert('회원 로그인이 필요합니다.');
+      navigate('/login');
     }
   };
 
@@ -69,6 +86,16 @@ const BookCreateReview = () => {
         setHoverRating(0); // 마우스가 벗어나면 기본 상태로
       };
 
+      // 로그인 않을 경우 알럭 처리
+      const handleClick = () => {
+        if (!member_num) {
+          alert('회원 로그인이 필요합니다.'); // Show alert for unauthenticated users
+          navigate('/login'); // Redirect to login page
+        } else {
+          setRating(i * 2); // Set the rating if user is logged in
+        }
+      };
+
       // 채워진 하트 이미지 결정
       let starImage;
       if (score <= (hoverRating || rating)) {
@@ -90,7 +117,7 @@ const BookCreateReview = () => {
           src={starImage} // 반개 하트 또는 전체 하트 전환
           alt={`star-${i}`}
           className="star"
-          onClick={() => setRating(i * 2)} // 클릭 시 해당 점수 설정
+          onClick={handleClick}
           onMouseEnter={handleMouseEnter} // 마우스 올리면 반개 하트로 색 변화 (0.5 단위)
           onMouseMove={handleMouseEnter} // 마우스 이동할 때도 색 변화
           onMouseLeave={handleMouseLeave} // 마우스가 벗어나면 기본 상태로
@@ -104,13 +131,16 @@ const BookCreateReview = () => {
     <div className="book-review-create">
       <div
         className="book-review-box"
+        ref={reviewBoxRef}
         contentEditable
+        onClick={handleReviewBoxClick} // 로그인 확인 기능 추가
         onInput={(e) => setReviewContent(e.currentTarget.textContent)}
         placeholder="책에 대한 리뷰를 작성해주세요."
         suppressContentEditableWarning={true}
       ></div>
       <div className="book-rating">{renderStars()}</div>
       <button onClick={handleReviewSubmit}>Submit Review</button>
+      {/* 새로 제출된 리뷰를 바로 화면에 표시 */}
     </div>
   );
 };

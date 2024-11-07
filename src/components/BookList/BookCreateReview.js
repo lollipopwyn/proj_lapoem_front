@@ -109,10 +109,7 @@ const BookCreateReview = () => {
         placeholder="책에 대한 리뷰를 작성해주세요."
         suppressContentEditableWarning={true}
       ></div>
-      <div className="book-rating">
-        {renderStars()}
-        <span className="score">{hoverRating || rating}/10</span>
-      </div>
+      <div className="book-rating">{renderStars()}</div>
       <button onClick={handleReviewSubmit}>Submit Review</button>
     </div>
   );

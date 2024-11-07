@@ -65,17 +65,15 @@ const Community = () => {
     {
       id: 1,
       isNotice: true,
-      title: '커뮤니티 포럼 공지사항입니다. 커뮤니티 사용 전에 읽어주세요.',
-      date: '2024-10-24',
-      likes: 33,
+      title:
+        '라보엠 커뮤니티 공지사항입니다. 커뮤니티 사용 전에 꼭 읽어주세요.',
+      date: '2024-11-07',
     },
     {
       id: 2,
       isNotice: true,
-      title:
-        '그 밖을 하다보기만 하듯, 나는 가끔 뒤처의 자락이 하늘이 하다리는 글 받았다.',
-      date: '2024-10-24',
-      likes: 31,
+      title: '커뮤니티 기능 업데이트 공지',
+      date: '2024-11-07',
     },
   ];
 
@@ -97,24 +95,26 @@ const Community = () => {
   }, [authInitialized, currentUser, dispatch]);
 
   useEffect(() => {
-    if (authInitialized && currentUser?.memberNum) {
-      setIsLoadingPosts(true);
-      if (viewType === 'Public') {
-        dispatch(fetchCommunityPostsData({ viewType: 'Public' })).then(() => {
-          setIsLoadingPosts(false);
-        });
-      } else if (viewType === 'Only me' && isLoggedIn) {
-        dispatch(
-          fetchCommunityPostsData({
-            viewType: 'Only me',
-            member_num: currentUser.memberNum,
-          })
-        ).then(() => {
-          setIsLoadingPosts(false);
-        });
-      }
+    setIsLoadingPosts(true);
+    if (viewType === 'Public') {
+      // 로그인 여부와 관계없이 Public 게시물 로드
+      dispatch(fetchCommunityPostsData({ viewType: 'Public' })).then(() => {
+        setIsLoadingPosts(false);
+      });
+    } else if (viewType === 'Only me' && isLoggedIn && currentUser?.memberNum) {
+      // 로그인된 사용자만 'Only me' 게시물 로드
+      dispatch(
+        fetchCommunityPostsData({
+          viewType: 'Only me',
+          member_num: currentUser.memberNum,
+        })
+      ).then(() => {
+        setIsLoadingPosts(false);
+      });
+    } else {
+      setIsLoadingPosts(false); // 로그인하지 않고 'Only me'인 경우에는 로딩 상태를 종료
     }
-  }, [viewType, authInitialized, isLoggedIn, currentUser, dispatch]);
+  }, [viewType, isLoggedIn, currentUser, dispatch]);
 
   const handleViewChange = (type) => {
     setViewType(type);
@@ -139,6 +139,25 @@ const Community = () => {
 
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
+  };
+
+  const handleNewForumClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // 기본 링크 동작 막기
+      alert('로그인 후 게시글을 작성하실 수 있습니다.');
+    }
+  };
+
+  const truncateContent = (content, maxLength = 100) => {
+    if (content.length > maxLength) {
+      return (
+        <>
+          {content.substring(0, maxLength)}...
+          <span className="read-more">자세히 보기</span>
+        </>
+      );
+    }
+    return content;
   };
 
   return (
@@ -171,7 +190,7 @@ const Community = () => {
               <div key={notice.id} className="post-item notice-post">
                 <div className="post-header">
                   <span className="notice-tag">[공지]</span>
-                  <div className="post-contents">
+                  <div className="notice-contents">
                     <h3>{notice.title}</h3>
                   </div>
                   <span className="date">{notice.date}</span>
@@ -184,6 +203,8 @@ const Community = () => {
               <div>Loading posts...</div>
             ) : isError ? (
               <p>{errorMessage}</p>
+            ) : viewType === 'Only me' && !isLoggedIn ? (
+              <p>로그인 후 이용해주세요.</p>
             ) : filteredPosts.length === 0 ? (
               <p>No posts found.</p>
             ) : (
@@ -197,16 +218,28 @@ const Community = () => {
                   <div className="post-middle">
                     <div className="post-contents">
                       <h3>{post.post_title}</h3>
-                      <p>{post.post_content}</p>
+                      <p>{truncateContent(post.post_content, 200)}</p>
                     </div>
                     <div className="post-footer">
-                      <span className="post-author">
-                        작성자: {post.member_nickname}
-                      </span>
-                      <span className="post-date">
-                        작성날짜:{' '}
-                        {new Date(post.post_created_at).toLocaleString()}
-                      </span>
+                      <div className="post-info-left">
+                        <span className="post-author">
+                          작성자: {post.member_nickname}
+                        </span>
+                        <span className="post-date">
+                          작성날짜:{' '}
+                          {new Date(post.post_created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="comment-count-wrapper">
+                        <img
+                          src={require('../../assets/images/comment.png')}
+                          alt="Comment Icon"
+                          className="comment-icon"
+                        />
+                        <span className="comment-count">
+                          {post.comments_count}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -219,7 +252,9 @@ const Community = () => {
         <div className="sidebar">
           <div className="my-forums-section">
             <div className="my-forums-header">
-              {currentUser?.nickname || currentUser?.name || 'User'} 님
+              {isLoggedIn
+                ? currentUser?.nickname || currentUser?.name || 'User'
+                : '로그아웃 상태'}{' '}
             </div>
             <div className="my-forums-stats">
               <div className="my-forums-stat">
@@ -231,7 +266,7 @@ const Community = () => {
               </div>
               <div className="my-forums-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
-                <div className="my-comment-stat-title">Total Comment</div>
+                <div className="my-comment-stat-title">My Comment</div>
                 <div className="my-comment-stat-value">
                   {userStats.totalComments}
                 </div>
@@ -287,7 +322,7 @@ const Community = () => {
 
           {/* New Forums Button */}
           <div className="sidebar-section">
-            <Link to="/new_forum">
+            <Link to="/new_forum" onClick={handleNewForumClick}>
               <button className="new-forum-button">New Forum</button>
             </Link>
           </div>

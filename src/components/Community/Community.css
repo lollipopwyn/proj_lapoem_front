@@ -7,7 +7,7 @@
 
 .community-container {
   min-height: 100vh;
-  padding: 180px 0 320px 180px; /* Space for navbar and footer */
+  padding: 180px 0 320px 180px;
   box-sizing: border-box;
 }
 
@@ -53,29 +53,29 @@
 
 .view-options button {
   padding: 8px 16px;
-  border: none; /* 기본 테두리 제거 */
-  background: none; /* 배경 제거 */
+  border: none;
+  background: none;
   display: flex;
   align-items: center;
-  gap: 8px; /* 아이콘과 텍스트 사이 간격 */
+  gap: 8px;
   cursor: pointer;
   font-size: 16px;
-  color: #999999; /* 기본 버튼 텍스트 색상 */
+  color: #999999;
 }
 
 .view-options button img.icon {
-  width: 20px; /* 아이콘의 크기 */
+  width: 20px;
   height: 20px;
 }
 
 .view-options button.active {
-  color: #222222; /* 선택된 버튼 텍스트 색상 */
+  color: #222222;
   font-weight: bold;
-  border-bottom: 2px solid #333; /* 선택된 버튼 밑줄 */
+  border-bottom: 2px solid #333;
 }
 
 .view-options button:hover {
-  color: #777777; /* 호버 시 텍스트 색상 변경 */
+  color: #777777;
 }
 
 .posts-container {
@@ -95,7 +95,7 @@
 .post-item {
   padding: 20px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 16px;
   background-color: #ececec;
   margin-bottom: 20px;
 }
@@ -104,9 +104,11 @@
   background-color: #ececec;
   font-weight: bold;
   height: 92px;
-  display: flex; /* Flexbox 사용 */
-  align-items: center; /* 수직 방향 중앙 정렬 */
-  padding: 0 20px; /* 수평 패딩 추가 (기존 padding을 변경) */
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  min-height: 92px;
+  box-sizing: border-box;
 }
 
 .notice-post .post-contents h3 {
@@ -131,6 +133,11 @@
   flex-grow: 1;
 }
 
+.notice-contents {
+  flex-grow: 1;
+  font-size: 24px;
+}
+
 .post-date {
   font-size: 12px;
   color: #999999;
@@ -143,29 +150,54 @@
 }
 
 .post-contents h3 {
-  margin: 0;
+  margin-bottom: 20px;
   font-size: 24px;
 }
 
 .post-footer {
   display: flex;
   font-size: 0.8em;
-  padding-top: 8px;
-  margin-top: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 48px;
+}
+
+.post-info-left {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-count-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 10px;
+}
+
+.comment-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+}
+
+.comment-count {
+  font-size: 0.9em;
+  color: #999999;
 }
 
 /* Sidebar styles */
 .sidebar {
   width: 340px;
-  height: 760px;
+  min-height: 700px;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: sticky;
-  top: 140px; /* navbar height(120px) + 20px margin */
-  align-self: flex-start; /* Prevents the sidebar from stretching */
-  margin-right: 0; /* Ensure sidebar stays at the right edge */
+  top: 140px;
+  align-self: flex-start;
+  margin-right: 0;
+  overflow-y: auto;
 }
 
 .sidebar-section {
@@ -194,8 +226,12 @@
   align-items: center;
   gap: 10px;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #f5f5f5;
+}
+
+.topic-item {
+  cursor: pointer;
 }
 
 .new-forum-button {
@@ -204,7 +240,7 @@
   background-color: #4b433b;
   color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
   text-align: center;
@@ -266,4 +302,9 @@
 .my-comment-stat-value {
   font-size: 24px;
   font-weight: bold;
+}
+
+.read-more {
+  color: #999999;
+  cursor: pointer;
 }

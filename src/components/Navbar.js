@@ -3,13 +3,15 @@ import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser, clearMessage } from '../redux/features/auth/authSlice';
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
 
 import logo_w from '../assets/images/logo-w.png';
 import login from '../assets/images/login.png';
 
 function Navbar() {
   const dispatch = useDispatch();
-  const { isLoggedIn, user, message } = useSelector((state) => state.auth);
+  const navigate = useNavigate(); // useNavigate 훅 호출
+  const { isLoggedIn, message } = useSelector((state) => state.auth);
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴 열림 상태 관리
 
@@ -31,8 +33,9 @@ function Navbar() {
     if (message) {
       alert(message); // "로그아웃 되었습니다." 메시지 표시
       dispatch(clearMessage()); // 메시지 초기화
+      navigate('/'); // 홈으로 리다이렉트
     }
-  }, [message, dispatch]);
+  }, [message, dispatch, navigate]);
 
   return (
     <nav className="nav-container">

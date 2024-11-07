@@ -46,7 +46,7 @@ const BookDetail = () => {
       // 사용자 번호와 책 번호를 URL에 포함하여 navigate
       navigate(`/chatstella/${bookId}?memberNum=${memberNum}`);
     } else {
-      alert('로그인이 필요합니다.'); // 사용자 번호가 없으면 로그인 필요 메시지
+      alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.'); // 사용자 번호가 없으면 로그인 필요 메시지
       navigate('/login'); // 로그인 페이지로 이동
     }
   };

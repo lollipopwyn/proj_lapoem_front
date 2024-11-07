@@ -47,9 +47,11 @@ const CommunityDetail = () => {
   const errorMessage = useSelector((state) => state.api.errorMessage);
   const memberNum = useSelector((state) => state.auth.user?.memberNum);
 
-  const { user: currentUser, authInitialized } = useSelector(
-    (state) => state.auth
-  );
+  const {
+    user: currentUser,
+    isLoggedIn,
+    authInitialized,
+  } = useSelector((state) => state.auth);
 
   useEffect(() => {
     console.log('Current user state:', currentUser);
@@ -176,6 +178,13 @@ const CommunityDetail = () => {
     });
   };
 
+  const handleNewForumClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // 기본 링크 동작 막기
+      alert('로그인 후 게시글을 작성하실 수 있습니다.');
+    }
+  };
+
   const handleDeletePost = () => {
     if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
       dispatch(deleteCommunityPostData(postId)).then(() => {
@@ -254,6 +263,16 @@ const CommunityDetail = () => {
           )}
           <div className="comment-section">
             <h2>전체 댓글</h2>
+            <div className="comment-count-wrapper">
+              <img
+                src={require('../../assets/images/comment.png')}
+                alt="Comment count icon"
+                className="comment-icon"
+              />
+              <span className="comment-count">
+                {postDetail.comments_count || 0}
+              </span>
+            </div>
           </div>
           <div className="comments-list">
             {comments?.map((comment) => (
@@ -351,7 +370,7 @@ const CommunityDetail = () => {
 
           {/* New Forums Button */}
           <div className="sidebar-section">
-            <Link to="/new-forum">
+            <Link to="/new_forum" onClick={handleNewForumClick}>
               <button className="new-forum-button">New Forum</button>
             </Link>
           </div>

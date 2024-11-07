@@ -221,13 +221,25 @@ const Community = () => {
                       <p>{truncateContent(post.post_content, 200)}</p>
                     </div>
                     <div className="post-footer">
-                      <span className="post-author">
-                        작성자: {post.member_nickname}
-                      </span>
-                      <span className="post-date">
-                        작성날짜:{' '}
-                        {new Date(post.post_created_at).toLocaleString()}
-                      </span>
+                      <div className="post-info-left">
+                        <span className="post-author">
+                          작성자: {post.member_nickname}
+                        </span>
+                        <span className="post-date">
+                          작성날짜:{' '}
+                          {new Date(post.post_created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="comment-count-wrapper">
+                        <img
+                          src={require('../../assets/images/comment.png')}
+                          alt="Comment Icon"
+                          className="comment-icon"
+                        />
+                        <span className="comment-count">
+                          {post.comments_count}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

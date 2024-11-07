@@ -18,9 +18,10 @@ const FASTAPI_WEBSOCKET_BASE_URL =
 
 // GET 요청 URL
 export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;
-export const GET_BOOK_DETAIL_API_URL = (bookId) => `${BASE_URL}/book-list/${bookId}`;
-export const GET_BOOK_REVIEWS_API_URL = (bookId) => `${BASE_URL}/book-list/${bookId}/reviews`;
-export const GET_REVIEW_BY_ID_API_URL = (bookId,reviewId) => `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`;
+export const GET_BOOK_DETAIL_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}`;
+export const GET_BOOK_REVIEWS_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}/reviews`;
 export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`;
 export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`;
 export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`;
@@ -39,11 +40,14 @@ export const LOGOUT_USER_API_URL = `${BASE_URL}/logout`; // 회원 로그아웃 
 export const VERIFY_USER_API_URL = `${BASE_URL}/verify`; // 사용자 인증 확인 URL
 export const CREATE_COMMUNITY_POST_API_URL = `${BASE_URL}/community`; // 커뮤니티 새 게시글 작성
 export const CREATE_COMMENT_API_URL = `${BASE_URL}/community/comment`; // 댓글 작성 URL
-export const CREATE_BOOK_REVIEW_API_URL = (bookId) => `${BASE_URL}/book-list/${bookId}/reviews`; //책 리뷰 작성
+export const CREATE_BOOK_REVIEW_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}/reviews`; //책 리뷰 작성
 
 // DELETE 요청 URL
-export const DELETE_COMMENT_API_URL = (commentId) => `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
-export const DELETE_REVIEW_API_URL = (bookId,reviewId) => `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`;//리뷰 삭제
+export const DELETE_COMMENT_API_URL = (commentId) =>
+  `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
+export const DELETE_REVIEW_API_URL = (bookId, reviewId) =>
+  `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`; //리뷰 삭제
 
 export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/api/chat`; // HTTP API URL
 export const WEBSOCKET_CHAT_URL = `${FASTAPI_WEBSOCKET_BASE_URL}/ws/chat`; // WebSocket URL

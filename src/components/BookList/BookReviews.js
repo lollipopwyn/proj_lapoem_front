@@ -5,7 +5,6 @@ import axios from 'axios';
 import {
   GET_BOOK_REVIEWS_API_URL,
   DELETE_REVIEW_API_URL,
-  GET_REVIEW_BY_ID_API_URL,
 } from '../../util/apiUrl';
 import './BookDetail.css';
 
@@ -51,24 +50,6 @@ const BookReviews = () => {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      const response = await axios.get(
-        GET_REVIEW_BY_ID_API_URL(bookId, reviewId),
-        { withCredentials: true }
-      );
-      const reviewToDelete = response.data;
-
-      // 2. 리뷰가 유효한지 확인합니다.
-      if (!reviewToDelete) {
-        alert('해당 리뷰를 찾을 수 없습니다.');
-        return;
-      }
-
-      // 3. 리뷰 작성자가 맞는지 확인
-      if (reviewToDelete.member_num !== member_num) {
-        alert('삭제 권한이 없습니다.');
-        return;
-      }
-
       const deleteResponse = await axios.delete(
         DELETE_REVIEW_API_URL(bookId, reviewId),
         { withCredentials: true }

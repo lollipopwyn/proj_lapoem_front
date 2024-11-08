@@ -8,25 +8,25 @@ import {
   fetchTopUsers,
 } from '../../redux/features/auth/apiSlice';
 import './Community.css';
-import publicIcon from '../../assets/images/public-icon.png';
-import meIcon from '../../assets/images/only-me-icon.png';
-import documentIcon from '../../assets/images/document.png';
 import chartIcon from '../../assets/images/chart.png';
 import rank1Icon from '../../assets/images/rank1-icon.png';
 import rank2Icon from '../../assets/images/rank2-icon.png';
 import rank3Icon from '../../assets/images/rank3-icon.png';
+import documentIcon from '../../assets/images/document.png';
+import publicIcon from '../../assets/images/public-icon.png';
+import meIcon from '../../assets/images/only-me-icon.png';
 
-const Community = () => {
+const CommunityMyForum = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [viewType, setViewType] = useState('Public'); // Public or Only me
   const [userStats, setUserStats] = useState({
     totalPosts: 0,
     totalComments: 0,
   });
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [hotTopics, setHotTopics] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
-  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [filteredPosts, setFilteredPosts] = useState([]);
 
   const {
     fetchCommunityPosts: communityPosts,
@@ -34,16 +34,33 @@ const Community = () => {
     isError,
     errorMessage,
   } = useSelector((state) => state.api);
+
   const {
     user: currentUser,
     isLoggedIn,
-    isAuthInitializing,
     authInitialized,
   } = useSelector((state) => state.auth);
 
   useEffect(() => {
     console.log('Current user state:', currentUser);
   }, [currentUser]);
+
+  useEffect(() => {
+    if (authInitialized && currentUser?.memberNum) {
+      // 사용자 통계 데이터 가져오기
+      const memberNum = currentUser.memberNum;
+      dispatch(fetchUserStats(memberNum)).then((result) => {
+        if (result.error) {
+          console.error('Error fetching user stats:', result.error);
+        } else if (result.payload) {
+          setUserStats({
+            totalPosts: result.payload.total_posts,
+            totalComments: result.payload.total_comments,
+          });
+        }
+      });
+    }
+  }, [authInitialized, currentUser, dispatch]);
 
   useEffect(() => {
     dispatch(fetchHotTopics()).then((result) => {
@@ -61,87 +78,46 @@ const Community = () => {
     });
   }, [dispatch]);
 
-  const notices = [
-    {
-      id: 1,
-      isNotice: true,
-      title:
-        '라보엠 커뮤니티 공지사항입니다. 커뮤니티 사용 전에 꼭 읽어주세요.',
-      date: '2024-11-07',
-    },
-    {
-      id: 2,
-      isNotice: true,
-      title: '커뮤니티 기능 업데이트 공지',
-      date: '2024-11-07',
-    },
-  ];
-
-  useEffect(() => {
-    if (authInitialized && currentUser?.memberNum) {
-      const memberNum = currentUser.memberNum;
-      console.log('Fetching stats for member_num:', memberNum);
-      dispatch(fetchUserStats(memberNum)).then((result) => {
-        if (result.error) {
-          console.error('Error fetching user stats:', result.error);
-        } else if (result.payload) {
-          setUserStats({
-            totalPosts: result.payload.total_posts,
-            totalComments: result.payload.total_comments,
-          });
-        }
-      });
-    }
-  }, [authInitialized, currentUser, dispatch]);
-
   useEffect(() => {
     setIsLoadingPosts(true);
-    if (viewType === 'Public') {
-      // 로그인 여부와 관계없이 Public 게시물 로드
-      dispatch(
-        fetchCommunityPostsData({
-          viewType: 'Public',
-          source: 'community', // 요청 출처를 지정하여 모든 사용자들의 게시물을 가져옴
-        })
-      ).then(() => {
-        setIsLoadingPosts(false);
-      });
-    } else if (viewType === 'Only me' && isLoggedIn && currentUser?.memberNum) {
-      // 로그인된 사용자만 'Only me' 게시물 로드
-      dispatch(
-        fetchCommunityPostsData({
-          viewType: 'Only me',
-          member_num: currentUser.memberNum,
-          source: 'community', // 요청 출처를 지정하여 'Only me' 게시물만 가져옴
-        })
-      ).then(() => {
+    if (authInitialized && currentUser?.memberNum) {
+      const memberNum = currentUser.memberNum;
+
+      // 로그인한 사용자의 Only me 게시물과 Public 게시물 모두 가져오기
+      Promise.all([
+        dispatch(
+          fetchCommunityPostsData({
+            viewType: 'Only me', // Only me 게시물 요청
+            member_num: memberNum, // 로그인한 사용자의 Only me 게시물만 필터링
+            source: 'my_forum', // 요청 출처를 지정하여 필터링 처리
+          })
+        ),
+        dispatch(
+          fetchCommunityPostsData({
+            viewType: 'Public', // Public 게시물 요청
+            member_num: memberNum, // 로그인한 사용자의 Public 게시물만 필터링
+            source: 'my_forum', // 요청 출처를 지정하여 필터링 처리
+          })
+        ),
+      ]).then(([onlyMePostsResult, publicPostsResult]) => {
+        if (onlyMePostsResult.payload && publicPostsResult.payload) {
+          // 두 결과를 결합하여 로그인한 사용자의 모든 게시물을 가져옴
+          const combinedPosts = [
+            ...onlyMePostsResult.payload,
+            ...publicPostsResult.payload,
+          ];
+          // 로그인한 사용자의 게시물만 필터링
+          const filtered = combinedPosts.filter(
+            (post) => Number(post.member_num) === Number(memberNum)
+          );
+          setFilteredPosts(filtered);
+        }
         setIsLoadingPosts(false);
       });
     } else {
-      setIsLoadingPosts(false); // 로그인하지 않고 'Only me'인 경우에는 로딩 상태를 종료
+      setIsLoadingPosts(false);
     }
-  }, [viewType, isLoggedIn, currentUser, dispatch]);
-
-  const handleViewChange = (type) => {
-    setViewType(type);
-  };
-
-  // 필터링된 게시글
-  const filteredPosts = communityPosts.filter((post) => {
-    if (viewType === 'Public') {
-      return post.visibility === true;
-    } else if (viewType === 'Only me') {
-      return (
-        post.visibility === false &&
-        Number(post.member_num) === Number(currentUser?.memberNum)
-      );
-    }
-    return false;
-  });
-
-  if (filteredPosts.length > 0) {
-    console.log('Filtered Posts:', filteredPosts);
-  }
+  }, [authInitialized, currentUser, dispatch]);
 
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
@@ -159,25 +135,7 @@ const Community = () => {
     }
   };
 
-  const truncateContent = (content, maxLines = 3) => {
-    const lines = content.split('\n');
-    if (lines.length > maxLines) {
-      return lines.slice(0, maxLines).join('\n');
-    }
-    return content;
-  };
-
-  const handleMyForumsClick = (e) => {
-    if (!isLoggedIn) {
-      e.preventDefault(); // 기본 링크 동작 막기
-      const confirmLogin = window.confirm(
-        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
-      );
-      if (confirmLogin) {
-        navigate('/login'); // 확인을 누르면 로그인 페이지로 이동
-      }
-      return; // 취소 시 함수 종료
-    }
+  const handleMyForumsClick = () => {
     navigate('/community/my_forum');
   };
 
@@ -186,46 +144,14 @@ const Community = () => {
       <div className="content-wrapper">
         <div className="main-content">
           <div className="header">
-            <h1 className="community-title">COMMUNITY</h1>
-            <div className="view-options">
-              <button
-                className={viewType === 'Public' ? 'active' : ''}
-                onClick={() => handleViewChange('Public')}
-              >
-                <img src={publicIcon} alt="Public" className="icon" />
-                Public
-              </button>
-              <button
-                className={viewType === 'Only me' ? 'active' : ''}
-                onClick={() => handleViewChange('Only me')}
-              >
-                <img src={meIcon} alt="Only me" className="icon" />
-                Only me
-              </button>
-            </div>
+            <h1 className="community-title">My Forums</h1>
           </div>
 
           <div className="posts-container">
-            {/* 공지사항 표시 */}
-            {notices.map((notice) => (
-              <div key={notice.id} className="post-item notice-post">
-                <div className="post-header">
-                  <span className="notice-tag">[공지]</span>
-                  <div className="notice-contents">
-                    <h3>{notice.title}</h3>
-                  </div>
-                  <span className="date">{notice.date}</span>
-                </div>
-              </div>
-            ))}
-
-            {/* 작성된 게시글 표시 */}
             {isLoadingPosts ? (
               <div>Loading posts...</div>
             ) : isError ? (
               <p>{errorMessage}</p>
-            ) : viewType === 'Only me' && !isLoggedIn ? (
-              <p>로그인 후 이용해주세요.</p>
             ) : filteredPosts.length === 0 ? (
               <div className="no-posts-message-container">
                 <p className="no-posts-message">
@@ -243,27 +169,7 @@ const Community = () => {
                   <div className="post-middle">
                     <div className="post-contents">
                       <h3>{post.post_title}</h3>
-                      <p>
-                        {truncateContent(post.post_content, 3)
-                          .split('\n')
-                          .map((line, index) => (
-                            <React.Fragment key={index}>
-                              {line}
-                              <br />
-                            </React.Fragment>
-                          ))}
-                        {post.post_content.split('\n').length > 3 && (
-                          <span
-                            className="see-more"
-                            onClick={(e) => {
-                              e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
-                              handlePostClick(post.posts_id);
-                            }}
-                          >
-                            ···자세히보기
-                          </span>
-                        )}
-                      </p>
+                      <p>{post.post_content}</p>
                     </div>
                     <div className="post-footer">
                       <div className="post-info-left">
@@ -274,6 +180,12 @@ const Community = () => {
                           작성날짜:{' '}
                           {new Date(post.post_created_at).toLocaleString()}
                         </span>
+                        <img
+                          src={post.visibility ? publicIcon : meIcon}
+                          alt={post.visibility ? 'Public' : 'Only me'}
+                          className="visibility-icon"
+                          style={{ marginLeft: '10px' }} // 여유 공간 추가
+                        />
                       </div>
                       <div className="comment-count-wrapper">
                         <img
@@ -377,4 +289,4 @@ const Community = () => {
   );
 };
 
-export default Community;
+export default CommunityMyForum;

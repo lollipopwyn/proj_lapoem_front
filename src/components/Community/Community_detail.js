@@ -200,6 +200,20 @@ const CommunityDetail = () => {
     }
   };
 
+  const handleMyForumsClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault(); // 기본 링크 동작 막기
+      const confirmLogin = window.confirm(
+        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
+      );
+      if (confirmLogin) {
+        navigate('/login'); // 확인을 누르면 로그인 페이지로 이동
+      }
+      return; // 취소 시 함수 종료
+    }
+    navigate('/community/my_forum');
+  };
+
   const handleDeletePost = () => {
     if (
       window.confirm(
@@ -362,7 +376,7 @@ const CommunityDetail = () => {
                 : '로그아웃 상태'}{' '}
             </div>
             <div className="my-forums-stats">
-              <div className="my-forums-stat">
+              <div className="my-forums-stat" onClick={handleMyForumsClick}>
                 <img src={documentIcon} alt="My Forums Icon" />
                 <div className="my-forums-stat-title">My Forums</div>
                 <div className="my-forums-stat-value">

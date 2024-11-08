@@ -259,7 +259,8 @@
 }
 
 .new-forum-button:hover {
-  background-color: #4b433b;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(75, 67, 59, 0.4);
 }
 
 .my-forums-section {

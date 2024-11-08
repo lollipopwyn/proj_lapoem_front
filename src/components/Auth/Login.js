@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/features/auth/authSlice';
-import { useNavigate, Link } from 'react-router-dom'; // Link 추가
+import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
@@ -14,7 +14,8 @@ function Login() {
     set_login_data({ ...login_data, [e.target.name]: e.target.value });
   };
 
-  const handle_login = async () => {
+  const handle_login = async (e) => {
+    e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
     await dispatch(loginUser(login_data));
   };
 
@@ -33,22 +34,23 @@ function Login() {
   return (
     <div className="login_container">
       <h2 className="login_title">로그인</h2>
-      <input type="text" name="member_id" placeholder="아이디" onChange={handle_change} className="login_input" />
-      <input
-        type="password"
-        name="member_password"
-        placeholder="비밀번호"
-        onChange={handle_change}
-        className="login_input"
-      />
-      <button onClick={handle_login} className="login_button">
-        로그인
-      </button>
+      <form onSubmit={handle_login}>
+        <input type="text" name="member_id" placeholder="아이디" onChange={handle_change} className="login_input" />
+        <input
+          type="password"
+          name="member_password"
+          placeholder="비밀번호"
+          onChange={handle_change}
+          className="login_input"
+        />
+        <button type="submit" className="login_button">
+          로그인
+        </button>
+      </form>
       {error && <p className="error_message">{error}</p>}
       <Link to="/join" className="signup_button">
         회원가입
-      </Link>{' '}
-      {/* 회원가입 버튼 추가 */}
+      </Link>
     </div>
   );
 }

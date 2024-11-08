@@ -14,10 +14,14 @@ const Stella = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [socket, setSocket] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [bookInfo, setBookInfo] = useState(null); // 책 정보 상태 추가
+  const [bookInfo, setBookInfo] = useState(null);
   const chatBoxRef = useRef(null);
-  const alertShownRef = useRef(false); // alert가 한 번만 표시되도록 상태 관리
+  const alertShownRef = useRef(false);
   const { isLoggedIn, isAuthInitializing, authInitialized, user } = useSelector((state) => state.auth);
+  const [isSocketOpen, setIsSocketOpen] = useState(false);
+
+  // bookId가 없는 경우 0으로 설정
+  const effectiveBookId = bookId || 0;
 
   // 인증 초기화
   useEffect(() => {
@@ -28,79 +32,93 @@ const Stella = () => {
 
   // 로그인 상태 확인 및 리다이렉트
   useEffect(() => {
-    if (isAuthInitializing) return;
-    if (!isLoggedIn && !alertShownRef.current) {
-      alert('로그인이 필요합니다. 로그인 페이지로 이동합니다.');
-      alertShownRef.current = true;
-      navigate('/login');
+    if (!isAuthInitializing && !isLoggedIn && !alertShownRef.current) {
+      alertShownRef.current = true; // 알림 표시 여부 설정
+
+      const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
+
+      if (shouldNavigateToLogin) {
+        navigate('/login'); // "확인"을 누르면 로그인 페이지로 이동
+      } else {
+        navigate('/'); // "취소"를 누르면 홈으로 이동
+      }
     }
-  }, [isAuthInitializing, authInitialized, isLoggedIn, navigate]);
 
-  // 책 정보 불러오기 및 환영 메시지 초기화
+    // 컴포넌트 언마운트 시 `alertShownRef`를 초기화하여 다시 표시되지 않도록 설정
+    return () => {
+      alertShownRef.current = true;
+    };
+  }, [isAuthInitializing, isLoggedIn, navigate]);
+
+  // 책 정보 및 채팅 내역 불러오기
   useEffect(() => {
-    const loadBookInfo = async () => {
-      if (bookId) {
-        try {
-          const response = await axios.get(GET_BOOK_DETAIL_API_URL(bookId));
-          setBookInfo(response.data);
+    if (!authInitialized || !isLoggedIn) return; // 조건 확인 후 훅 실행
+    const loadBookInfoAndChatHistory = async () => {
+      try {
+        if (effectiveBookId && user && user.memberNum) {
+          const bookResponse = await axios.get(GET_BOOK_DETAIL_API_URL(effectiveBookId));
+          setBookInfo(bookResponse.data);
 
-          // 환영 메시지를 채팅 기록에 바로 추가
+          const chatResponse = await axios.get(`${API_CHAT_URL}/${effectiveBookId}/${user.memberNum}`);
+          setChatHistory(chatResponse.data);
+
           const welcomeMessage = {
             sender_id: 'stella',
-            message: `${response.data.book_title} 채팅방에 오신 것을 환영합니다!`,
+            message: `${bookResponse.data.book_title || '일회성'} 채팅방에 오신 것을 환영합니다!`,
           };
-          setChatHistory([welcomeMessage]); // 환영 인사를 chatHistory에 초기값으로 설정
-        } catch (error) {
-          console.error('Failed to load book information:', error);
+          setChatHistory((prev) => [welcomeMessage, ...prev]);
         }
+      } catch (error) {
+        console.error('Failed to load book information or chat history:', error);
       }
     };
-    loadBookInfo();
-  }, [bookId]);
 
-  // WebSocket 연결 및 채팅 초기화
+    loadBookInfoAndChatHistory();
+  }, [effectiveBookId, authInitialized, isLoggedIn, user]);
+
+  // WebSocket 연결 및 재연결 관리
   useEffect(() => {
-    if (!authInitialized || !isLoggedIn || !bookInfo) return;
+    if (!authInitialized || !isLoggedIn || !user) return; // 조건 확인 후 훅 실행
 
-    const loadChatHistory = async () => {
-      if (bookId) {
-        try {
-          const response = await axios.get(`${API_CHAT_URL}/${bookId}/${user.memberNum}`);
-          setChatHistory((prev) => [...prev, ...response.data]); // 기존 환영 인사 뒤에 불러온 채팅 기록 추가
-        } catch (error) {
-          console.error('Failed to load chat history:', error);
+    const connectWebSocket = () => {
+      const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${effectiveBookId}`;
+
+      const ws = new WebSocket(wsUrl);
+      setSocket(ws);
+
+      ws.onopen = () => {
+        console.log('Connected to the chat server');
+        setIsSocketOpen(true);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('Disconnected from chat server, attempting to reconnect...');
+        setIsSocketOpen(false);
+        setSocket(null);
+        setTimeout(connectWebSocket, 3000); // 3초 후 재연결 시도
+      };
+
+      ws.onmessage = (event) => {
+        const receivedMessage = JSON.parse(event.data);
+        setIsTyping(false);
+        if (receivedMessage.message.trim()) {
+          setChatHistory((prev) => [...prev, receivedMessage]);
         }
-      }
+      };
     };
 
-    loadChatHistory();
-
-    const wsUrl = bookId
-      ? `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${bookId}`
-      : `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}`;
-    const ws = new WebSocket(wsUrl);
-    setSocket(ws);
-
-    ws.onopen = () => {
-      console.log('Connected to the chat server');
-    };
-
-    ws.onmessage = (event) => {
-      const receivedMessage = JSON.parse(event.data);
-      setIsTyping(false);
-      if (receivedMessage.message.trim()) {
-        setChatHistory((prev) => [...prev, receivedMessage]);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log('Disconnected from chat server');
-    };
+    connectWebSocket();
 
     return () => {
-      ws.close();
+      if (socket) {
+        socket.close();
+      }
     };
-  }, [isLoggedIn, isAuthInitializing, authInitialized, user, bookId, navigate, bookInfo]);
+  }, [isLoggedIn, authInitialized, user, effectiveBookId]);
 
   // 채팅 기록 스크롤 관리
   useEffect(() => {
@@ -109,8 +127,9 @@ const Stella = () => {
     }
   }, [chatHistory]);
 
+  // 메시지 전송 함수
   const handleSendMessage = () => {
-    if (socket && socket.readyState === WebSocket.OPEN && message.trim()) {
+    if (isSocketOpen && message.trim()) {
       const userMessage = { sender_id: 'user', message: message.trim() };
       socket.send(message.trim());
       setChatHistory((prev) => [...prev, userMessage]);
@@ -121,8 +140,9 @@ const Stella = () => {
     }
   };
 
+  // Enter 키 이벤트와 클릭 이벤트에서 중복 방지
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.repeat) {
       e.preventDefault();
       handleSendMessage();
     }

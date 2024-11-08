@@ -6,7 +6,10 @@ import {
   GET_BOOK_REVIEWS_API_URL,
   DELETE_REVIEW_API_URL,
 } from '../../util/apiUrl';
+// 컴퍼넌트
 import BookCreateReview from './BookCreateReview';
+import HeartRating from './HeartRating';
+// 리소스
 import deleteIcon from '../../assets/images/delete.png';
 import './BookReview.css';
 
@@ -89,7 +92,8 @@ const BookReviews = () => {
               <li key={review.review_num || index}>
                 <h3>{review.member_nickname}</h3> {/* 리뷰 작성자의 별명 */}
                 <p>{review.review_content}</p> {/* 리뷰 내용 */}
-                <p>Rating: {review.rating}</p> {/* 평점 */}
+                {/* <p>Rating: {review.rating}</p>  */}
+                <HeartRating rating={review.rating} /> {/* 하트 평점 */}
                 <p>Date: {review.review_created_at}</p> {/* 작성 날짜 */}
                 {member_num === review.member_num && (
                   <img

@@ -139,6 +139,14 @@ const CommunityMyForum = () => {
     navigate('/community/my_forum');
   };
 
+  const truncateContent = (content, maxLines = 3) => {
+    const lines = content.split('\n');
+    if (lines.length > maxLines) {
+      return lines.slice(0, maxLines).join('\n');
+    }
+    return content;
+  };
+
   return (
     <div className="community-container">
       <div className="content-wrapper">
@@ -169,7 +177,27 @@ const CommunityMyForum = () => {
                   <div className="post-middle">
                     <div className="post-contents">
                       <h3>{post.post_title}</h3>
-                      <p>{post.post_content}</p>
+                      <p>
+                        {truncateContent(post.post_content, 3)
+                          .split('\n')
+                          .map((line, index) => (
+                            <React.Fragment key={index}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}
+                        {post.post_content.split('\n').length > 3 && (
+                          <span
+                            className="see-more"
+                            onClick={(e) => {
+                              e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
+                              handlePostClick(post.posts_id);
+                            }}
+                          >
+                            ···자세히보기
+                          </span>
+                        )}
+                      </p>
                     </div>
                     <div className="post-footer">
                       <div className="post-info-left">

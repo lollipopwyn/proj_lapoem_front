@@ -145,63 +145,6 @@
 }
 
 .book-detail-desc p {
-  display: inline;
   line-height: 1.8;
 }
 
-.book-rating-overview {
-  margin-top: 20px;
-}
-
-
-.book-reviews {
-  margin-top: 20px;
-}
-
-.book-reviews h3 {
-  margin-bottom: 20px;
-}
-
-
-.review-create {
-  margin-top: 20px;
-  padding: 70px;
-  background-color: var(--text-gray-bg);
-  border-radius: 15px;
-  text-align: center;
-}
-
-/* ---------------리뷰 작성--------------- */
-
-/* 리뷰 별점 */
-.book-rating {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.star {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-}
-
-
-.score {
-  font-size: 16px;
-  margin-left: 10px;
-}
-
-
-
-/* -------------챗봇 버튼(임시)---------- */
-.chatbot  {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: var();
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}

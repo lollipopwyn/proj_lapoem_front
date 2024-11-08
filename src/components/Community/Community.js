@@ -72,7 +72,7 @@ const Community = () => {
     {
       id: 2,
       isNotice: true,
-      title: '커뮤니티 기능 업데이트 공지',
+      title: '욕설 및 비방 글 작성 시 삭제될 수 있습니다.',
       date: '2024-11-07',
     },
   ];

@@ -128,13 +128,30 @@ const Stella = () => {
   }, [chatHistory]);
 
   // 메시지 전송 함수
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (isSocketOpen && message.trim()) {
-      const userMessage = { sender_id: 'user', message: message.trim() };
-      socket.send(message.trim());
-      setChatHistory((prev) => [...prev, userMessage]);
-      setMessage('');
-      setIsTyping(true);
+      // "이 책에 대해 설명해줘"와 유사한 요청을 감지하여 책 정보 제공
+      if (message.trim().includes('이 책에 대해 설명해줘')) {
+        if (bookInfo) {
+          const bookDescriptionMessage = {
+            sender_id: 'stella',
+            message: `책 제목: ${bookInfo.book_title}\n설명: ${bookInfo.description}`,
+          };
+          setChatHistory((prev) => [...prev, bookDescriptionMessage]);
+        } else {
+          const errorMessage = {
+            sender_id: 'stella',
+            message: '죄송합니다, 해당 책에 대한 정보를 찾을 수 없습니다.',
+          };
+          setChatHistory((prev) => [...prev, errorMessage]);
+        }
+      } else {
+        const userMessage = { sender_id: 'user', message: message.trim() };
+        socket.send(message.trim());
+        setChatHistory((prev) => [...prev, userMessage]);
+        setMessage('');
+        setIsTyping(true);
+      }
     } else {
       console.log('WebSocket is not open or message is empty');
     }

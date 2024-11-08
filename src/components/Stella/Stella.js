@@ -6,10 +6,14 @@ import { WEBSOCKET_CHAT_URL, API_CHAT_URL, GET_BOOK_DETAIL_API_URL } from '../..
 import { initializeAuth } from '../../redux/features/auth/authSlice';
 import './Stella.css';
 
+const MAX_RECONNECT_ATTEMPTS = 1; // 최대 재연결 시도 횟수
+const INITIAL_RECONNECT_DELAY = 1000; // 초기 재연결 지연 시간 (1초)
+
 const Stella = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -18,9 +22,11 @@ const Stella = () => {
   const chatBoxRef = useRef(null);
   const alertShownRef = useRef(false);
   const { isLoggedIn, isAuthInitializing, authInitialized, user } = useSelector((state) => state.auth);
-  const [isSocketOpen, setIsSocketOpen] = useState(false);
 
-  // bookId가 없는 경우 0으로 설정
+  const [isSocketOpen, setIsSocketOpen] = useState(false);
+  const reconnectAttemptsRef = useRef(0);
+  const reconnectDelayRef = useRef(INITIAL_RECONNECT_DELAY);
+
   const effectiveBookId = bookId || 0;
 
   // 인증 초기화
@@ -33,26 +39,26 @@ const Stella = () => {
   // 로그인 상태 확인 및 리다이렉트
   useEffect(() => {
     if (!isAuthInitializing && !isLoggedIn && !alertShownRef.current) {
-      alertShownRef.current = true; // 알림 표시 여부 설정
+      alertShownRef.current = true;
 
       const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
 
       if (shouldNavigateToLogin) {
-        navigate('/login'); // "확인"을 누르면 로그인 페이지로 이동
+        navigate('/login');
       } else {
-        navigate('/'); // "취소"를 누르면 홈으로 이동
+        navigate('/');
       }
     }
 
-    // 컴포넌트 언마운트 시 `alertShownRef`를 초기화하여 다시 표시되지 않도록 설정
     return () => {
-      alertShownRef.current = true;
+      alertShownRef.current = false;
     };
   }, [isAuthInitializing, isLoggedIn, navigate]);
 
   // 책 정보 및 채팅 내역 불러오기
   useEffect(() => {
-    if (!authInitialized || !isLoggedIn) return; // 조건 확인 후 훅 실행
+    if (!authInitialized || !isLoggedIn) return;
+
     const loadBookInfoAndChatHistory = async () => {
       try {
         if (effectiveBookId && user && user.memberNum) {
@@ -76,19 +82,31 @@ const Stella = () => {
     loadBookInfoAndChatHistory();
   }, [effectiveBookId, authInitialized, isLoggedIn, user]);
 
-  // WebSocket 연결 및 재연결 관리
+  // WebSocket 연결 관리
   useEffect(() => {
-    if (!authInitialized || !isLoggedIn || !user) return; // 조건 확인 후 훅 실행
+    if (!authInitialized || !isLoggedIn || !user) return;
+
+    // WebSocket 인스턴스가 이미 존재할 경우 새로운 연결 방지
+    if (socket) {
+      return;
+    }
+
+    let ws; // WebSocket 인스턴스 선언
 
     const connectWebSocket = () => {
-      const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${effectiveBookId}`;
+      if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+        console.log('Maximum reconnect attempts reached. Stopping reconnect attempts.');
+        return; // 최대 재연결 횟수 도달 시 재연결 중단
+      }
 
-      const ws = new WebSocket(wsUrl);
+      const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${effectiveBookId}`;
+      ws = new WebSocket(wsUrl);
       setSocket(ws);
 
       ws.onopen = () => {
         console.log('Connected to the chat server');
         setIsSocketOpen(true);
+        reconnectAttemptsRef.current = 0; // 연결이 성공하면 재연결 횟수 초기화
       };
 
       ws.onerror = (error) => {
@@ -96,10 +114,16 @@ const Stella = () => {
       };
 
       ws.onclose = () => {
-        console.log('Disconnected from chat server, attempting to reconnect...');
+        console.log('Disconnected from chat server');
         setIsSocketOpen(false);
-        setSocket(null);
-        setTimeout(connectWebSocket, 3000); // 3초 후 재연결 시도
+        setSocket(null); // 연결이 닫히면 socket 상태를 null로 설정
+
+        // 재연결 로직
+        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          setTimeout(connectWebSocket, reconnectDelayRef.current); // 재연결 시도
+          reconnectAttemptsRef.current += 1;
+          reconnectDelayRef.current *= 2; // 재연결 지연 시간 증가
+        }
       };
 
       ws.onmessage = (event) => {
@@ -114,9 +138,11 @@ const Stella = () => {
     connectWebSocket();
 
     return () => {
-      if (socket) {
-        socket.close();
+      if (ws) {
+        ws.close(); // 컴포넌트가 언마운트될 때 기존 WebSocket 연결 해제
       }
+      reconnectAttemptsRef.current = 0; // 컴포넌트 언마운트 시 재연결 횟수 초기화
+      reconnectDelayRef.current = INITIAL_RECONNECT_DELAY; // 재연결 지연 시간 초기화
     };
   }, [isLoggedIn, authInitialized, user, effectiveBookId]);
 
@@ -128,11 +154,17 @@ const Stella = () => {
   }, [chatHistory]);
 
   // 메시지 전송 함수
-  const handleSendMessage = () => {
-    if (isSocketOpen && message.trim()) {
+  // handleSendMessage 함수 수정
+  const handleSendMessage = async () => {
+    if (isSocketOpen && socket.readyState === WebSocket.OPEN && message.trim()) {
+      // 사용자 메시지를 WebSocket을 통해 서버로 전송
       const userMessage = { sender_id: 'user', message: message.trim() };
-      socket.send(message.trim());
+      socket.send(JSON.stringify(userMessage));
+
+      // 사용자가 입력한 메시지를 채팅 기록에 추가
       setChatHistory((prev) => [...prev, userMessage]);
+
+      // 메시지 입력 필드를 초기화
       setMessage('');
       setIsTyping(true);
     } else {

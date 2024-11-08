@@ -8,6 +8,7 @@ import Stella from './components/Stella/Stella';
 import Community from './components/Community/Community';
 import NewForum from './components/Community/NewForum';
 import Community_detail from './components/Community/Community_detail';
+import CommunityMyForum from './components/Community/CommunityMyForum';
 import ThreadOn from './components/ThreadOn/Threadon';
 import BookDetail from './components/BookList/BookDetail';
 
@@ -37,13 +38,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
           <Route path="/book_list/:bookId" element={<BookDetail />} />
-          <Route path="/chatstella/" element={<Stella />} />
           <Route path="/chatstella/:bookId" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/new_thread" element={<Threadon_post />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
           <Route path="/community/:postId" element={<Community_detail />} />
+          <Route path="/community/my_forum" element={<CommunityMyForum />} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

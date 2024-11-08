@@ -198,18 +198,21 @@ const Stella = () => {
           ))}
           {isTyping && <div className="stella_typing">Stella가 입력 중입니다...</div>}
         </div>
-        <div className="stella_input_container">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            className="stella_input"
-          />
-          <button onClick={handleSendMessage} className="stella_send_button">
-            Send
-          </button>
+
+        <div className="stella_input_outer_container">
+          <div className="stella_input_container">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              className="stella_input"
+            />
+            <button onClick={handleSendMessage} className="stella_send_button">
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>

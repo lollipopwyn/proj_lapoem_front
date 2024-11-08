@@ -8,6 +8,7 @@ import {
 } from '../../util/apiUrl';
 import BookCreateReview from './BookCreateReview';
 import './BookDetail.css';
+import './BookReview.css'
 
 const BookReviews = () => {
   const { bookId, reviewId } = useParams();

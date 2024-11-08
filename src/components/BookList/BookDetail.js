@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GET_BOOK_DETAIL_API_URL } from '../../util/apiUrl';
 import BookReviews from './BookReviews';
-import BookCreateReview from './BookCreateReview';
 import { useSelector } from 'react-redux';
 import './BookDetail.css';
 
@@ -115,7 +114,7 @@ const BookDetail = () => {
             <div className="book-review-area">
               <BookReviews />
             </div>
-            <button onClick={handleStartChat}>채팅 시작</button>{' '}
+            <button className='chatbot' onClick={handleStartChat} >채팅 시작</button>
             {/* 채팅 시작 버튼 */}
           </>
         ) : (

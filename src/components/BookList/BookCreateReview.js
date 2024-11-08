@@ -149,18 +149,26 @@ const BookCreateReview = ({ handleAddReview }) => {
 
   return (
     <div className="book-review-create">
+      <div className="book-rating">{renderStars()}</div>
+
       <div
         className="book-review-box"
         ref={reviewBoxRef}
         contentEditable
         onClick={handleReviewBoxClick} // 로그인 확인 기능 추가
         onInput={(e) => setReviewContent(e.currentTarget.textContent)}
-        placeholder="배송 문의나 욕설 및 인식공격성 글은 상품 페이지에서 노출 제외처리됩니다."
         suppressContentEditableWarning={true}
       ></div>
-      <div className="book-rating">{renderStars()}</div>
-      <button onClick={handleReviewSubmit}>Submit Review</button>
-      {/* 새로 제출된 리뷰를 바로 화면에 표시 */}
+      <div className="review-tip">
+        <span>
+          * 비고: 욕설 및 인식공격성 글은 리뷰 페이지에서 노출 제외처리됩니다.
+        </span>
+        <span>300자</span>
+      </div>
+      <div className="sned-button-container">
+        <button onClick={handleReviewSubmit}>Send</button>
+        {/* 새로 제출된 리뷰를 바로 화면에 표시 */}
+      </div>
     </div>
   );
 };

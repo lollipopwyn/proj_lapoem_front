@@ -16,7 +16,6 @@ import './BookReview.css';
 const BookReviews = () => {
   const { bookId, reviewId } = useParams();
   console.log('Fetched bookId:', bookId);
-  console.log('Fetched bookId:', reviewId);
 
   const dispatch = useDispatch();
   const member_num = useSelector((state) => state.auth.user?.memberNum);

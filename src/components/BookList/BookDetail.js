@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GET_BOOK_DETAIL_API_URL } from '../../util/apiUrl';
+// 컴포넌트
+import BookReviewChart from './BookReviewChart';
 import BookReviews from './BookReviews';
 import { useSelector } from 'react-redux';
 import './BookDetail.css';
@@ -121,6 +123,7 @@ const BookDetail = () => {
               <p>{bookDetail.book_description}</p>
             </div>
             <div className="book-review-area">
+              <BookReviewChart />
               <BookReviews />
             </div>
             <button className="chatbot" onClick={handleStartChat}>

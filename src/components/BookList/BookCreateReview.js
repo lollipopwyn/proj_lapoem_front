@@ -14,6 +14,8 @@ const BookCreateReview = ({ handleAddReview }) => {
   const [reviewContent, setReviewContent] = useState('');
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [charCount, setCharCount] = useState(0); // 글자 수 상태 추가
+  const maxCharLimit = 300; // 최대 글자 수 제한 설정
   const navigate = useNavigate();
   const reviewBoxRef = useRef(null);
 
@@ -84,6 +86,7 @@ const BookCreateReview = ({ handleAddReview }) => {
 
       setReviewContent(''); // 리뷰 내용 초기화
       setRating(0); // 평점 초기화
+      setCharCount(0); // 글자 수 초기화
 
       if (reviewBoxRef.current) {
         reviewBoxRef.current.textContent = ''; //편집한 내용 초기화
@@ -100,6 +103,33 @@ const BookCreateReview = ({ handleAddReview }) => {
     if (!member_num) {
       alert('회원 로그인이 필요합니다.');
       navigate('/login');
+    }
+  };
+
+  // 글자 수 업데이트 및 제한
+  const handleInputChange = (e) => {
+    const content = e.currentTarget.textContent;
+    if (content.length <= maxCharLimit) {
+      setReviewContent(content);
+      setCharCount(content.length); // 글자 수 업데이트
+    } else {
+      e.currentTarget.textContent = reviewContent; // 최대 글자 수 초과 시 내용 되돌리기
+    }
+  };
+
+  // 붙여넣기 시 최대 글자 수 제한
+  const handlePaste = (e) => {
+    e.preventDefault(); // 기본 붙여넣기 동작 방지
+    const clipboardText = e.clipboardData.getData('text'); // 클립보드에서 텍스트 가져오기
+    const allowedText = clipboardText.slice(0, maxCharLimit - charCount); // 남은 글자 수만큼만 가져오기
+    const newText = reviewContent + allowedText; // 기존 텍스트와 합치기
+
+    if (newText.length <= maxCharLimit) {
+      setReviewContent(newText); // 300자 이하일 경우 전체 텍스트를 설정
+      setCharCount(newText.length); // 글자 수 업데이트
+      if (reviewBoxRef.current) {
+        reviewBoxRef.current.textContent = newText; // 입력창에 텍스트 반영
+      }
     }
   };
 
@@ -152,14 +182,18 @@ const BookCreateReview = ({ handleAddReview }) => {
         ref={reviewBoxRef}
         contentEditable
         onClick={handleReviewBoxClick} // 로그인 확인 기능 추가
-        onInput={(e) => setReviewContent(e.currentTarget.textContent)}
+        onInput={handleInputChange} // 글자 수 제한 함수 연결
+        onPaste={handlePaste} // 붙여넣기 제한 이벤트 추가
         suppressContentEditableWarning={true}
       ></div>
       <div className="review-tip">
         <span>
           * 비고: 욕설 및 인신공격성 글은 리뷰 페이지에서 노출 제외처리됩니다.
         </span>
-        <span>300자</span>
+        <span>
+          {charCount}/{maxCharLimit}자
+        </span>{' '}
+        {/* 글자 수 표시 */}
       </div>
       <div className="sned-button-container">
         <button onClick={handleReviewSubmit}>Send</button>

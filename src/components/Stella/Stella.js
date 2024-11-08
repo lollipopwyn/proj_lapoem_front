@@ -6,7 +6,7 @@ import { WEBSOCKET_CHAT_URL, API_CHAT_URL, GET_BOOK_DETAIL_API_URL } from '../..
 import { initializeAuth } from '../../redux/features/auth/authSlice';
 import './Stella.css';
 
-const MAX_RECONNECT_ATTEMPTS = 2; // 최대 재연결 시도 횟수
+const MAX_RECONNECT_ATTEMPTS = 1; // 최대 재연결 시도 횟수
 const INITIAL_RECONNECT_DELAY = 1000; // 초기 재연결 지연 시간 (1초)
 
 const Stella = () => {

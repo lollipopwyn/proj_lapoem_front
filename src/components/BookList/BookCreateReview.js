@@ -108,21 +108,6 @@ const BookCreateReview = ({ handleAddReview }) => {
     for (let i = 1; i <= 5; i++) {
       const score = i * 2; // 2, 4, 6, 8, 10 점
 
-      // 반 개 하트 여부를 판단하는 함수
-      const handleMouseEnter = (e) => {
-        const halfWidth = e.target.offsetWidth / 2; // 하트의 절반 너비
-        const mouseX = e.clientX - e.target.getBoundingClientRect().left; // 마우스 위치 (좌측 기준)
-        if (mouseX < halfWidth) {
-          setHoverRating(i * 2 - 1); // 마우스가 왼쪽 절반에 있을 때 반 개 하트
-        } else {
-          setHoverRating(i * 2); // 마우스가 오른쪽 절반에 있을 때 전체 하트
-        }
-      };
-
-      const handleMouseLeave = () => {
-        setHoverRating(0); // 마우스가 벗어나면 기본 상태로
-      };
-
       // 로그인 않을 경우 알럭 처리
       const handleClick = () => {
         if (!member_num) {

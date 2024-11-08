@@ -38,7 +38,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
           <Route path="/book_list/:bookId" element={<BookDetail />} />
-          <Route path="/chatstella/" element={<Stella />} />
           <Route path="/chatstella/:bookId" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/new_thread" element={<Threadon_post />} />

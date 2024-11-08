@@ -87,22 +87,29 @@ const BookReviews = () => {
         <h2 className="book-review-title">BLOVER REVIEWS</h2>
         <div className="book-create-review"></div>
         {reviews.length > 0 ? ( // 리뷰가 있는지 체크
-          <ul>
+          <ul className="review-list">
             {reviews.map((review, index) => (
-              <li key={review.review_num || index}>
-                <h3>{review.member_nickname}</h3> {/* 리뷰 작성자의 별명 */}
-                <p>{review.review_content}</p> {/* 리뷰 내용 */}
-                {/* <p>Rating: {review.rating}</p>  */}
-                <HeartRating rating={review.rating} /> {/* 하트 평점 */}
-                <p>Date: {review.review_created_at}</p> {/* 작성 날짜 */}
-                {member_num === review.member_num && (
-                  <img
-                    img
-                    src={deleteIcon}
-                    alt="Delete Comment"
-                    onClick={() => handleDeleteReview(review.review_num)}
-                  />
-                )}
+              <li key={review.review_num || index} className="review-item">
+                <div className="review-header">
+                  <h3 className="review-nickname">{review.member_nickname}</h3>
+                  <span className="review-date">
+                    {review.review_created_at}
+                  </span>
+                  <HeartRating rating={review.rating} />
+                </div>
+                <div className="review-right">
+                  {member_num === review.member_num && (
+                    <img
+                      className="delete-icon"
+                      img
+                      src={deleteIcon}
+                      alt="Delete Comment"
+                      onClick={() => handleDeleteReview(review.review_num)}
+                    />
+                  )}
+                </div>
+
+                <p className="review-content">{review.review_content}</p>
               </li>
             ))}
           </ul>

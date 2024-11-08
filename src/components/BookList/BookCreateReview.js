@@ -68,8 +68,8 @@ const BookCreateReview = ({ handleAddReview }) => {
         review_num: response.data.review_num, // 서버에서 제공되는 review ID
         review_content: reviewContent,
         rating: rating,
-        review_created_at: formatDate(new Date()), // 서버가 반환하는 시간 형식에 맞춰서 저장
-        member_nickname: response.data.member_nickname, // 서버가 반환하는 작성자 별명
+        review_created_at: formatDate(new Date()),
+        member_nickname: response.data.member_nickname,
         member_num: member_num,
       };
 

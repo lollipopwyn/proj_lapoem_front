@@ -48,7 +48,9 @@ const BookDetail = () => {
       // 사용자 번호와 책 번호를 URL에 포함하여 navigate
       navigate(`/chatstella/${bookId}?memberNum=${memberNum}`);
     } else {
-      const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
+      const shouldNavigateToLogin = window.confirm(
+        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
+      );
       // 사용자 번호가 없으면 확인/취소 선택 메시지
       if (shouldNavigateToLogin) {
         navigate('/login'); // 확인을 누른 경우 로그인 페이지로 이동
@@ -76,13 +78,22 @@ const BookDetail = () => {
               </div>
               <div className="book-detail-right">
                 <div className="book-detail-labels">
-                  {bookDetail.is_book_best && <span className="label-best-seller">베스트 셀러</span>}
-                  <span className="label-genre">{bookDetail.genre_tag_name}</span>
+                  {bookDetail.is_book_best && (
+                    <span className="label-best-seller">베스트 셀러</span>
+                  )}
+                  <span className="label-genre">
+                    {bookDetail.genre_tag_name}
+                  </span>
                 </div>
                 <h2 className="book-detail-title">{bookDetail.book_title}</h2>
                 <p className="book-detail-rating">
-                  <span className="rating-score">★ {bookDetail.average_rating}</span>
-                  <span className="review-count"> ({bookDetail.review_count})</span>
+                  <span className="rating-score">
+                    ★ {bookDetail.average_rating}
+                  </span>
+                  <span className="review-count">
+                    {' '}
+                    ({bookDetail.review_count})
+                  </span>
                 </p>
                 <div className="book-detail-info">
                   <p>
@@ -92,7 +103,8 @@ const BookDetail = () => {
                     <strong>출판사:</strong> {bookDetail.book_publisher}
                   </p>
                   <p>
-                    <strong>출판일:</strong> {new Date(bookDetail.publish_date).toLocaleDateString()}
+                    <strong>출판일:</strong>{' '}
+                    {new Date(bookDetail.publish_date).toLocaleDateString()}
                   </p>
                   <p>
                     <strong>정가:</strong> {bookDetail.book_price} KRW
@@ -105,7 +117,7 @@ const BookDetail = () => {
             </div>
             <div className="book-detail-desc">
               <div className="book-detal-desc-line"></div>
-              <h3>책 소개</h3>
+              <h3>DESCRIPTION</h3>
               <p>{bookDetail.book_description}</p>
             </div>
             <div className="book-review-area">

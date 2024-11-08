@@ -138,9 +138,11 @@
 
 .book-detail-desc h3 {
   display: flex;
+  font-size: 30px;
   justify-content: center;
-  font-size: var(--font-normal3);
   font-weight: var(--font-bold-weight);
+  color: var(--text-point);
+  font-family: var(--font-en);
   margin-bottom: 30px;
 }
 

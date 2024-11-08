@@ -155,14 +155,9 @@ const Community = () => {
 
   const truncateContent = (content, maxLength = 100) => {
     if (content.length > maxLength) {
-      return (
-        <>
-          {content.substring(0, maxLength)}...
-          <span className="read-more">자세히 보기</span>
-        </>
-      );
+      return content.substring(0, maxLength).replace(/\n/g, '<br/>') + '...';
     }
-    return content;
+    return content.replace(/\n/g, '<br/>');
   };
 
   return (
@@ -221,10 +216,12 @@ const Community = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="post-middle">
-                    <div className="post-contents">
-                      <h3>{post.post_title}</h3>
-                      <p>{truncateContent(post.post_content, 200)}</p>
-                    </div>
+                    <div
+                      className="post-contents"
+                      dangerouslySetInnerHTML={{
+                        __html: truncateContent(post.post_content, 200),
+                      }}
+                    ></div>
                     <div className="post-footer">
                       <div className="post-info-left">
                         <span className="post-author">

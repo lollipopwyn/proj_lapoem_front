@@ -273,7 +273,11 @@ const CommunityDetail = () => {
                 }}
               ></textarea>
             ) : (
-              postDetail.post_content
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: postDetail.post_content.replace(/\n/g, '<br/>'),
+                }}
+              />
             )}
             {postDetail.member_num === memberNum && (
               <div className="post-edit-delete-buttons">

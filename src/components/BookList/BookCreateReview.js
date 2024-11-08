@@ -29,6 +29,16 @@ const BookCreateReview = ({ handleAddReview }) => {
       console.log('User not logged in'); // 로그인 확인 콘솔 출력
       return;
     }
+    if (rating === 0) {
+      alert('별점을 선택해주세요.');
+      return;
+    }
+
+    if (!reviewContent.trim()) {
+      alert('리뷰 내용을 입력해주세요.');
+      return;
+    }
+
     console.log('Logged in user:', member_num);
 
     try {
@@ -161,7 +171,7 @@ const BookCreateReview = ({ handleAddReview }) => {
       ></div>
       <div className="review-tip">
         <span>
-          * 비고: 욕설 및 인식공격성 글은 리뷰 페이지에서 노출 제외처리됩니다.
+          * 비고: 욕설 및 인신공격성 글은 리뷰 페이지에서 노출 제외처리됩니다.
         </span>
         <span>300자</span>
       </div>

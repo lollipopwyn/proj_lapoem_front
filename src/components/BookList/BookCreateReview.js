@@ -89,6 +89,7 @@ const BookCreateReview = ({ handleAddReview }) => {
         reviewBoxRef.current.textContent = ''; //편집한 내용 초기화
       }
       handleAddReview(newReview);
+      window.location.reload(); // 페이지를 새로 고침
     } catch (error) {
       console.error('Error posting review:', error); // 에러 발생 시 콘솔 출력
     }

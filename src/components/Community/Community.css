@@ -290,7 +290,20 @@
   align-items: center;
 }
 
+.my-comment-stat {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .my-forums-stat img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
+}
+
+.my-comment-stat img {
   width: 40px;
   height: 40px;
   margin-bottom: 5px;

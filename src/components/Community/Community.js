@@ -285,7 +285,7 @@ const Community = () => {
                   {userStats.totalPosts}
                 </div>
               </div>
-              <div className="my-forums-stat">
+              <div className="my-comment-stat">
                 <img src={chartIcon} alt="Total Views Icon" />
                 <div className="my-comment-stat-title">My Comment</div>
                 <div className="my-comment-stat-value">

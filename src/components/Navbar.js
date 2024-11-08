@@ -50,7 +50,9 @@ function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              className={`nav-item ${
+                location.pathname === item.path ? 'active' : ''
+              }`}
             >
               <p>{item.label}</p>
             </Link>
@@ -69,6 +71,12 @@ function Navbar() {
                 <div className="profile-menu">
                   <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                     마이페이지
+                  </Link>
+                  <Link
+                    to="/community/my_forum"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    마이포럼
                   </Link>
                   <button onClick={handleLogout}>로그아웃</button>
                 </div>

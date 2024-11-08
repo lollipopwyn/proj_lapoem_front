@@ -57,21 +57,20 @@
 .stella_input_container {
   display: flex;
   width: 100%;
-  border-radius: 20px;
   overflow: hidden;
   background-color: transparent;
   /* 안쪽 컨테이너의 배경을 투명으로 설정 */
 }
 
 .stella_input {
+  margin-right: 20px;
   flex: 1;
-  padding: 10px 10px 10px 20px;
+  padding: 15px 10px 15px 20px;
   border: none;
   outline: none;
   background-color: #f1f1f1;
   color: #443322;
-  border-radius: 20px 0 0 20px;
-  /* 왼쪽 끝 라운드 */
+  border-radius: 20px;
 }
 
 .stella_send_button {

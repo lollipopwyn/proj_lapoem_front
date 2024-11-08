@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { CREATE_BOOK_REVIEW_API_URL } from '../../util/apiUrl';
 // 별점 처리 이미지
 import heartRating from '../../assets/images/heart-rating.png';
-import heartRatingHalf from '../../assets/images/heart-half-rating.png';
 import heartRatingEmpty from '../../assets/images/heart-rating-empty.png';
 
 import './Booklist.css';
@@ -128,13 +127,7 @@ const BookCreateReview = ({ handleAddReview }) => {
       let starImage;
       if (score <= (hoverRating || rating)) {
         // 색이 채워진 경우
-        if (hoverRating === i * 2 - 1 || rating === i * 2 - 1) {
-          // 반개 하트일 때
-          starImage = heartRatingHalf;
-        } else {
-          // 전체 하트일 때
-          starImage = heartRating;
-        }
+        starImage = heartRating; // 전체 하트
       } else {
         starImage = heartRatingEmpty; // 빈 하트
       }
@@ -142,13 +135,12 @@ const BookCreateReview = ({ handleAddReview }) => {
       stars.push(
         <img
           key={i}
-          src={starImage} // 반개 하트 또는 전체 하트 전환
+          src={starImage} // 채워진 하트 또는 빈 하트 전환
           alt={`star-${i}`}
           className="star"
           onClick={handleClick}
-          onMouseEnter={handleMouseEnter} // 마우스 올리면 반개 하트로 색 변화 (0.5 단위)
-          onMouseMove={handleMouseEnter} // 마우스 이동할 때도 색 변화
-          onMouseLeave={handleMouseLeave} // 마우스가 벗어나면 기본 상태로
+          onMouseEnter={() => setHoverRating(score)} // 마우스 올리면 전체 하트로 색 변화
+          onMouseLeave={() => setHoverRating(0)} // 마우스가 벗어나면 기본 상태로
         />
       );
     }
@@ -163,7 +155,7 @@ const BookCreateReview = ({ handleAddReview }) => {
         contentEditable
         onClick={handleReviewBoxClick} // 로그인 확인 기능 추가
         onInput={(e) => setReviewContent(e.currentTarget.textContent)}
-        placeholder="책에 대한 리뷰를 작성해주세요."
+        placeholder="배송 문의나 욕설 및 인식공격성 글은 상품 페이지에서 노출 제외처리됩니다."
         suppressContentEditableWarning={true}
       ></div>
       <div className="book-rating">{renderStars()}</div>

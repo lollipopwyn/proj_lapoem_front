@@ -89,32 +89,37 @@ const BookDetail = () => {
                     ({bookDetail.review_count})
                   </span>
                 </p>
-                <p>
-                  <strong>저자:</strong> {bookDetail.book_author}
-                </p>
-                <p>
-                  <strong>출판사:</strong> {bookDetail.book_publisher}
-                </p>
-                <p>
-                  <strong>출판일:</strong>{' '}
-                  {new Date(bookDetail.publish_date).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>정가:</strong> {bookDetail.book_price} KRW
-                </p>
-                <p>
-                  <strong>ISBN:</strong> {bookDetail.isbn}
-                </p>
+                <div className="book-detail-info">
+                  <p>
+                    <strong>저자:</strong> {bookDetail.book_author}
+                  </p>
+                  <p>
+                    <strong>출판사:</strong> {bookDetail.book_publisher}
+                  </p>
+                  <p>
+                    <strong>출판일:</strong>{' '}
+                    {new Date(bookDetail.publish_date).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>정가:</strong> {bookDetail.book_price} KRW
+                  </p>
+                  <p>
+                    <strong>ISBN:</strong> {bookDetail.isbn}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="book-detail-desc">
+              <div className="book-detal-desc-line"></div>
               <h3>책 소개</h3>
               <p>{bookDetail.book_description}</p>
             </div>
             <div className="book-review-area">
               <BookReviews />
             </div>
-            <button className='chatbot' onClick={handleStartChat} >채팅 시작</button>
+            <button className="chatbot" onClick={handleStartChat}>
+              채팅 시작
+            </button>
             {/* 채팅 시작 버튼 */}
           </>
         ) : (

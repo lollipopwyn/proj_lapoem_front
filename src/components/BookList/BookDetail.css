@@ -30,49 +30,49 @@
 /* --------------------------책 정보 영역--------------------------------- */
 
 
-/* .book-detail-top {
+.book-detail-top {
   display: flex;
-  margin-bottom: 20px;
-  color: var(--text-black);
-} */
-
-/* Book Cover (Left Section) */
-.book-detail-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
   justify-content: center;
+  width: 100%;
+  padding-bottom: 40px;
+  color: var(--text-black);
+}
+
+
+.book-detail-left {
+  display: flex;
 }
 
 
 .book-detail-thumbnail {
-  width: 300px;
-  height: 400px;
-  border-radius: 5px;
+  width: 100%;
+  height: 500px;
+  border-radius: 8px 0% 0% 8px / 8px 8px 8px 8px ;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   /* object-fit: cover; */
 }
 
 /* Book Details (Right Section) */
 .book-detail-right {
-  flex: 2;
+  width: 500px;
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 0% 8px 8px 0% / 8px 8px 8px 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   line-height: 1.5;
 }
 
 .book-detail-labels {
+  margin-left: 15px;
   display: flex;
-  gap: 10px;
+  gap: 5px;
   margin-bottom: 10px;
 }
 
 .label-best-seller {
-  background-color:#AF1740;
-  color: #fff;
+  background-color:#A02334;
+  color: rgb(252, 239, 239);
   padding: 5px 10px;
   border-radius: 5px;
   font-weight: bold;
@@ -83,14 +83,14 @@
   /* background-color: #696051; */
   color: var(--text-black);
   padding: 5px 10px;
-  border: 1px solid #696051;
+  border: 1px solid var(--text-point);
   border-radius: 5px;
 }
 
 .book-detail-title {
   font-size: 28px;
   font-weight: bold;
-  margin: 30px 0;
+  margin: 30px 15px;
 }
 
 .book-detail-rating {
@@ -99,7 +99,6 @@
   color: #ff5757;
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 15px;
 }
 
 .rating-score {
@@ -113,24 +112,41 @@
   color: #777;
 }
 
+.book-detail-info{
+  margin-top: 30px;
+}
 
 .book-detail-right p {
-  margin: 8px 0;
+  margin: 10px 15px;
 }
 
 .book-detail-desc {
-  margin-top: 30px;
-  border-top: 1px solid #e0e0e0;
-  padding-top: 20px;
+  justify-content: center;
+  width: 100%;
+  margin: 5% auto 5%;
+  padding: 50px;
+  padding-top: 30px;
+}
+
+.book-detal-desc-line{
+  display: flex;
+  justify-content: center;
+  margin: 5% auto 5%;
+  border-top: 1px solid var(--text-gray-light);
+  width: 80%;
 }
 
 .book-detail-desc h3 {
-  font-size: 25px;
-  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  font-size: var(--font-normal3);
+  font-weight: var(--font-bold-weight);
+  margin-bottom: 30px;
 }
 
 .book-detail-desc p {
-  line-height: 1.6;
+  display: inline;
+  line-height: 1.8;
 }
 
 .book-rating-overview {

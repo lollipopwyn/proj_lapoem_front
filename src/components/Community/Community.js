@@ -153,11 +153,12 @@ const Community = () => {
     }
   };
 
-  const truncateContent = (content, maxLength = 100) => {
-    if (content.length > maxLength) {
-      return content.substring(0, maxLength).replace(/\n/g, '<br/>') + '...';
+  const truncateContent = (content, maxLines = 3) => {
+    const lines = content.split('\n');
+    if (lines.length > maxLines) {
+      return lines.slice(0, maxLines).join('\n');
     }
-    return content.replace(/\n/g, '<br/>');
+    return content;
   };
 
   return (
@@ -216,12 +217,30 @@ const Community = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   <div className="post-middle">
-                    <div
-                      className="post-contents"
-                      dangerouslySetInnerHTML={{
-                        __html: truncateContent(post.post_content, 200),
-                      }}
-                    ></div>
+                    <div className="post-contents">
+                      <h3>{post.post_title}</h3>
+                      <p>
+                        {truncateContent(post.post_content, 3)
+                          .split('\n')
+                          .map((line, index) => (
+                            <React.Fragment key={index}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))}
+                        {post.post_content.split('\n').length > 3 && (
+                          <span
+                            className="see-more"
+                            onClick={(e) => {
+                              e.stopPropagation(); // 부모 클릭 이벤트 전파 방지
+                              handlePostClick(post.posts_id);
+                            }}
+                          >
+                            ···자세히보기
+                          </span>
+                        )}
+                      </p>
+                    </div>
                     <div className="post-footer">
                       <div className="post-info-left">
                         <span className="post-author">

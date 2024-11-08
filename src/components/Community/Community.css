@@ -131,6 +131,7 @@
 
 .post-contents {
   flex-grow: 1;
+  white-space: pre-wrap;
 }
 
 .notice-contents {
@@ -141,6 +142,15 @@
 .post-date {
   font-size: 12px;
   color: #999999;
+}
+
+.posts_detail {
+  white-space: pre-wrap;
+}
+
+.see-more {
+  color: #999999;
+  cursor: pointer;
 }
 
 .post-author {

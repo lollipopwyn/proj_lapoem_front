@@ -33,7 +33,8 @@ function Login() {
 
   return (
     <div className="login_container">
-      <h2 className="login_title">로그인</h2>
+      <h2 className="login_title">Login</h2>
+      <span>로그인 후 라보엠의 모든 서비스를 이용해보세요</span>
       <form onSubmit={handle_login}>
         <input type="text" name="member_id" placeholder="아이디" onChange={handle_change} className="login_input" />
         <input
@@ -48,7 +49,7 @@ function Login() {
         </button>
       </form>
       {error && <p className="error_message">{error}</p>}
-      <Link to="/join" className="signup_button">
+      <Link to="/terms" className="signup_button">
         회원가입
       </Link>
     </div>

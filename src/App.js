@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
 import Threadon_post from './components/ThreadOn/Threadon_post';
+import Terms from './components/Auth/Terms';
 
 function App() {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Main />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/join" element={<Join />} />
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />

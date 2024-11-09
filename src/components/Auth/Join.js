@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { JOIN_USER_API_URL } from '../../util/apiUrl'; // URL 불러오기
+import { useNavigate, useLocation } from 'react-router-dom';
+import { JOIN_USER_API_URL, SAVE_TERMS_AGREEMENT_API_URL } from '../../util/apiUrl';
 import './Join.css';
+import PageHeader from './PageHeader';
 
 function Join() {
   const [form_data, set_form_data] = useState({
@@ -16,10 +17,12 @@ function Join() {
   });
 
   const [error, set_error] = useState(null);
-  const [phoneError, setPhoneError] = useState(null); // 전화번호 입력 오류 상태 추가
-  const [idError, setIdError] = useState(null); // 아이디 입력 오류 상태 추가
-  const [genderError, setGenderError] = useState(null); // 성별 선택 오류 상태 추가
+  const [phoneError, setPhoneError] = useState(null);
+  const [idError, setIdError] = useState(null);
+  const [genderError, setGenderError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const agreedTerms = location.state?.agreedTerms || [];
 
   const handle_change = (e) => {
     const { name, value } = e.target;
@@ -45,7 +48,7 @@ function Join() {
     }
 
     if (name === 'member_gender') {
-      setGenderError(null); // 성별 선택 시 오류 메시지 제거
+      setGenderError(null);
     }
 
     set_form_data({ ...form_data, [name]: value });
@@ -58,7 +61,6 @@ function Join() {
       return;
     }
 
-    // 성별이 선택되지 않은 경우 오류 메시지 설정
     if (!form_data.member_gender) {
       setGenderError('성별을 선택해 주세요.');
       return;
@@ -66,9 +68,22 @@ function Join() {
 
     try {
       const response = await axios.post(JOIN_USER_API_URL, form_data, { withCredentials: true });
+      const member_num = response.data.userId;
+
+      // 약관 동의 정보를 저장하는 추가 API 호출
+      if (member_num && agreedTerms.length > 0) {
+        await axios.post(SAVE_TERMS_AGREEMENT_API_URL, {
+          agreements: agreedTerms.map((term) => ({
+            member_num,
+            terms_id: term.terms_id,
+            agreement_status: term.agreement_status,
+          })),
+        });
+      }
+
       alert(response.data.message);
       set_error(null);
-      navigate('/'); // 홈으로 이동
+      navigate('/login');
     } catch (error) {
       if (error.response && error.response.data) {
         set_error(error.response.data.message);
@@ -80,6 +95,14 @@ function Join() {
 
   return (
     <div className="join_container">
+      <PageHeader
+        title="Join"
+        description="회원 가입 정보를 입력해주세요."
+        step_title="회원정보 입력"
+        steps={['약관 동의', '회원정보 입력', '가입 완료']}
+        is_required={true}
+        active_step={1}
+      />
       <h2 className="join_title">회원가입</h2>
       <p className="join_description">라보엠의 서비스를 이용하시려면 회원가입을 완료해주세요.</p>
       <form onSubmit={handle_submit} className="join_form">
@@ -149,7 +172,7 @@ function Join() {
             여
           </label>
         </div>
-        {genderError && <p className="error_message">{genderError}</p>} {/* 성별 선택 오류 메시지 */}
+        {genderError && <p className="error_message">{genderError}</p>}
         <input type="date" name="member_birth_date" onChange={handle_change} className="join_input" required />
         <button type="submit" className="join_button">
           회원가입

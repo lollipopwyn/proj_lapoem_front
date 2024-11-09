@@ -68,11 +68,20 @@ const Stella = () => {
           const chatResponse = await axios.get(`${API_CHAT_URL}/${effectiveBookId}/${user.memberNum}`);
           setChatHistory(chatResponse.data);
 
-          const welcomeMessage = {
-            sender_id: 'stella',
-            message: `${bookResponse.data.book_title || '일회성'} 채팅방에 오신 것을 환영합니다!`,
-          };
-          setChatHistory((prev) => [welcomeMessage, ...prev]);
+          // 환영 메시지와 추가 안내 메시지 설정
+          const welcomeMessages = [
+            {
+              sender_id: 'stella',
+              message: `${bookResponse.data.book_title || '일회성'} 채팅방에 오신 것을 환영합니다!`,
+            },
+            {
+              sender_id: 'stella',
+              message: 'ex) 이 책에 대해 설명해줘 같은 메시지를 입력해 주세요.',
+            },
+          ];
+
+          // 기존 채팅 기록 앞에 환영 메시지와 안내 메시지 추가
+          setChatHistory((prev) => [...welcomeMessages, ...prev]);
         }
       } catch (error) {
         console.error('Failed to load book information or chat history:', error);

@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+import birthIcon from '../../assets/images/birth_icon.png';
 import '../My/Mypage.css';
 
 const Mypage = () => {
+  const [gender, setGender] = useState('male');
+  const birthdate = '1990-01-01';
+
+  const handleGenderToggle = () => {
+    setGender((prevGender) => (prevGender === 'male' ? 'female' : 'male'));
+  };
+
   return (
     <div className="mypage_container">
       <div className="my_page_top">
@@ -29,16 +37,41 @@ const Mypage = () => {
             <label>이메일</label>
             <input type="email" placeholder="이메일을 입력하세요" />
           </div>
-          <div className="marketing-container"> {/* 마케팅 동의 체크박스 컨테이너 */}
+          <div className="marketing-container">
+            {/* 마케팅 동의 체크박스 컨테이너 */}
             <input type="checkbox" id="marketingConsent" />
-            <label htmlFor="marketingConsent">마케팅 송신 동의</label>
+            <label htmlFor="marketingConsent">마케팅 수신 동의</label>
+          </div>
+          <div className="my_privacy">
+            <div className="my_birth">
+              <div className="birthdate-display">
+                <img src={birthIcon} alt="birtday icon" />
+                <span>{birthdate}</span>
+              </div>
+            </div>
+            <div className="my_gender">
+              <div className="gender_toggle">
+                <button
+                  onClick={() => setGender('male')}
+                  className={gender === 'male' ? 'selected' : ''}
+                >
+                  남
+                </button>
+                <button
+                  onClick={() => setGender('female')}
+                  className={gender === 'female' ? 'selected' : ''}
+                >
+                  여
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="my_page_button">
         <button id="deleteBtn">DELETE MY ACCOUNT</button>
-        <div className="button-group-right"> {/* 오른쪽 버튼 그룹 */}
+        <div className="button-group-right">
           <button id="saveBtn">SAVE</button>
           <button id="cancelBtn">CANCEL</button>
         </div>

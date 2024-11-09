@@ -105,8 +105,7 @@ const BookDetail = () => {
                     <strong>출판사:</strong> {bookDetail.book_publisher}
                   </p>
                   <p>
-                    <strong>출판일:</strong>{' '}
-                    {new Date(bookDetail.publish_date).toLocaleDateString()}
+                    <strong>출판일:</strong> {bookDetail.publish_date}
                   </p>
                   <p>
                     <strong>정가:</strong> {bookDetail.book_price} KRW

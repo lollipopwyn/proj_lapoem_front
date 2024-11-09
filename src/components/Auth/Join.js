@@ -19,7 +19,10 @@ function Join() {
   const [error, set_error] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
   const [idError, setIdError] = useState(null);
+  const [birthDateError, setBirthDateError] = useState(null);
   const [genderError, setGenderError] = useState(null);
+  const [requiredErrors, setRequiredErrors] = useState({});
+
   const navigate = useNavigate();
   const location = useLocation();
   const agreedTerms = location.state?.agreedTerms || [];
@@ -47,30 +50,51 @@ function Join() {
       }
     }
 
-    if (name === 'member_gender') {
-      setGenderError(null);
+    if (name === 'member_birth_date') {
+      const isValidDate = /^[0-9]{0,8}$/.test(value); // 최대 8자리 숫자만 허용
+      set_form_data({ ...form_data, [name]: value });
+      if (!isValidDate || value.length !== 8) {
+        setBirthDateError('8자리로 입력해 주세요.');
+      } else {
+        setBirthDateError(null);
+      }
+      return;
     }
 
     set_form_data({ ...form_data, [name]: value });
+    setRequiredErrors({ ...requiredErrors, [name]: false });
+  };
+
+  const handleGenderSelect = (gender) => {
+    set_form_data({ ...form_data, member_gender: gender });
+    setGenderError(null);
+    setRequiredErrors({ ...requiredErrors, member_gender: false });
   };
 
   const handle_submit = async (e) => {
     e.preventDefault();
-    if (phoneError || idError) {
-      alert('입력 정보를 확인해 주세요.');
-      return;
+
+    // 필수 필드가 비어있는지 확인
+    const errors = {};
+    if (!form_data.member_id) errors.member_id = '아이디를 입력해주세요.';
+    if (!form_data.member_password) errors.member_password = '비밀번호를 입력해주세요.';
+    if (!form_data.member_nickname) errors.member_nickname = '닉네임을 입력해주세요.';
+    if (!form_data.member_email) errors.member_email = '이메일을 입력해주세요.';
+    if (!form_data.member_gender) errors.member_gender = '성별을 선택해 주세요.';
+    if (!form_data.member_birth_date || form_data.member_birth_date.length !== 8) {
+      errors.member_birth_date = '생년월일을 올바르게 입력해 주세요.';
     }
 
-    if (!form_data.member_gender) {
-      setGenderError('성별을 선택해 주세요.');
-      return;
+    setRequiredErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      return; // 필수 필드가 비어 있으면 제출 중지
     }
 
     try {
       const response = await axios.post(JOIN_USER_API_URL, form_data, { withCredentials: true });
       const member_num = response.data.userId;
 
-      // 약관 동의 정보를 저장하는 추가 API 호출
       if (member_num && agreedTerms.length > 0) {
         await axios.post(SAVE_TERMS_AGREEMENT_API_URL, {
           agreements: agreedTerms.map((term) => ({
@@ -103,77 +127,96 @@ function Join() {
         is_required={true}
         active_step={1}
       />
-      <h2 className="join_title">회원가입</h2>
-      <p className="join_description">라보엠의 서비스를 이용하시려면 회원가입을 완료해주세요.</p>
       <form onSubmit={handle_submit} className="join_form">
+        <p>아이디 *</p>
         <input
           type="text"
           name="member_id"
-          placeholder="아이디"
+          placeholder="아이디를 입력해주세요."
           onChange={handle_change}
           required
           className="join_input"
         />
         {idError && <p className="error_message">{idError}</p>}
+        {requiredErrors.member_id && <p className="error_message">{requiredErrors.member_id}</p>}
+
+        <p>비밀번호 *</p>
         <input
           type="password"
           name="member_password"
-          placeholder="비밀번호"
+          placeholder="비밀번호를 입력해주세요."
           onChange={handle_change}
           required
           className="join_input"
         />
+        {requiredErrors.member_password && <p className="error_message">{requiredErrors.member_password}</p>}
+
+        <p>닉네임 *</p>
         <input
           type="text"
           name="member_nickname"
-          placeholder="닉네임"
+          placeholder="닉네임을 입력해주세요."
           onChange={handle_change}
           required
           className="join_input"
         />
+        {requiredErrors.member_nickname && <p className="error_message">{requiredErrors.member_nickname}</p>}
+
+        <p>이메일 *</p>
         <input
           type="email"
           name="member_email"
-          placeholder="이메일"
+          placeholder="이메일을 입력해주세요."
           onChange={handle_change}
           required
           className="join_input"
         />
+        {requiredErrors.member_email && <p className="error_message">{requiredErrors.member_email}</p>}
+
+        <p>전화번호</p>
         <input
           type="text"
           name="member_phone"
-          placeholder="전화번호"
+          placeholder="숫자만 입력해주세요."
           onChange={handle_change}
           className="join_input"
-          required
         />
         {phoneError && <p className="error_message">{phoneError}</p>}
-        <div className="gender_radio_group">
-          <label>
-            <input
-              type="radio"
-              name="member_gender"
-              value="남"
-              onChange={handle_change}
-              required
-              checked={form_data.member_gender === '남'}
-            />
+
+        <p>성별 *</p>
+        <div className="gender_select_group">
+          <button
+            type="button"
+            className={`gender_button ${form_data.member_gender === '남' ? 'active' : ''}`}
+            onClick={() => handleGenderSelect('남')}
+          >
             남
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="member_gender"
-              value="여"
-              onChange={handle_change}
-              required
-              checked={form_data.member_gender === '여'}
-            />
+          </button>
+          <button
+            type="button"
+            className={`gender_button ${form_data.member_gender === '여' ? 'active' : ''}`}
+            onClick={() => handleGenderSelect('여')}
+          >
             여
-          </label>
+          </button>
         </div>
         {genderError && <p className="error_message">{genderError}</p>}
-        <input type="date" name="member_birth_date" onChange={handle_change} className="join_input" required />
+        {requiredErrors.member_gender && <p className="error_message">{requiredErrors.member_gender}</p>}
+
+        <p>생년월일 *</p>
+        <input
+          type="text"
+          name="member_birth_date"
+          placeholder="Ex) 19990102"
+          onChange={handle_change}
+          value={form_data.member_birth_date}
+          className="join_input"
+          required
+          maxLength={8}
+        />
+        {birthDateError && <p className="error_message">{birthDateError}</p>}
+        {requiredErrors.member_birth_date && <p className="error_message">{requiredErrors.member_birth_date}</p>}
+
         <button type="submit" className="join_button">
           회원가입
         </button>

@@ -6,6 +6,8 @@ import { GET_BOOK_DETAIL_API_URL } from '../../util/apiUrl';
 import BookReviewChart from './BookReviewChart';
 import BookReviews from './BookReviews';
 import { useSelector } from 'react-redux';
+
+import heartRating from '../../assets/images/heart-rating.png';
 import './BookDetail.css';
 
 const BookDetail = () => {
@@ -90,7 +92,12 @@ const BookDetail = () => {
                 <h2 className="book-detail-title">{bookDetail.book_title}</h2>
                 <p className="book-detail-rating">
                   <span className="rating-score">
-                    ★ {bookDetail.average_rating}
+                    <img
+                      src={heartRating}
+                      alt="아이콘"
+                      className="heart_rating w-[20px] h-[20px]"
+                    />
+                    {bookDetail.average_rating}
                   </span>
                   <span className="review-count">
                     {' '}

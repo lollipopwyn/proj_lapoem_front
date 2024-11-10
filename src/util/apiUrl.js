@@ -1,20 +1,20 @@
 // util/apiUrl.js
 const BASE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'http://222.112.27.120:8002' // 배포용 URL
-    : 'http://localhost:8002'; // 로컬 개발용 URL
+  process.env.NODE_ENV === "production"
+    ? "http://222.112.27.120:8002" // 배포용 URL
+    : "http://localhost:8002"; // 로컬 개발용 URL
 
 // FastAPI 서버의 BASE URL (HTTP API 요청용)
 const FASTAPI_HTTP_BASE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'http://222.112.27.120:9002' // 배포용 HTTP API URL
-    : 'http://localhost:9002'; // 로컬 개발용 HTTP API URL
+  process.env.NODE_ENV === "production"
+    ? "http://222.112.27.120:9002" // 배포용 HTTP API URL
+    : "http://localhost:9002"; // 로컬 개발용 HTTP API URL
 
 // FastAPI WebSocket URL
 const FASTAPI_WEBSOCKET_BASE_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'ws://222.112.27.120:9002' // 배포용 WebSocket URL
-    : 'ws://localhost:9002'; // 로컬 개발용 WebSocket URL
+  process.env.NODE_ENV === "production"
+    ? "ws://222.112.27.120:9002" // 배포용 WebSocket URL
+    : "ws://localhost:9002"; // 로컬 개발용 WebSocket URL
 
 // ==============================GET 요청 URL=========================================
 export const GET_TERMS_API_URL = `${BASE_URL}/terms`; // 약관 목록 조회
@@ -38,6 +38,10 @@ export const GET_THREADS_API_URL = `${BASE_URL}/threads`;
 export const GET_CHECK_THREAD_EXISTENCE_API_URL = (bookId) =>
   `${BASE_URL}/threads/exists/${bookId}`; // 특정 책에 대한 스레드 존재 여부 확인
 export const GET_SEARCH_THREADS_API_URL = `${BASE_URL}/search-threads`;
+export const GET_THREADS_DETAIL_API_URL = (thread_num) =>
+  `${BASE_URL}/threads/${thread_num}`; // 스레드 상세 정보 조회 API URL
+export const GET_THREADS_COMMENTS_API_URL = (thread_num) =>
+  `${BASE_URL}/threads/${thread_num}/comments`; // 스레드 댓글 목록 조회 API URL
 
 //마이페이지
 export const GET_MEMBER_INFO_API_URL = (memberNum) =>
@@ -57,6 +61,10 @@ export const CREATE_BOOK_REVIEW_API_URL = (bookId) =>
 export const SAVE_TERMS_AGREEMENT_API_URL = `${BASE_URL}/terms/agreement`; // 약관 동의 내역 저장
 
 export const POST_CREATE_THREAD_API_URL = `${BASE_URL}/threads`;
+export const POST_THREAD_COMMENT_API_URL = (thread_num) =>
+  `${BASE_URL}/threads/${thread_num}/comment`; // 스레드 댓글 작성 API URL
+export const POST_THREAD_REPLY_API_URL = (thread_num, thread_content_num) =>
+  `${BASE_URL}/threads/${thread_num}/comment/${thread_content_num}/reply`; // 스레드 대댓글 작성 API URL
 
 // ==============================DELETE 요청 URL=========================================
 
@@ -64,6 +72,9 @@ export const DELETE_COMMENT_API_URL = (commentId) =>
   `${BASE_URL}/community/comment/${commentId}`; // 댓글 삭제 URL
 export const DELETE_REVIEW_API_URL = (bookId, reviewId) =>
   `${BASE_URL}/book-list/${bookId}/reviews/${reviewId}`; //리뷰 삭제
+
+export const DELETE_THREAD_COMMENTS_API_URL = (commentId) =>
+  `${BASE_URL}/threads/comment/${commentId}`; // 스레드 댓글 및 대댓글 삭제 API URL
 
 // ==============================Chat 관련 API URL=========================================
 export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/api/chat`; // HTTP API URL

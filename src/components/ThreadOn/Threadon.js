@@ -127,6 +127,10 @@ function Threadon() {
               author={thread.book_author}
               publisher={thread.book_publisher}
               participantsCount={thread.participant_count}
+              onClick={() => {
+                console.log(`Navigating to thread ${thread.thread_num}`);
+                navigate(`/threads/${thread.thread_num}`);
+              }}
             />
           ))}
           {Array.from({ length: itemsPerPage - threads.length }).map(

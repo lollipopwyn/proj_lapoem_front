@@ -18,6 +18,7 @@ import { initializeAuth } from './redux/features/auth/authSlice';
 import Mypage from './components/My/Mypage';
 import Threadon_post from './components/ThreadOn/Threadon_post';
 import Terms from './components/Auth/Terms';
+import ThreadDetailPage from './components/ThreadOn/ThreadDetailPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -40,9 +41,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/book_list" element={<Booklist />} />
           <Route path="/book_list/:bookId" element={<BookDetail />} />
+          <Route path="/chatstella/" element={<Stella />} />
           <Route path="/chatstella/:bookId" element={<Stella />} />
           <Route path="/thread_on" element={<ThreadOn />} />
           <Route path="/new_thread" element={<Threadon_post />} />
+          <Route path="/threads/:thread_num" element={<ThreadDetailPage />} />
           <Route path="/community" element={<Community />} />
           <Route path="/new_forum" element={<NewForum />} />
           <Route path="/community/:postId" element={<Community_detail />} />

@@ -4,9 +4,16 @@ import "./Threadcard.css";
 import Default from "../../assets/images/default-cover.png";
 import Thread_i from "../../assets/images/thread-i.png";
 
-function ThreadCard({ cover, title, author, publisher, participantsCount }) {
+function ThreadCard({
+  cover,
+  title,
+  author,
+  publisher,
+  participantsCount,
+  onClick,
+}) {
   return (
-    <div className="thread-card">
+    <div className="thread-card" onClick={onClick} role="button" tabIndex={0}>
       <div className="thread-wrapper">
         <div className="thread-thumbnail">
           <img src={cover || Default} alt="책 썸네일" />

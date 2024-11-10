@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { WEBSOCKET_CHAT_URL, API_CHAT_URL, GET_BOOK_DETAIL_API_URL } from '../../util/apiUrl';
+import { WEBSOCKET_CHAT_URL, API_CHAT_URL, GET_BOOK_DETAIL_API_URL, API_CHAT_LIST_URL } from '../../util/apiUrl';
 import { initializeAuth } from '../../redux/features/auth/authSlice';
 import './Stella.css';
 
-const MAX_RECONNECT_ATTEMPTS = 1; // 최대 재연결 시도 횟수
-const INITIAL_RECONNECT_DELAY = 1000; // 초기 재연결 지연 시간 (1초)
+const MAX_RECONNECT_ATTEMPTS = 3;
+const INITIAL_RECONNECT_DELAY = 1000;
 
 const Stella = () => {
   const { bookId } = useParams();
@@ -16,7 +16,8 @@ const Stella = () => {
 
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const [chatRooms, setChatRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(bookId || 0);
   const [isTyping, setIsTyping] = useState(false);
   const [bookInfo, setBookInfo] = useState(null);
   const chatBoxRef = useRef(null);
@@ -26,23 +27,18 @@ const Stella = () => {
   const [isSocketOpen, setIsSocketOpen] = useState(false);
   const reconnectAttemptsRef = useRef(0);
   const reconnectDelayRef = useRef(INITIAL_RECONNECT_DELAY);
+  const wsRef = useRef(null); // WebSocket을 관리하기 위한 ref
 
-  const effectiveBookId = bookId || 0;
-
-  // 인증 초기화
   useEffect(() => {
     if (!authInitialized) {
       dispatch(initializeAuth());
     }
   }, [authInitialized, dispatch]);
 
-  // 로그인 상태 확인 및 리다이렉트
   useEffect(() => {
     if (!isAuthInitializing && !isLoggedIn && !alertShownRef.current) {
       alertShownRef.current = true;
-
       const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
-
       if (shouldNavigateToLogin) {
         navigate('/login');
       } else {
@@ -55,20 +51,30 @@ const Stella = () => {
     };
   }, [isAuthInitializing, isLoggedIn, navigate]);
 
-  // 책 정보 및 채팅 내역 불러오기
   useEffect(() => {
-    if (!authInitialized || !isLoggedIn) return;
+    const loadChatRooms = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(API_CHAT_LIST_URL(user.memberNum));
+          setChatRooms(response.data);
+        } catch (error) {
+          console.error('Failed to load chat rooms:', error);
+        }
+      }
+    };
+    loadChatRooms();
+  }, [user]);
 
+  useEffect(() => {
     const loadBookInfoAndChatHistory = async () => {
-      try {
-        if (effectiveBookId && user && user.memberNum) {
-          const bookResponse = await axios.get(GET_BOOK_DETAIL_API_URL(effectiveBookId));
+      if (selectedRoom && user) {
+        try {
+          const bookResponse = await axios.get(GET_BOOK_DETAIL_API_URL(selectedRoom));
           setBookInfo(bookResponse.data);
 
-          const chatResponse = await axios.get(`${API_CHAT_URL}/${effectiveBookId}/${user.memberNum}`);
+          const chatResponse = await axios.get(`${API_CHAT_URL}/${selectedRoom}/${user.memberNum}`);
           setChatHistory(chatResponse.data);
 
-          // 환영 메시지와 추가 안내 메시지 설정
           const welcomeMessages = [
             {
               sender_id: 'stella',
@@ -79,43 +85,39 @@ const Stella = () => {
               message: 'ex) 이 책에 대해 설명해줘 같은 메시지를 입력해 주세요.',
             },
           ];
-
-          // 기존 채팅 기록 앞에 환영 메시지와 안내 메시지 추가
           setChatHistory((prev) => [...welcomeMessages, ...prev]);
+        } catch (error) {
+          console.error('Failed to load book information or chat history:', error);
         }
-      } catch (error) {
-        console.error('Failed to load book information or chat history:', error);
       }
     };
 
     loadBookInfoAndChatHistory();
-  }, [effectiveBookId, authInitialized, isLoggedIn, user]);
+  }, [selectedRoom, user]);
 
   // WebSocket 연결 관리
   useEffect(() => {
-    if (!authInitialized || !isLoggedIn || !user) return;
+    if (!authInitialized || !isLoggedIn || !user || selectedRoom === null) return;
 
-    // WebSocket 인스턴스가 이미 존재할 경우 새로운 연결 방지
-    if (socket) {
-      return;
+    // 기존 WebSocket 연결이 존재하면 닫기
+    if (wsRef.current) {
+      wsRef.current.close();
     }
-
-    let ws; // WebSocket 인스턴스 선언
 
     const connectWebSocket = () => {
       if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
         console.log('Maximum reconnect attempts reached. Stopping reconnect attempts.');
-        return; // 최대 재연결 횟수 도달 시 재연결 중단
+        return;
       }
 
-      const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${effectiveBookId}`;
-      ws = new WebSocket(wsUrl);
-      setSocket(ws);
+      const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${selectedRoom}`;
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws; // WebSocket 인스턴스를 ref에 저장
 
       ws.onopen = () => {
         console.log('Connected to the chat server');
         setIsSocketOpen(true);
-        reconnectAttemptsRef.current = 0; // 연결이 성공하면 재연결 횟수 초기화
+        reconnectAttemptsRef.current = 0;
       };
 
       ws.onerror = (error) => {
@@ -125,13 +127,12 @@ const Stella = () => {
       ws.onclose = () => {
         console.log('Disconnected from chat server');
         setIsSocketOpen(false);
-        setSocket(null); // 연결이 닫히면 socket 상태를 null로 설정
+        wsRef.current = null;
 
-        // 재연결 로직
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
-          setTimeout(connectWebSocket, reconnectDelayRef.current); // 재연결 시도
+          setTimeout(connectWebSocket, reconnectDelayRef.current);
           reconnectAttemptsRef.current += 1;
-          reconnectDelayRef.current *= 2; // 재연결 지연 시간 증가
+          reconnectDelayRef.current *= 2;
         }
       };
 
@@ -147,33 +148,19 @@ const Stella = () => {
     connectWebSocket();
 
     return () => {
-      if (ws) {
-        ws.close(); // 컴포넌트가 언마운트될 때 기존 WebSocket 연결 해제
+      if (wsRef.current) {
+        wsRef.current.close(); // 기존 연결을 확실히 닫기
       }
-      reconnectAttemptsRef.current = 0; // 컴포넌트 언마운트 시 재연결 횟수 초기화
-      reconnectDelayRef.current = INITIAL_RECONNECT_DELAY; // 재연결 지연 시간 초기화
+      reconnectAttemptsRef.current = 0;
+      reconnectDelayRef.current = INITIAL_RECONNECT_DELAY;
     };
-  }, [isLoggedIn, authInitialized, user, effectiveBookId]);
+  }, [selectedRoom, isLoggedIn, authInitialized, user]);
 
-  // 채팅 기록 스크롤 관리
-  useEffect(() => {
-    if (chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-    }
-  }, [chatHistory]);
-
-  // 메시지 전송 함수
-  // handleSendMessage 함수 수정
   const handleSendMessage = async () => {
-    if (isSocketOpen && socket.readyState === WebSocket.OPEN && message.trim()) {
-      // 사용자 메시지를 WebSocket을 통해 서버로 전송
+    if (isSocketOpen && wsRef.current && message.trim()) {
       const userMessage = { sender_id: 'user', message: message.trim() };
-      socket.send(JSON.stringify(userMessage));
-
-      // 사용자가 입력한 메시지를 채팅 기록에 추가
+      wsRef.current.send(JSON.stringify(userMessage));
       setChatHistory((prev) => [...prev, userMessage]);
-
-      // 메시지 입력 필드를 초기화
       setMessage('');
       setIsTyping(true);
     } else {
@@ -181,20 +168,35 @@ const Stella = () => {
     }
   };
 
-  // Enter 키 이벤트와 클릭 이벤트에서 중복 방지
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.repeat) {
-      e.preventDefault();
-      handleSendMessage();
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  };
+  }, [chatHistory]);
 
-  if (isAuthInitializing) {
-    return <div>로딩 중...</div>;
-  }
+  // 채팅방 선택 시 새로운 대화 불러오기
+  const handleRoomSelect = (bookId) => {
+    if (wsRef.current) {
+      wsRef.current.close();
+    }
+    setSelectedRoom(bookId);
+    setChatHistory([]);
+    setIsSocketOpen(false);
+  };
 
   return (
     <div className="stella_container">
+      <div className="stella_sidebar">
+        <h3>채팅방 목록</h3>
+        <ul>
+          {chatRooms.map((room) => (
+            <li key={room.book_id} onClick={() => handleRoomSelect(room.book_id)}>
+              {room.book_title}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="stella_chat_area">
         <div className="stella_chat_box" ref={chatBoxRef}>
           {chatHistory.map((chat, index) => (
@@ -214,7 +216,7 @@ const Stella = () => {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Type your message..."
               className="stella_input"
             />

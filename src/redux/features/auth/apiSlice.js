@@ -441,7 +441,7 @@ export const getMemberInfoData = createApiThunk(
 
 export const updateMemberInfoData = createApiThunk(
   'api/updateMemberInfo',
-  async (memberNum) => UPDATE_MEMBER_INFO_API_URL,
+  (memberNum) => UPDATE_MEMBER_INFO_API_URL,
   patchRequest
 );
 

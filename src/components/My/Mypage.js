@@ -8,6 +8,7 @@ import '../My/Mypage.css';
 const Mypage = () => {
   const member_num = useSelector((state) => state.auth.user?.memberNum);
   const [memberData, setMemberData] = useState(null);
+  const [memberId, setMemberId] = useState(''); // State to store the member_id
   const [nickname, setNickname] = useState('');
   const [contact, setContact] = useState('');
   const [email, setEmail] = useState('');
@@ -29,6 +30,8 @@ const Mypage = () => {
 
 
           const data = response.data;
+          //회원 아이디 출력 추가
+          setMemberId(data.member_id);
 
           // Map response data to state variables
           setMemberData(data);
@@ -54,16 +57,50 @@ const Mypage = () => {
     setter(e.target.value);
     setIsEdited(true);
   };
-  
+
 // 마케팅 동의 체크박스 값이 변경될 때마다 isEdited 상태를 true로 설정
 const handleMarketingConsentChange = (e) => {
   setMarketingConsent(e.target.checked);
   setIsEdited(true); // 마케팅 동의 변경 시 isEdited 상태 변경
 };
 
+// 변경된 정보 유효성 검사 함수들
+const validateNickname = (nickname) => {
+  if (nickname.length < 1 || nickname.length > 20) {
+    return '닉네임은 1자리 이상 20자리 이하만 설정 가능합니다!';
+  }
+  return null;
+};
+
+const validateEmail = (email) => {
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  if (!emailRegex.test(email)) {
+    return '중복된 이메일이 있거나 이메일 형식이 맞지 않습니다!';
+  }
+  return null;
+};
+
+const validateContact = (contact) => {
+  const contactRegex = /^010\d{8}$/;
+  if (!contactRegex.test(contact)) {
+    return '전화번호는 반드시 010으로 시작하는 11자리 이어야 합니다!';
+  }
+  return null;
+};
+
 
   // 수정된 정보를 서버에 업데이트하는 함수
   const handleSave = async () => {
+    // 맞지 않는 형식의 정보 수정 시 알럭 추가
+    const nicknameError = validateNickname(nickname);
+    const emailError = validateEmail(email);
+    const contactError = validateContact(contact);
+
+    if (nicknameError || emailError || contactError) {
+      setError(nicknameError || emailError || contactError);
+      return;
+    }
+
     // 수정된 정보를 서버에 저장하기 전에 확인 메시지를 띄움
   const isConfirmed = window.confirm('회원 정보를 수정하시겠습니까?');
   if (isConfirmed) {
@@ -88,7 +125,6 @@ const handleMarketingConsentChange = (e) => {
         setIsEdited(false); // 수정 완료 후 isEdited 상태 초기화
         setMemberData(response.data); // 수정된 데이터를 클라이언트 상태에 반영
         setTimeout(() => setIsSaved(false), 3000); // 3초 후 저장 알림 숨김
-
 
       }
     } catch (error) {
@@ -126,7 +162,7 @@ const handleMarketingConsentChange = (e) => {
         <div className="my_page_content_info">
           <div>
             <label>아이디</label>
-            <input type="text" value={memberData?.member_id || ''} disabled />
+            <input type="text" value={memberId || ''} disabled />
           </div>
           <div>
             <label>닉네임</label>

@@ -54,6 +54,13 @@ const Mypage = () => {
     setter(e.target.value);
     setIsEdited(true);
   };
+  
+// 마케팅 동의 체크박스 값이 변경될 때마다 isEdited 상태를 true로 설정
+const handleMarketingConsentChange = (e) => {
+  setMarketingConsent(e.target.checked);
+  setIsEdited(true); // 마케팅 동의 변경 시 isEdited 상태 변경
+};
+
 
   // 수정된 정보를 서버에 업데이트하는 함수
   const handleSave = async () => {
@@ -147,7 +154,7 @@ const Mypage = () => {
             <input type="checkbox"
               id="marketingConsent"
               checked={marketingConsent}
-              onChange={(e) => setMarketingConsent(e.target.checked)} />
+              onChange={handleMarketingConsentChange} />
             <label htmlFor="marketingConsent">마케팅 수신 동의</label>
           </div>
           <div className="my_privacy">

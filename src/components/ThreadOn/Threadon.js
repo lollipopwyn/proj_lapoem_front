@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ThreadCard from "./ThreadCard";
@@ -9,6 +10,7 @@ import {
   GET_SEARCH_THREADS_API_URL,
   GET_THREADS_API_URL,
 } from "../../util/apiUrl";
+import reset from "../../assets/images/reset.png";
 
 function Threadon() {
   const [threads, setThreads] = useState([]);
@@ -19,11 +21,21 @@ function Threadon() {
   const [error, setError] = useState(null);
   const [totalCount, setTotalCount] = useState(0); // 전체 항목 수 추가
   const navigate = useNavigate();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
+  // 검색어가 빈 문자열일 경우 전체 목록을 요청
+  useEffect(() => {
+    if (searchTerm === "") {
+      fetchThreads();
+    }
+  }, [searchTerm]);
+
+  // 현재 페이지가 변경될 때마다 목록을 요청
   useEffect(() => {
     fetchThreads();
-  }, [currentPage, searchTerm]);
+  }, [currentPage]);
 
+  // 스레드 데이터를 불러오는 함수
   const fetchThreads = async () => {
     setLoading(true);
     setError(null);
@@ -33,12 +45,11 @@ function Threadon() {
         params: {
           page: currentPage, // 현재 페이지 번호(몇 번째 페이지를 가져올지.)
           limit: itemsPerPage, // 한 페이지에 표시할 스레드 수 (한 페이지에 몇 개의 스레드를 보여줄지.)
-          query: searchTerm, // 검색어 (없을 수도 있음/ 사용자가 입력한 검색어(필터 조건).)
+          query: searchTerm || "", // 검색어 (없으면 전체 목록 불러오기/ 사용자가 입력한 검색어(필터 조건).)
         },
       });
       setThreads(response.data.threads);
       setTotalCount(response.data.totalCount); // totalCount 설정
-      // console.log("Total threads for pagination:", response.data.totalCount);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching threads:", err);
@@ -47,21 +58,24 @@ function Threadon() {
     }
   };
 
+  // 검색어가 업데이트되었을 때의 핸들러
   const handleSearch = (data) => {
     if (typeof data === "string") {
       setSearchTerm(data); // 검색어로 검색
+      setCurrentPage(1);
+      fetchThreads(); // 검색어가 업데이트된 후 목록을 불러옴
     } else {
-      // data가 객체일 때 (응답일 때)
       setThreads(data.threads || []);
-      setTotalCount(data.totalCount || 0); // 응답 데이터에서 totalCount 설정
+      setTotalCount(data.totalCount || 0);
     }
-    setCurrentPage(1); // 검색 시 페이지 초기화
   };
 
   // 전체 보기 핸들러
   const handleReset = () => {
+    console.log("Reset button clicked"); // 콘솔 로그 추가
     setSearchTerm(""); // 검색어 초기화
-    setCurrentPage(1);
+    setCurrentPage(1); // 페이지도 초기화
+    fetchThreads(); // 전체 목록 불러오기
   };
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -71,13 +85,29 @@ function Threadon() {
       <h1 className="thread-header">THREAD ON</h1>
 
       <div className="thread-search-bar">
-        <SearchBar
-          apiUrl={GET_SEARCH_THREADS_API_URL}
-          onSearch={handleSearch}
-        />
+        <div className="search-bar-container">
+          <SearchBar
+            apiUrl={GET_SEARCH_THREADS_API_URL}
+            onSearch={handleSearch}
+          />
+          <button className="thread-reset-button" onClick={handleReset}>
+            <img src={reset} alt="Reset" />
+          </button>
+        </div>
         <button
           className="thread-new-thread-button"
-          onClick={() => navigate("/new_thread")}
+          onClick={() => {
+            if (isLoggedIn) {
+              navigate("/new_thread");
+            } else {
+              const confirmed = window.confirm(
+                "회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+              );
+              if (confirmed) {
+                navigate("/login");
+              }
+            }
+          }}
         >
           New Thread
         </button>

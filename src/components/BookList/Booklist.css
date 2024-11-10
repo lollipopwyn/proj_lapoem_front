@@ -1,3 +1,4 @@
+/* ==============고정 틀================== */
 /* Responsive adjustments */
 @media (max-width: 1920px) {
   .content-wrapper {
@@ -22,15 +23,22 @@
   font-weight: bold;
 }
 
+
+/* ==============책 리스트================ */
+
+/* 검색창 */
 .booklist_search {
   display: flex;
   margin-top: 30px;
   margin-bottom: 150px;
 }
 
+
+/* 책 정렬 */
 .booklist_content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 40px 0;
 }
+

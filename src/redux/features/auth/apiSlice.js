@@ -19,6 +19,7 @@ import {
   GET_SEARCH_THREADS_API_URL,
   GET_MEMBER_INFO_API_URL,
   UPDATE_MEMBER_INFO_API_URL,
+  GET_TOP_BOOKS_API_URL,
 
   //post
   CREATE_COMMUNITY_POST_API_URL,
@@ -69,6 +70,13 @@ const createApiThunk = (actionType, apiURL, requestMethod) => {
 export const fetchBookListData = createApiThunk(
   "api/fetchGetBookList",
   GET_BOOK_LIST_API_URL,
+  getRequest
+);
+
+// 평점 리뷰 최고인 책
+export const fetchTopBooksData = createApiThunk(
+  "api/fetchTopBooks",
+  GET_TOP_BOOKS_API_URL,
   getRequest
 );
 
@@ -519,6 +527,7 @@ const apiSlice = createSlice({
     hotTopics: [],
     topUsers: [],
     fetchGetBookList: [],
+    fetchTopBooks:[],
     fetchGetBookDetail: null,
     fetchGetBookReviews: [],
     fetchDeleteReview: null,
@@ -561,6 +570,12 @@ const apiSlice = createSlice({
         handleFullfilled("fetchGetBookList")
       )
       .addCase(fetchBookListData.rejected, handleRejected)
+      // 평점 리뷰 최고인 책 -----------------------------------------------------
+      .addCase(
+        fetchTopBooksData.fulfilled,
+        handleFullfilled("fetchTopBooks")
+      )
+      .addCase(fetchTopBooksData.rejected, handleRejected)
       // 북 리뷰-----------------------------------------------------
       .addCase(
         fetchBookReviewsData.fulfilled,

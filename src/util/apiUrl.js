@@ -24,6 +24,8 @@ export const GET_BOOK_REVIEWS_API_URL = (bookId) => `${BASE_URL}/book-list/${boo
 export const GET_SEARCH_BOOKS_API_URL = `${BASE_URL}/search-books`; //도서 검색
 export const GET_BOOK_BY_CATEGORY_API_URL = `${BASE_URL}/search-category`; //도서 필터링 검색
 export const GET_BOOK_ALL_CATEGORIES_API_URL = `${BASE_URL}/all-categories`; //도서 전체 카테고리
+export const GET_TOP_BOOKS_API_URL = `${BASE_URL}/top-books`; //리뷰, 평점 최고인 책
+
 
 export const GET_COMMUNITY_POSTS_API_URL = `${BASE_URL}/community`; // 커뮤니티 게시글 목록 조회
 export const GET_USER_STATS_API_URL = `${BASE_URL}/user/stats`;

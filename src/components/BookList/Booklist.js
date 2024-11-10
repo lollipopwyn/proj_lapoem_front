@@ -5,10 +5,13 @@ import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_SEARCH_BOOKS_API_URL,
 } from "../../util/apiUrl";
+// 컴포넌트
 import Pagination from "../PageNation";
 import SearchBar from "../Common/SearchBar";
 import CategoryFilter from "../Common/CategoryFilter";
+import TopOfBookList from "./TopOfBookList";
 import BookCard from "../Bookcard";
+
 import "./Booklist.css";
 
 const BookList = () => {
@@ -74,6 +77,7 @@ const BookList = () => {
           onSearch={handleSearch}
         />{" "}
       </div>
+      <TopOfBookList />
       {loading ? (
         <p>Loading...</p>
       ) : (

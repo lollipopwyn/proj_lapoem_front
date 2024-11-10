@@ -144,6 +144,8 @@ const validateContact = (contact) => {
     setEmail(memberData?.member_email || '');
     setMarketingConsent(memberData?.marketing_consent || false);
     setIsEdited(false);
+
+    window.location.reload();
   };
 
 
@@ -225,12 +227,17 @@ const validateContact = (contact) => {
         <div className="button-group-right">
         <button
             id="saveBtn"
-            disabled={!isEdited} // 수정 사항이 있을 때만 활성화
+            className={isEdited ? 'active' : ''} // 수정 사항이 있을 때만 활성화
+            disabled={!isEdited}
             onClick={handleSave}
           >
             SAVE
           </button>
-          <button id="cancelBtn" onClick={handleCancel}> {/* 취소 버튼 클릭 시 초기화 */}CANCEL</button>
+          <button 
+          id="cancelBtn" 
+          className={isEdited? 'active' :''}
+          disabled={!isEdited}
+          onClick={handleCancel}> {/* 취소 버튼 클릭 시 초기화 */}CANCEL</button>
         </div>
       </div>
     </div>

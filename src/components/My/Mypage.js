@@ -36,6 +36,7 @@ const Mypage = () => {
           setMarketingConsent(data.marketing_consent || false);
           setGender(data.member_gender || '');
           setBirthdate(data.member_birth_date || '');
+          console.log("회원정보:",response.data);
         } catch (error) {
           console.error('Error fetching member info:', error);
           setError(error.response?.data?.message || 'Failed to fetch member info');
@@ -104,14 +105,14 @@ const Mypage = () => {
             <div className="my_gender">
               <div className="gender_toggle">
               <button
-                  onClick={() => setGender('male')}
-                  className={gender === 'male' ? 'selected' : ''}
+                  className={gender === '남' ? 'selected' : ''}
+                  disabled 
                 >
                   남
                 </button>
                 <button
-                  onClick={() => setGender('female')}
-                  className={gender === 'female' ? 'selected' : ''}
+                  className={gender === '여' ? 'selected' : ''}
+                  disabled 
                 >
                   여
                 </button>

@@ -1,7 +1,8 @@
-import React from "react";
-import Slider from "./Slider";
-import Releases from "./Releases";
-import Bestseller from "./Bestseller";
+import React from 'react';
+import Slider from './Slider';
+import Releases from './Releases';
+import Bestseller from './Bestseller';
+import HotForums from './HotForums';
 
 function Main() {
   return (
@@ -9,6 +10,7 @@ function Main() {
       <Slider />
       <Releases />
       <Bestseller />
+      <HotForums />
     </div>
   );
 }

@@ -37,7 +37,7 @@ const Stella = () => {
 
   useEffect(() => {
     if (!isAuthInitializing && !isLoggedIn && !alertShownRef.current) {
-      alertShownRef.current = true;
+      alertShownRef.current = true; // 표시되었음을 설정
       const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
       if (shouldNavigateToLogin) {
         navigate('/login');
@@ -45,10 +45,6 @@ const Stella = () => {
         navigate('/');
       }
     }
-
-    return () => {
-      alertShownRef.current = false;
-    };
   }, [isAuthInitializing, isLoggedIn, navigate]);
 
   useEffect(() => {

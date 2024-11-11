@@ -25,7 +25,6 @@ const Community = () => {
     totalPosts: 0,
     totalComments: 0,
   });
-  const [hotTopics, setHotTopics] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +32,7 @@ const Community = () => {
 
   const {
     fetchCommunityPosts: communityPosts,
+    hotTopics,
     isLoading,
     isError,
     errorMessage,
@@ -48,12 +48,9 @@ const Community = () => {
     console.log('Current user state:', currentUser);
   }, [currentUser]);
 
+  // 핫토픽 불러오기 (5개)
   useEffect(() => {
-    dispatch(fetchHotTopics()).then((result) => {
-      if (result.payload) {
-        setHotTopics(result.payload);
-      }
-    });
+    dispatch(fetchHotTopics(5));
   }, [dispatch]);
 
   useEffect(() => {
@@ -338,9 +335,9 @@ const Community = () => {
             </div>
           </div>
           <div className="sidebar-section">
-            <h2>Today's Hot Forums</h2>
+            <h2>Weekly Hot Forums</h2>
             <div className="hot-topics">
-              {hotTopics.map((topic, index) => (
+              {hotTopics.slice(0, 3).map((topic, index) => (
                 <div
                   key={topic.posts_id}
                   className="topic-item"

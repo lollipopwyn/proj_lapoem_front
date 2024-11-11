@@ -58,7 +58,7 @@ const CommunityDetail = () => {
   }, [currentUser]);
 
   useEffect(() => {
-    dispatch(fetchHotTopics()).then((result) => {
+    dispatch(fetchHotTopics(3)).then((result) => {
       if (result.payload) {
         setHotTopics(result.payload);
       }

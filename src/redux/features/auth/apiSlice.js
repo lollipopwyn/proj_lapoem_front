@@ -396,9 +396,11 @@ export const fetchUserStats = createAsyncThunk(
 
 export const fetchHotTopics = createAsyncThunk(
   'api/fetchHotTopics',
-  async (_, { rejectWithValue }) => {
+  async (limit = 5, { rejectWithValue }) => {
     try {
-      const response = await getRequest(GET_HOT_TOPICS_API_URL);
+      const response = await getRequest(
+        `${GET_HOT_TOPICS_API_URL}?limit=${limit}`
+      );
       return response;
     } catch (error) {
       console.error('Failed to fetch hot topics:', error);
@@ -634,12 +636,18 @@ const apiSlice = createSlice({
       })
       .addCase(fetchUserStats.rejected, handleRejected)
       // 핫토픽 가져오기
-      .addCase(fetchHotTopics.pending, handlePending)
+      .addCase(fetchHotTopics.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(fetchHotTopics.fulfilled, (state, action) => {
-        state.hotTopics = action.payload; // 핫토픽 데이터를 상태에 저장
+        state.hotTopics = action.payload; // 핫토픽 데이터 저장
         state.isLoading = false;
       })
-      .addCase(fetchHotTopics.rejected, handleRejected)
+      .addCase(fetchHotTopics.rejected, (state, action) => {
+        state.isError = true;
+        state.errorMessage = action.payload;
+        state.isLoading = false;
+      })
       // 상위 사용자 가져오기
       .addCase(fetchTopUsers.pending, handlePending)
       .addCase(fetchTopUsers.fulfilled, (state, action) => {

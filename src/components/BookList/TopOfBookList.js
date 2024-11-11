@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { GET_TOP_BOOKS_API_URL } from "../../util/apiUrl";
 import heartRating from '../../assets/images/heart-rating.png';
+import heartCrown from '../../assets/images/crown_icon.png';
 
 const TopOfBookList = () => {
   const [topBooks, setTopBooks] = useState([]);
@@ -79,7 +80,7 @@ const TopOfBookList = () => {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseUp}
       >
-        {topBooks.map((book) => (
+        {topBooks.map((book, index) => (
           <Link
             to={`/book_list/${book.book_id}`}
             key={book.book_id}
@@ -88,6 +89,7 @@ const TopOfBookList = () => {
               textAlign: "center",
               textDecoration: "none",
               color: "inherit",
+              position: "relative", // 추가: 왕관을 책 이미지 위에 배치할 수 있도록
             }}
           >
             <img
@@ -103,6 +105,21 @@ const TopOfBookList = () => {
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
               }}
             />
+            {/* 첫 번째 책에만 왕관 이미지 표시 */}
+            {index === 0 && (
+              <img
+                src={heartCrown}
+                alt="왕관"
+                style={{
+                  position: "absolute",
+                  top: "-18px",
+                  left: "10px",
+                  width: "60px", // 왕관 크기 조정
+                  height: "60px", // 왕관 크기 조정
+                  transform: "rotate(-40deg)", // 시계 반대 방향으로 10도 회전
+                }}
+              />
+            )}
             <p style={{ fontSize: "1em", marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {book.book_title}
             </p>

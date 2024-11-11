@@ -80,8 +80,8 @@ export const DELETE_THREAD_COMMENTS_API_URL = (commentId) =>
   `${BASE_URL}/threads/comment/${commentId}`; // 스레드 댓글 및 대댓글 삭제 API URL
 
 // ==============================Chat 관련 API URL=========================================
-export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/api/chat`; // HTTP API URL
+export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/chat`; // HTTP API URL
 export const WEBSOCKET_CHAT_URL = `${FASTAPI_WEBSOCKET_BASE_URL}/ws/chat`; // WebSocket URL
 // 채팅방 목록 조회 URL
 export const API_CHAT_LIST_URL = (memberNum) =>
-  `${FASTAPI_HTTP_BASE_URL}/api/chat-list/${memberNum}`;
+  `${FASTAPI_HTTP_BASE_URL}/chat-list/${memberNum}`;

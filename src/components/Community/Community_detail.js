@@ -58,7 +58,7 @@ const CommunityDetail = () => {
   }, [currentUser]);
 
   useEffect(() => {
-    dispatch(fetchHotTopics()).then((result) => {
+    dispatch(fetchHotTopics(3)).then((result) => {
       if (result.payload) {
         setHotTopics(result.payload);
       }
@@ -101,9 +101,10 @@ const CommunityDetail = () => {
         if (result.error) {
           console.error('Error fetching user stats:', result.error);
         } else if (result.payload) {
+          // 서버에서 가져온 값을 숫자로 변환하여 상태 업데이트
           setUserStats({
-            totalPosts: result.payload.total_posts,
-            totalComments: result.payload.total_comments,
+            totalPosts: Number(result.payload.total_posts),
+            totalComments: Number(result.payload.total_comments),
           });
         }
       });
@@ -127,9 +128,9 @@ const CommunityDetail = () => {
           '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
         )
       ) {
-        navigate('/login'); // 로그인 페이지로 이동
+        navigate('/login');
       }
-      return; // 취소를 누르면 여기서 함수 종료
+      return;
     }
 
     const newComment = {
@@ -146,6 +147,13 @@ const CommunityDetail = () => {
       // 댓글 작성 후 최신 게시글 정보를 다시 가져옴
       dispatch(fetchCommunityPostDetail(postId));
       dispatch(fetchCommentsByPostId(postId));
+
+      // userStats의 totalComments 값을 직접 증가시켜 로컬 상태를 갱신
+      setUserStats((prevStats) => ({
+        ...prevStats,
+        totalComments: Number(prevStats.totalComments) + 1,
+      }));
+
       // 작성 후 텍스트 및 길이 초기화
       setCommentText('');
       setCommentLength(0);
@@ -153,6 +161,10 @@ const CommunityDetail = () => {
       console.error('Failed to submit comment:', error);
     }
   };
+
+  useEffect(() => {
+    console.log('Updated userStats:', userStats);
+  }, [userStats]);
 
   const handleDeleteComment = (commentId) => {
     if (
@@ -162,6 +174,11 @@ const CommunityDetail = () => {
     ) {
       dispatch(deleteCommentData(commentId)).then(() => {
         dispatch(fetchCommentsByPostId(postId));
+        // 댓글 목록 재요청 후 댓글 수 상태를 다시 설정
+        setUserStats((prevStats) => ({
+          ...prevStats,
+          totalComments: prevStats.totalComments - 1,
+        }));
       });
     }
   };
@@ -338,9 +355,7 @@ const CommunityDetail = () => {
                 alt="Comment count icon"
                 className="comment-icon2"
               />
-              <span className="comment-count2">
-                {postDetail.comments_count || 0}
-              </span>
+              <span className="comment-count2">{comments.length}</span>
             </div>
           </div>
           <div className="comments-list">

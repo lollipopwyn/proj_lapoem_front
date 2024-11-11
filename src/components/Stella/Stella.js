@@ -37,7 +37,7 @@ const Stella = () => {
 
   useEffect(() => {
     if (!isAuthInitializing && !isLoggedIn && !alertShownRef.current) {
-      alertShownRef.current = true;
+      alertShownRef.current = true; // 표시되었음을 설정
       const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
       if (shouldNavigateToLogin) {
         navigate('/login');
@@ -45,10 +45,6 @@ const Stella = () => {
         navigate('/');
       }
     }
-
-    return () => {
-      alertShownRef.current = false;
-    };
   }, [isAuthInitializing, isLoggedIn, navigate]);
 
   useEffect(() => {
@@ -69,12 +65,15 @@ const Stella = () => {
     const loadBookInfoAndChatHistory = async () => {
       if (selectedRoom && user) {
         try {
+          // 책 정보 가져오기
           const bookResponse = await axios.get(GET_BOOK_DETAIL_API_URL(selectedRoom));
           setBookInfo(bookResponse.data);
 
+          // 채팅 기록 가져오기
           const chatResponse = await axios.get(`${API_CHAT_URL}/${selectedRoom}/${user.memberNum}`);
-          setChatHistory(chatResponse.data);
+          const loadedChatHistory = chatResponse.data;
 
+          // 환영 메시지 정의
           const welcomeMessages = [
             {
               sender_id: 'stella',
@@ -85,7 +84,9 @@ const Stella = () => {
               message: 'ex) 이 책에 대해 설명해줘 같은 메시지를 입력해 주세요.',
             },
           ];
-          setChatHistory((prev) => [...welcomeMessages, ...prev]);
+
+          // 환영 메시지와 불러온 채팅 기록 병합 후 설정
+          setChatHistory([...welcomeMessages, ...loadedChatHistory]);
         } catch (error) {
           console.error('Failed to load book information or chat history:', error);
         }
@@ -101,6 +102,7 @@ const Stella = () => {
 
     // 기존 WebSocket 연결이 존재하면 닫기
     if (wsRef.current) {
+      wsRef.current.onclose = null; // 재연결 중 onclose 이벤트가 다시 호출되지 않도록
       wsRef.current.close();
     }
 
@@ -115,7 +117,7 @@ const Stella = () => {
       wsRef.current = ws; // WebSocket 인스턴스를 ref에 저장
 
       ws.onopen = () => {
-        console.log('Connected to the chat server');
+        console.log(`Connected to the chat server with book_id: ${selectedRoom}`);
         setIsSocketOpen(true);
         reconnectAttemptsRef.current = 0;
       };
@@ -125,7 +127,7 @@ const Stella = () => {
       };
 
       ws.onclose = () => {
-        console.log('Disconnected from chat server');
+        console.log(`Disconnected from chat server with book_id: ${selectedRoom}`);
         setIsSocketOpen(false);
         wsRef.current = null;
 
@@ -149,6 +151,7 @@ const Stella = () => {
 
     return () => {
       if (wsRef.current) {
+        wsRef.current.onclose = null; // 재연결 중 onclose 이벤트가 다시 호출되지 않도록
         wsRef.current.close(); // 기존 연결을 확실히 닫기
       }
       reconnectAttemptsRef.current = 0;
@@ -176,12 +179,20 @@ const Stella = () => {
 
   // 채팅방 선택 시 새로운 대화 불러오기
   const handleRoomSelect = (bookId) => {
+    if (bookId === selectedRoom) {
+      // 현재 채팅방을 클릭한 경우에는 아무 작업도 하지 않음
+      return;
+    }
+
     if (wsRef.current) {
       wsRef.current.close();
     }
     setSelectedRoom(bookId);
     setChatHistory([]);
     setIsSocketOpen(false);
+
+    // URL을 현재 선택된 채팅방의 bookId로 업데이트
+    navigate(`/chatstella/${bookId}?memberNum=${user.memberNum}`);
   };
 
   return (

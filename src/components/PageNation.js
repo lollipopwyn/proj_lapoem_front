@@ -1,4 +1,7 @@
 import React from 'react';
+import './pageNation.css';
+import l_arrow from '../assets/images/l_arrow.png';
+import r_arrow from '../assets/images/r_arrow.png';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   // 페이지 버튼 생성
@@ -30,14 +33,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        Previous
+        <img src={l_arrow} alt="left_arrow" />
       </button>
       {renderPaginationButtons()}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        Next
+        <img src={r_arrow} alt="rightt_arrow" />
       </button>
     </div>
   );

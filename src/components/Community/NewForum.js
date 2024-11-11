@@ -127,7 +127,6 @@ const NewForum = () => {
           </div>
         </form>
       </div>
-      <div className="footer-placeholder"></div>
     </>
   );
 };

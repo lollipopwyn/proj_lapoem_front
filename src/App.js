@@ -19,6 +19,7 @@ import Mypage from './components/My/Mypage';
 import Threadon_post from './components/ThreadOn/Threadon_post';
 import Terms from './components/Auth/Terms';
 import ThreadDetailPage from './components/ThreadOn/ThreadDetailPage';
+import Footer from './components/Footer';
 
 function App() {
   const dispatch = useDispatch();
@@ -53,7 +54,7 @@ function App() {
           <Route path="/mypage" element={<Mypage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-
+        <Footer />
         {/* Catch all unmatched routes and redirect to Home */}
       </div>
     </BrowserRouter>

@@ -15,6 +15,7 @@ import chartIcon from '../../assets/images/chart.png';
 import rank1Icon from '../../assets/images/rank1-icon.png';
 import rank2Icon from '../../assets/images/rank2-icon.png';
 import rank3Icon from '../../assets/images/rank3-icon.png';
+import Pagination from '../PageNation';
 
 const Community = () => {
   const dispatch = useDispatch();
@@ -24,12 +25,14 @@ const Community = () => {
     totalPosts: 0,
     totalComments: 0,
   });
-  const [hotTopics, setHotTopics] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 7; // 한 페이지당 게시글 수
 
   const {
     fetchCommunityPosts: communityPosts,
+    hotTopics,
     isLoading,
     isError,
     errorMessage,
@@ -45,12 +48,9 @@ const Community = () => {
     console.log('Current user state:', currentUser);
   }, [currentUser]);
 
+  // 핫토픽 불러오기 (5개)
   useEffect(() => {
-    dispatch(fetchHotTopics()).then((result) => {
-      if (result.payload) {
-        setHotTopics(result.payload);
-      }
-    });
+    dispatch(fetchHotTopics(5));
   }, [dispatch]);
 
   useEffect(() => {
@@ -143,6 +143,11 @@ const Community = () => {
     console.log('Filtered Posts:', filteredPosts);
   }
 
+  // 현재 페이지의 게시글 슬라이싱
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+
   const handlePostClick = (postId) => {
     navigate(`/community/${postId}`);
   };
@@ -179,6 +184,10 @@ const Community = () => {
       return; // 취소 시 함수 종료
     }
     navigate('/community/my_forum');
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -226,14 +235,14 @@ const Community = () => {
               <p>{errorMessage}</p>
             ) : viewType === 'Only me' && !isLoggedIn ? (
               <p>로그인 후 이용해주세요.</p>
-            ) : filteredPosts.length === 0 ? (
+            ) : currentPosts.length === 0 ? (
               <div className="no-posts-message-container">
                 <p className="no-posts-message">
                   아직 작성된 게시글이 없습니다. 첫 게시글을 작성해보세요!
                 </p>
               </div>
             ) : (
-              filteredPosts.map((post) => (
+              currentPosts.map((post) => (
                 <div
                   key={post.posts_id}
                   className="post-item regular-post"
@@ -291,6 +300,13 @@ const Community = () => {
               ))
             )}
           </div>
+          <div className="pagination-container">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredPosts.length / postsPerPage)}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -319,9 +335,9 @@ const Community = () => {
             </div>
           </div>
           <div className="sidebar-section">
-            <h2>Today's Hot Forums</h2>
+            <h2>Weekly Hot Forums</h2>
             <div className="hot-topics">
-              {hotTopics.map((topic, index) => (
+              {hotTopics.slice(0, 3).map((topic, index) => (
                 <div
                   key={topic.posts_id}
                   className="topic-item"

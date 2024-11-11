@@ -1,6 +1,6 @@
 .community-detail-container {
   min-height: 100vh;
-  padding: 120px 0 320px 180px; /* Navbar, footer, and left padding */
+  padding: 120px 0 0px 180px; /* Navbar, footer, and left padding */
   box-sizing: border-box;
 }
 

@@ -9,6 +9,7 @@ function Join() {
   const [form_data, set_form_data] = useState({
     member_id: '',
     member_password: '',
+    confirm_password: '',
     member_nickname: '',
     member_email: '',
     member_phone: '',
@@ -16,12 +17,7 @@ function Join() {
     member_birth_date: '',
   });
 
-  const [error, set_error] = useState(null);
-  const [phoneError, setPhoneError] = useState(null);
-  const [idError, setIdError] = useState(null);
-  const [birthDateError, setBirthDateError] = useState(null);
-  const [genderError, setGenderError] = useState(null);
-  const [requiredErrors, setRequiredErrors] = useState({});
+  const [errors, set_errors] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,66 +25,87 @@ function Join() {
 
   const handle_change = (e) => {
     const { name, value } = e.target;
+    const updatedErrors = { ...errors };
 
-    if (name === 'member_phone') {
-      const isValidPhone = /^[0-9]*$/.test(value);
-      if (!isValidPhone) {
-        setPhoneError('숫자만 입력해 주세요.');
-        return;
-      } else {
-        setPhoneError(null);
-      }
-    }
-
+    // 아이디 검사
     if (name === 'member_id') {
-      const isValidId = /^[a-z0-9]*$/.test(value);
-      if (!isValidId) {
-        setIdError('아이디는 영어 소문자와 숫자만 입력 가능합니다.');
-        return;
-      } else {
-        setIdError(null);
-      }
+      const isValidId = /^[a-z0-9]+$/.test(value); // 영어 소문자와 숫자만 허용
+      updatedErrors.member_id = isValidId ? null : '아이디는 영어 소문자와 숫자만 입력 가능합니다.';
     }
 
+    // 이메일 형식 검사
+    if (name === 'member_email') {
+      const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+      updatedErrors.member_email = isValidEmail ? null : '이메일 형식이 맞지 않습니다.';
+    }
+
+    // 전화번호 검사
+    if (name === 'member_phone') {
+      const isValidPhone = /^[0-9]*$/.test(value) && value.length <= 11;
+      updatedErrors.member_phone = isValidPhone ? null : '전화번호 형식에 맞지 않습니다. 숫자만 입력해 주세요.';
+    }
+
+    // 비밀번호 검사
+    if (name === 'member_password') {
+      const isValidPassword = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(value);
+      updatedErrors.member_password = isValidPassword
+        ? null
+        : '비밀번호는 대문자 1개, 특수문자 1개를 포함하고 8자리 이상이어야 합니다.';
+    }
+
+    // 비밀번호 확인 검사
+    if (name === 'confirm_password') {
+      updatedErrors.confirm_password = value === form_data.member_password ? null : '비밀번호가 일치하지 않습니다.';
+    }
+
+    // 닉네임 검사
+    if (name === 'member_nickname') {
+      updatedErrors.member_nickname = value ? null : '닉네임을 입력해주세요.';
+    }
+
+    // 생년월일 검사 (8자리 숫자)
     if (name === 'member_birth_date') {
-      const isValidDate = /^[0-9]{0,8}$/.test(value); // 최대 8자리 숫자만 허용
-      set_form_data({ ...form_data, [name]: value });
-      if (!isValidDate || value.length !== 8) {
-        setBirthDateError('8자리로 입력해 주세요.');
-      } else {
-        setBirthDateError(null);
-      }
-      return;
+      const isValidDate = /^[0-9]{8}$/.test(value);
+      updatedErrors.member_birth_date = isValidDate ? null : '생년월일을 올바르게 입력해 주세요.';
+    }
+
+    // 성별 검사
+    if (name === 'member_gender') {
+      updatedErrors.member_gender = value ? null : '성별을 선택해 주세요.';
     }
 
     set_form_data({ ...form_data, [name]: value });
-    setRequiredErrors({ ...requiredErrors, [name]: false });
+    set_errors(updatedErrors);
   };
 
   const handleGenderSelect = (gender) => {
     set_form_data({ ...form_data, member_gender: gender });
-    setGenderError(null);
-    setRequiredErrors({ ...requiredErrors, member_gender: false });
+    set_errors({ ...errors, member_gender: null });
   };
 
   const handle_submit = async (e) => {
     e.preventDefault();
 
     // 필수 필드가 비어있는지 확인
-    const errors = {};
-    if (!form_data.member_id) errors.member_id = '아이디를 입력해주세요.';
-    if (!form_data.member_password) errors.member_password = '비밀번호를 입력해주세요.';
-    if (!form_data.member_nickname) errors.member_nickname = '닉네임을 입력해주세요.';
-    if (!form_data.member_email) errors.member_email = '이메일을 입력해주세요.';
-    if (!form_data.member_gender) errors.member_gender = '성별을 선택해 주세요.';
+    const validationErrors = {};
+    if (!form_data.member_id) validationErrors.member_id = '아이디를 입력해주세요.';
+    if (!form_data.member_password) validationErrors.member_password = '비밀번호를 입력해주세요.';
+    if (!form_data.confirm_password) validationErrors.confirm_password = '비밀번호 확인을 입력해주세요.';
+    if (!form_data.member_nickname) validationErrors.member_nickname = '닉네임을 입력해주세요.';
+    if (!form_data.member_email) validationErrors.member_email = '이메일을 입력해주세요.';
+    if (!form_data.member_gender) validationErrors.member_gender = '성별을 선택해 주세요.';
     if (!form_data.member_birth_date || form_data.member_birth_date.length !== 8) {
-      errors.member_birth_date = '생년월일을 올바르게 입력해 주세요.';
+      validationErrors.member_birth_date = '생년월일을 올바르게 입력해 주세요.';
+    }
+    if (form_data.member_password !== form_data.confirm_password) {
+      validationErrors.confirm_password = '비밀번호가 일치하지 않습니다.';
     }
 
-    setRequiredErrors(errors);
+    set_errors(validationErrors);
 
-    if (Object.keys(errors).length > 0) {
-      return; // 필수 필드가 비어 있으면 제출 중지
+    // 에러가 있으면 제출 중지
+    if (Object.keys(validationErrors).length > 0) {
+      return;
     }
 
     try {
@@ -106,13 +123,13 @@ function Join() {
       }
 
       alert(response.data.message);
-      set_error(null);
+      set_errors({});
       navigate('/login');
     } catch (error) {
       if (error.response && error.response.data) {
-        set_error(error.response.data.message);
+        set_errors({ submit: error.response.data.message });
       } else {
-        set_error('회원가입 중 네트워크 오류가 발생했습니다.');
+        set_errors({ submit: '회원가입 중 네트워크 오류가 발생했습니다.' });
       }
     }
   };
@@ -120,108 +137,132 @@ function Join() {
   return (
     <div className="join_container">
       <PageHeader
-        title="Join"
+        title="회원가입"
         description="회원 가입 정보를 입력해주세요."
-        step_title="회원정보 입력"
+        error_message={errors.submit}
+        step_title="회원 정보 입력"
         steps={['약관 동의', '회원정보 입력', '가입 완료']}
         is_required={true}
-        active_step={1}
+        active_step={1} // 현재 페이지에 해당하는 단계 인덱스
       />
       <form onSubmit={handle_submit} className="join_form">
-        <p>아이디 *</p>
-        <input
-          type="text"
-          name="member_id"
-          placeholder="아이디를 입력해주세요."
-          onChange={handle_change}
-          required
-          className="join_input"
-        />
-        {idError && <p className="error_message">{idError}</p>}
-        {requiredErrors.member_id && <p className="error_message">{requiredErrors.member_id}</p>}
-
-        <p>비밀번호 *</p>
-        <input
-          type="password"
-          name="member_password"
-          placeholder="비밀번호를 입력해주세요."
-          onChange={handle_change}
-          required
-          className="join_input"
-        />
-        {requiredErrors.member_password && <p className="error_message">{requiredErrors.member_password}</p>}
-
-        <p>닉네임 *</p>
-        <input
-          type="text"
-          name="member_nickname"
-          placeholder="닉네임을 입력해주세요."
-          onChange={handle_change}
-          required
-          className="join_input"
-        />
-        {requiredErrors.member_nickname && <p className="error_message">{requiredErrors.member_nickname}</p>}
-
-        <p>이메일 *</p>
-        <input
-          type="email"
-          name="member_email"
-          placeholder="이메일을 입력해주세요."
-          onChange={handle_change}
-          required
-          className="join_input"
-        />
-        {requiredErrors.member_email && <p className="error_message">{requiredErrors.member_email}</p>}
-
-        <p>전화번호</p>
-        <input
-          type="text"
-          name="member_phone"
-          placeholder="숫자만 입력해주세요."
-          onChange={handle_change}
-          className="join_input"
-        />
-        {phoneError && <p className="error_message">{phoneError}</p>}
-
-        <p>성별 *</p>
-        <div className="gender_select_group">
-          <button
-            type="button"
-            className={`gender_button ${form_data.member_gender === '남' ? 'active' : ''}`}
-            onClick={() => handleGenderSelect('남')}
-          >
-            남
-          </button>
-          <button
-            type="button"
-            className={`gender_button ${form_data.member_gender === '여' ? 'active' : ''}`}
-            onClick={() => handleGenderSelect('여')}
-          >
-            여
-          </button>
+        <div className="input_group">
+          <p>아이디 *</p>
+          <input
+            type="text"
+            name="member_id"
+            placeholder="아이디를 입력해주세요."
+            onChange={handle_change}
+            className="join_input"
+          />
+          {errors.member_id && <p className="error_message">{errors.member_id}</p>}
         </div>
-        {genderError && <p className="error_message">{genderError}</p>}
-        {requiredErrors.member_gender && <p className="error_message">{requiredErrors.member_gender}</p>}
 
-        <p>생년월일 *</p>
-        <input
-          type="text"
-          name="member_birth_date"
-          placeholder="Ex) 19990102"
-          onChange={handle_change}
-          value={form_data.member_birth_date}
-          className="join_input"
-          required
-          maxLength={8}
-        />
-        {birthDateError && <p className="error_message">{birthDateError}</p>}
-        {requiredErrors.member_birth_date && <p className="error_message">{requiredErrors.member_birth_date}</p>}
+        <div className="input_row">
+          <div className="input_group">
+            <p>비밀번호 *</p>
+            <input
+              type="password"
+              name="member_password"
+              placeholder="비밀번호를 입력해주세요."
+              onChange={handle_change}
+              className="join_input"
+            />
+            {errors.member_password && <p className="error_message">{errors.member_password}</p>}
+          </div>
+
+          <div className="input_group">
+            <p>비밀번호 확인 *</p>
+            <input
+              type="password"
+              name="confirm_password"
+              placeholder="비밀번호를 한 번 더 입력해주세요."
+              onChange={handle_change}
+              className="join_input"
+            />
+            {errors.confirm_password && <p className="error_message">{errors.confirm_password}</p>}
+          </div>
+          <div className="input_group gender_group"></div>
+        </div>
+
+        <div className="input_row">
+          <div className="input_group">
+            <p>닉네임 *</p>
+            <input
+              type="text"
+              name="member_nickname"
+              placeholder="닉네임을 입력해주세요."
+              onChange={handle_change}
+              className="join_input"
+            />
+            {errors.member_nickname && <p className="error_message">{errors.member_nickname}</p>}
+          </div>
+
+          <div className="input_group">
+            <p>생년월일(양력) *</p>
+            <input
+              type="text"
+              name="member_birth_date"
+              placeholder="Ex) 19990102"
+              onChange={handle_change}
+              className="join_input"
+              maxLength={8}
+            />
+            {errors.member_birth_date && <p className="error_message">{errors.member_birth_date}</p>}
+          </div>
+
+          <div className="input_group gender_group">
+            <p>성별 *</p>
+            <div className="gender_select_group">
+              <button
+                type="button"
+                className={`gender_button ${form_data.member_gender === '남' ? 'active' : ''}`}
+                onClick={() => handleGenderSelect('남')}
+              >
+                남
+              </button>
+              <button
+                type="button"
+                className={`gender_button ${form_data.member_gender === '여' ? 'active' : ''}`}
+                onClick={() => handleGenderSelect('여')}
+              >
+                여
+              </button>
+            </div>
+            {errors.member_gender && <p className="error_message">{errors.member_gender}</p>}
+          </div>
+        </div>
+
+        <div className="input_group">
+          <p>연락처 *</p>
+          <input
+            type="text"
+            name="member_phone"
+            placeholder="숫자만 입력해주세요."
+            onChange={handle_change}
+            className="join_input"
+            maxLength={11} // 전화번호는 11자리까지 입력 가능
+          />
+          {errors.member_phone && <p className="error_message">{errors.member_phone}</p>}
+        </div>
+
+        <div className="input_group">
+          <p>이메일 *</p>
+          <input
+            type="email"
+            name="member_email"
+            placeholder="이메일을 입력해주세요."
+            onChange={handle_change}
+            className="join_input"
+          />
+          {errors.member_email && <p className="error_message">{errors.member_email}</p>}
+        </div>
 
         <button type="submit" className="join_button">
           회원가입
         </button>
       </form>
-      {error && <p className="error_message">{error}</p>}
+      {errors.submit && <p className="error_message">{errors.submit}</p>}
     </div>
   );
 }

@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { GET_TOP_BOOKS_API_URL } from "../../util/apiUrl";
 import heartRating from '../../assets/images/heart-rating.png';
-
-
 
 const TopOfBookList = () => {
   const [topBooks, setTopBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
-  
   useEffect(() => {
     const fetchTopBooks = async () => {
       setLoading(true);
@@ -31,11 +27,6 @@ const TopOfBookList = () => {
     fetchTopBooks();
   }, []);
 
-  const handleBookClick = (bookId) => {
-    navigate(`/book-list/${bookId}`);
-  };
-
-  // Variables to handle dragging
   let isDragging = false;
   let startX;
 
@@ -57,19 +48,17 @@ const TopOfBookList = () => {
     container.scrollLeft -= e.movementX;
   };
 
-
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>{error}</p>;
-
 
   return (
     <div style={{ padding: "10px", width: "100%", textAlign: "center" }}>
       <h2 style={{
-        fontFamily:"var(--font-en)",
+        fontFamily: "var(--font-en)",
         fontSize: "35px",
         marginBottom: "20px",
-        fontWeight:"var(--font-semibold-weight)",
-        color:"var(--text-point)"
+        fontWeight: "var(--font-semibold-weight)",
+        color: "var(--text-point)"
       }}>
         THE MOST BELOVED BOOK IN LAPOEM
       </h2>
@@ -83,37 +72,38 @@ const TopOfBookList = () => {
           marginBottom: "80px",
           padding: "17px 0",
           cursor: "grab",
-          scrollbarWidth: "none", // Firefox
+          scrollbarWidth: "none",
         }}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseUp}
       >
-        {topBooks.map((book, index) => (
-          <div
+        {topBooks.map((book) => (
+          <Link
+            to={`/book_list/${book.book_id}`}
             key={book.book_id}
-            onClick={() => handleBookClick(book.book_id)}
             style={{
               flex: "0 0 auto",
               textAlign: "center",
-              cursor: "pointer"
+              textDecoration: "none",
+              color: "inherit",
             }}
           >
             <img
               src={book.book_cover}
               alt={book.book_title}
               style={{
-                marginLeft:"10px",
+                marginLeft: "10px",
                 width: "200px",
                 height: "200px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                border:  "2px solid var(--text-gray-light)",
+                border: "2px solid var(--text-gray-light)",
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
               }}
             />
-            <p style={{ fontSize: "1em" ,marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <p style={{ fontSize: "1em", marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {book.book_title}
             </p>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "5px" }}>
@@ -122,12 +112,11 @@ const TopOfBookList = () => {
                 {book.average_rating} ({book.review_count})
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
   );
 };
-
 
 export default TopOfBookList;

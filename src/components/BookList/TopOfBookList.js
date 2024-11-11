@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GET_TOP_BOOKS_API_URL } from "../../util/apiUrl";
+import heartRating from '../../assets/images/heart-rating.png';
+
 
 
 const TopOfBookList = () => {
@@ -30,7 +32,7 @@ const TopOfBookList = () => {
   }, []);
 
   const handleBookClick = (bookId) => {
-    navigate(`/book/${bookId}`);
+    navigate(`/book-list/${bookId}`);
   };
 
   // Variables to handle dragging
@@ -61,12 +63,12 @@ const TopOfBookList = () => {
 
 
   return (
-    <div style={{ padding: "20px", width: "100%", textAlign: "center" }}>
+    <div style={{ padding: "10px", width: "100%", textAlign: "center" }}>
       <h2 style={{
         fontFamily:"var(--font-en)",
-        fontSize: "40px",
+        fontSize: "35px",
         marginBottom: "20px",
-        fontWeight:"bold",
+        fontWeight:"var(--font-semibold-weight)",
         color:"var(--text-point)"
       }}>
         THE MOST BELOVED BOOK IN LAPOEM
@@ -102,16 +104,24 @@ const TopOfBookList = () => {
               src={book.book_cover}
               alt={book.book_title}
               style={{
-                width: "250px",
-                height: "250px",
+                marginLeft:"10px",
+                width: "200px",
+                height: "200px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                border: index === 0 ? "5px solid gold" : "2px solid var(--text-gray-light)"
+                border:  "2px solid var(--text-gray-light)",
+                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
               }}
             />
-            <p style={{ fontSize: "1em", marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <p style={{ fontSize: "1em" ,marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {book.book_title}
             </p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "5px" }}>
+              <img src={heartRating} alt="Heart Rating" style={{ width: "16px", height: "16px", marginRight: "5px" }} />
+              <span style={{ fontSize: "0.9em", color: "var(--text-secondary)" }}>
+                {book.average_rating} ({book.review_count})
+              </span>
+            </div>
           </div>
         ))}
       </div>

@@ -4,21 +4,18 @@ import PropTypes from "prop-types";
 import "./Common.css";
 
 const SearchBar = ({ apiUrl, onSearch }) => {
-  const [keyword, setKeyword] = useState(""); // 검색어 상태
+  const [keyword, setKeyword] = useState("");
 
-  // 검색 버튼 클릭 시 호출되는 함수
   const handleSearch = async () => {
-    if (keyword.trim() === "") return; // 빈 검색어로는 검색하지 않음
+    if (keyword.trim() === "") return;
 
     try {
-      // API 호출
       const response = await axios.get(apiUrl, {
         params: { keyword },
       });
-      onSearch(response.data); // 부모 컴포넌트의 onSearch 함수 호출
+      onSearch(response.data, keyword); // 검색어와 함께 검색 결과 전달
     } catch (error) {
       console.error("Error fetching search results:", error);
-      // 필요에 따라 에러 핸들링 로직 추가 가능
     }
   };
 
@@ -27,18 +24,17 @@ const SearchBar = ({ apiUrl, onSearch }) => {
       <input
         type="text"
         value={keyword}
-        onChange={(e) => setKeyword(e.target.value)} // 검색어 입력 시 상태 업데이트
+        onChange={(e) => setKeyword(e.target.value)}
         placeholder="책 제목 또는 저자 검색..."
       />
-      <button onClick={handleSearch}>검색</button> {/* 검색 버튼 */}
+      <button onClick={handleSearch}>검색</button>
     </div>
   );
 };
 
-// PropTypes를 사용하여 props의 타입 정의
 SearchBar.propTypes = {
   apiUrl: PropTypes.string.isRequired,
-  onSearch: PropTypes.func.isRequired, // onSearch는 필수 props
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default SearchBar;

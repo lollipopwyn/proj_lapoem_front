@@ -91,6 +91,13 @@ const authSlice = createSlice({
     clearMessage: (state) => {
       state.message = null;
     },
+    // 닉네임 업데이트 액션 추가
+    updateNickname: (state, action) => {
+      if (state.user) {
+        state.user.nickname = action.payload; // 닉네임 업데이트
+        localStorage.setItem('user', JSON.stringify(state.user)); // 로컬 스토리지에 업데이트된 사용자 정보 저장
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -147,5 +154,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearMessage } = authSlice.actions;
+export const { clearMessage, updateNickname } = authSlice.actions;
 export default authSlice.reducer;

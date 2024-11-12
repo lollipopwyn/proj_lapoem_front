@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import { updateNickname } from '../../redux/features/auth/authSlice';
 import birthIcon from '../../assets/images/birth_icon.png';
 import {
   GET_MEMBER_INFO_API_URL,
@@ -9,6 +10,7 @@ import {
 import '../My/Mypage.css';
 
 const Mypage = () => {
+  const dispatch = useDispatch();
   const member_num = useSelector((state) => state.auth.user?.memberNum);
   const [memberData, setMemberData] = useState(null);
   const [memberId, setMemberId] = useState(''); // State to store the member_id
@@ -98,7 +100,7 @@ const Mypage = () => {
 
   // 수정된 정보를 서버에 업데이트하는 함수
   const handleSave = async () => {
-    // 맞지 않는 형식의 정보 수정 시 알럭 추가
+    // 유효성 검사
     const nicknameError = validateNickname(nickname);
     const emailError = validateEmail(email);
     const contactError = validateContact(contact);
@@ -108,7 +110,6 @@ const Mypage = () => {
       return;
     }
 
-    // 수정된 정보를 서버에 저장하기 전에 확인 메시지를 띄움
     const isConfirmed = window.confirm('회원 정보를 수정하시겠습니까?');
     if (isConfirmed) {
       try {
@@ -119,18 +120,19 @@ const Mypage = () => {
           marketing_consent: marketingConsent,
         };
 
-        // URL을 member_num을 포함하여 생성합니다.
         const url = UPDATE_MEMBER_INFO_API_URL(member_num);
 
-        // 서버에 PATCH 요청을 보냅니다.
+        // 서버에 PATCH 요청
         const response = await axios.patch(url, updatedData, {
-          withCredentials: true, // 쿠키와 함께 요청을 보냅니다.
+          withCredentials: true,
         });
 
         if (response.status === 200) {
           setIsSaved(true); // 저장 후 성공 메시지 표시
           setIsEdited(false); // 수정 완료 후 isEdited 상태 초기화
           setMemberData(response.data); // 수정된 데이터를 클라이언트 상태에 반영
+
+          dispatch(updateNickname(nickname)); // Redux 상태의 닉네임 업데이트
           setTimeout(() => setIsSaved(false), 3000); // 3초 후 저장 알림 숨김
         }
       } catch (error) {
@@ -139,9 +141,6 @@ const Mypage = () => {
           error.response?.data?.message || 'Failed to update member info'
         );
       }
-    } else {
-      // 사용자가 취소한 경우, 아무 작업도 하지 않습니다.
-      console.log('회원 정보 수정이 취소되었습니다.');
     }
   };
 

@@ -115,7 +115,7 @@ const BookDetail = () => {
                     <strong>출판일:</strong> {bookDetail.publish_date}
                   </p>
                   <p>
-                    <strong>정가:</strong> {bookDetail.book_price} KRW
+                    <strong>정가:</strong> {bookDetail.book_price}
                   </p>
                   <p>
                     <strong>ISBN:</strong> {bookDetail.isbn}

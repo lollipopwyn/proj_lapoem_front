@@ -18,7 +18,7 @@
   justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  /* 위쪽 정렬로 모든 항목이 일관되게 정렬됨 */
+  width: 100%;
 }
 
 .input_group {
@@ -40,7 +40,7 @@
   padding: 12px;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 30px;
+  border-radius: 10px;
   text-align: left;
   outline: none;
   box-sizing: border-box;
@@ -98,4 +98,30 @@
 .error_message {
   color: red;
   font-size: 0.9rem;
+}
+
+/* 이메일 입력 필드와 체크박스 정렬 */
+.email_input_row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.email_input {
+  flex: 1;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  max-width: 500px;
+  /* 연락처 입력창과 동일한 최대 너비 */
+}
+
+.checkbox_label {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }

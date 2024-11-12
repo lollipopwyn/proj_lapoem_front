@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import {
-  GET_BOOK_REVIEWS_API_URL,
-  DELETE_REVIEW_API_URL,
-} from '../../util/apiUrl';
+import { GET_BOOK_REVIEWS_API_URL, DELETE_REVIEW_API_URL } from '../../util/apiUrl';
 // 컴퍼넌트
 import BookCreateReview from './BookCreateReview';
 import HeartRating from './HeartRating';
@@ -58,14 +55,9 @@ const BookReviews = () => {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      const deleteResponse = await axios.delete(
-        DELETE_REVIEW_API_URL(bookId, reviewId),
-        { withCredentials: true }
-      );
+      const deleteResponse = await axios.delete(DELETE_REVIEW_API_URL(bookId, reviewId), { withCredentials: true });
       if (deleteResponse.status === 200) {
-        setReviews((prevReviews) =>
-          prevReviews.filter((review) => review.review_num !== reviewId)
-        );
+        setReviews((prevReviews) => prevReviews.filter((review) => review.review_num !== reviewId));
         alert('리뷰가 삭제되었습니다.');
       }
     } catch (error) {
@@ -91,16 +83,13 @@ const BookReviews = () => {
               <li key={review.review_num || index} className="review-item">
                 <div className="review-header">
                   <h3 className="review-nickname">{review.member_nickname}</h3>
-                  <span className="review-date">
-                    {review.review_created_at}
-                  </span>
+                  <span className="review-date">{review.review_created_at}</span>
                   <HeartRating rating={review.rating} />
                 </div>
                 <div className="review-right">
                   {member_num === review.member_num && (
                     <img
                       className="delete-icon"
-                      img
                       src={deleteIcon}
                       alt="Delete Comment"
                       onClick={() => handleDeleteReview(review.review_num)}
@@ -113,9 +102,7 @@ const BookReviews = () => {
             ))}
           </ul>
         ) : (
-          <p className="book-review-none">
-            작성된 리뷰가 없습니다, 첫번째 BLOVER가 되세요!
-          </p>
+          <p className="book-review-none">작성된 리뷰가 없습니다, 첫번째 BLOVER가 되세요!</p>
         )}
         <BookCreateReview handleAddReview={handleAddReview} />
       </div>

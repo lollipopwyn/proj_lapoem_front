@@ -15,61 +15,60 @@ function Join() {
     member_phone: '',
     member_gender: '',
     member_birth_date: '',
+    marketing_consent: false,
   });
 
   const [errors, set_errors] = useState({});
-
   const navigate = useNavigate();
   const location = useLocation();
   const agreedTerms = location.state?.agreedTerms || [];
+
+  // 생년월일이 유효한 날짜인지 검증하는 함수 추가
+  const isValidDate = (dateString) => {
+    const regex = /^(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/;
+    if (!regex.test(dateString)) return false;
+
+    const year = parseInt(dateString.slice(0, 4), 10);
+    const month = parseInt(dateString.slice(4, 6), 10);
+    const day = parseInt(dateString.slice(6, 8), 10);
+
+    // 실제 날짜가 존재하는지 확인
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day;
+  };
 
   const handle_change = (e) => {
     const { name, value } = e.target;
     const updatedErrors = { ...errors };
 
-    // 아이디 검사
     if (name === 'member_id') {
-      const isValidId = /^[a-z0-9]+$/.test(value); // 영어 소문자와 숫자만 허용
+      const isValidId = /^[a-z0-9]+$/.test(value);
       updatedErrors.member_id = isValidId ? null : '아이디는 영어 소문자와 숫자만 입력 가능합니다.';
     }
-
-    // 이메일 형식 검사
     if (name === 'member_email') {
       const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
       updatedErrors.member_email = isValidEmail ? null : '이메일 형식이 맞지 않습니다.';
     }
-
-    // 전화번호 검사
     if (name === 'member_phone') {
       const isValidPhone = /^[0-9]*$/.test(value) && value.length <= 11;
       updatedErrors.member_phone = isValidPhone ? null : '전화번호 형식에 맞지 않습니다. 숫자만 입력해 주세요.';
     }
-
-    // 비밀번호 검사
     if (name === 'member_password') {
       const isValidPassword = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(value);
       updatedErrors.member_password = isValidPassword
         ? null
         : '비밀번호는 대문자 1개, 특수문자 1개를 포함하고 8자리 이상이어야 합니다.';
     }
-
-    // 비밀번호 확인 검사
     if (name === 'confirm_password') {
       updatedErrors.confirm_password = value === form_data.member_password ? null : '비밀번호가 일치하지 않습니다.';
     }
-
-    // 닉네임 검사
     if (name === 'member_nickname') {
       updatedErrors.member_nickname = value ? null : '닉네임을 입력해주세요.';
     }
-
-    // 생년월일 검사 (8자리 숫자)
     if (name === 'member_birth_date') {
-      const isValidDate = /^[0-9]{8}$/.test(value);
-      updatedErrors.member_birth_date = isValidDate ? null : '생년월일을 올바르게 입력해 주세요.';
+      // 생년월일 검증 추가
+      updatedErrors.member_birth_date = isValidDate(value) ? null : '생년월일을 올바르게 입력해 주세요.';
     }
-
-    // 성별 검사
     if (name === 'member_gender') {
       updatedErrors.member_gender = value ? null : '성별을 선택해 주세요.';
     }
@@ -83,18 +82,27 @@ function Join() {
     set_errors({ ...errors, member_gender: null });
   };
 
+  const handleCheckboxChange = () => {
+    set_form_data((prev_data) => ({
+      ...prev_data,
+      marketing_consent: !prev_data.marketing_consent,
+    }));
+  };
+
   const handle_submit = async (e) => {
     e.preventDefault();
 
-    // 필수 필드가 비어있는지 확인
+    // 확인용 콘솔 로그
+    console.log('전송할 데이터:', form_data);
     const validationErrors = {};
+
     if (!form_data.member_id) validationErrors.member_id = '아이디를 입력해주세요.';
     if (!form_data.member_password) validationErrors.member_password = '비밀번호를 입력해주세요.';
     if (!form_data.confirm_password) validationErrors.confirm_password = '비밀번호 확인을 입력해주세요.';
     if (!form_data.member_nickname) validationErrors.member_nickname = '닉네임을 입력해주세요.';
     if (!form_data.member_email) validationErrors.member_email = '이메일을 입력해주세요.';
     if (!form_data.member_gender) validationErrors.member_gender = '성별을 선택해 주세요.';
-    if (!form_data.member_birth_date || form_data.member_birth_date.length !== 8) {
+    if (!form_data.member_birth_date || !isValidDate(form_data.member_birth_date)) {
       validationErrors.member_birth_date = '생년월일을 올바르게 입력해 주세요.';
     }
     if (form_data.member_password !== form_data.confirm_password) {
@@ -103,7 +111,6 @@ function Join() {
 
     set_errors(validationErrors);
 
-    // 에러가 있으면 제출 중지
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
@@ -241,20 +248,25 @@ function Join() {
             placeholder="숫자만 입력해주세요."
             onChange={handle_change}
             className="join_input"
-            maxLength={11} // 전화번호는 11자리까지 입력 가능
+            maxLength={11}
           />
           {errors.member_phone && <p className="error_message">{errors.member_phone}</p>}
         </div>
-
         <div className="input_group">
           <p>이메일 *</p>
-          <input
-            type="email"
-            name="member_email"
-            placeholder="이메일을 입력해주세요."
-            onChange={handle_change}
-            className="join_input"
-          />
+          <div className="email_input_row">
+            <input
+              type="email"
+              name="member_email"
+              placeholder="이메일을 입력해주세요."
+              onChange={handle_change}
+              className="join_input"
+            />
+            <label className="checkbox_label">
+              <input type="checkbox" checked={form_data.marketing_consent} onChange={handleCheckboxChange} />
+              이메일 수신 동의
+            </label>
+          </div>
           {errors.member_email && <p className="error_message">{errors.member_email}</p>}
         </div>
 

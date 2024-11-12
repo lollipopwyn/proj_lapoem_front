@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import {
   GET_THREADS_DETAIL_API_URL,
@@ -8,122 +8,161 @@ import {
   POST_THREAD_COMMENT_API_URL,
 } from "../../util/apiUrl";
 
-function ThreadDetailPage() {
-  const { thread_num } = useParams();
-  const navigate = useNavigate();
-
-  // 스레드 정보 및 댓글 상태
+const ThreadDetailPage = () => {
+  const { thread_num } = useParams(); // useParams를 통해 thread_num을 가져옵니다.
   const [threadDetail, setThreadDetail] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [offset, setOffset] = useState(0);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
+  const authData = useSelector((state) => state.auth.authData);
   const COMMENTS_LIMIT = 5;
 
-  // 스레드 상세 정보 불러오기
+  // 스레드 상세 정보 가져오기
   useEffect(() => {
     const fetchThreadDetail = async () => {
       try {
-        const response = await axios.get(
-          GET_THREADS_DETAIL_API_URL(thread_num)
-        );
-        setThreadDetail(response.data);
+        const response = await fetch(GET_THREADS_DETAIL_API_URL(thread_num));
+        const data = await response.json();
+        setThreadDetail(data);
       } catch (error) {
-        console.error("Error fetching thread details:", error);
+        console.error("Error fetching thread detail:", error);
       }
     };
 
-    fetchThreadDetail();
+    if (thread_num) {
+      fetchThreadDetail();
+    }
   }, [thread_num]);
 
-  // 댓글 목록 불러오기
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(
-          GET_THREADS_COMMENTS_API_URL(thread_num),
-          {
-            params: { offset, limit: COMMENTS_LIMIT },
-          }
-        );
-        setComments((prevComments) => [
-          ...prevComments,
-          ...response.data.comments,
-        ]);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    fetchComments();
-  }, [thread_num, offset]);
-
-  // 새로운 댓글 작성
-  const handleAddComment = async () => {
+  // 부모 댓글 목록 가져오기 함수
+  const fetchComments = async (currentOffset) => {
     try {
-      await axios.post(POST_THREAD_COMMENT_API_URL(thread_num), {
-        member_num: 1, // 예제: 회원 번호를 직접 입력 (실제 환경에서는 인증된 사용자 정보 사용)
-        thread_content: newComment,
+      const response = await fetch(
+        `${GET_THREADS_COMMENTS_API_URL(
+          thread_num
+        )}?offset=${currentOffset}&limit=${COMMENTS_LIMIT}`
+      );
+      const data = await response.json();
+
+      if (data.comments.length < COMMENTS_LIMIT) {
+        setHasMoreComments(false); // 더 이상 가져올 댓글이 없을 경우
+      }
+
+      setComments((prevComments) => {
+        // 새로운 댓글 중에서 기존 댓글과 중복되지 않은 댓글만 필터링
+        const filteredComments = data.comments.filter(
+          (newComment) =>
+            !prevComments.some(
+              (existingComment) =>
+                existingComment.thread_content_num ===
+                newComment.thread_content_num
+            )
+        );
+        return [...prevComments, ...filteredComments];
       });
-      setNewComment("");
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  // 부모 댓글 목록 가져오기 (useEffect)
+  useEffect(() => {
+    if (thread_num) {
+      setComments([]); // thread_num 변경 시 댓글 초기화
       setOffset(0);
-      setComments([]); // 댓글 목록 초기화 후 다시 불러오기
+      setHasMoreComments(true);
+      fetchComments(0);
+    }
+  }, [thread_num]);
+
+  // 댓글 작성 핸들러
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await fetch(POST_THREAD_COMMENT_API_URL(thread_num), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          member_num: authData.member_num,
+          thread_content: newComment,
+        }),
+      });
+
+      if (response.ok) {
+        setNewComment("");
+        setComments([]); // 새 댓글 작성 후 기존 댓글 초기화
+        setOffset(0);
+        setHasMoreComments(true);
+        fetchComments(0); // 새 댓글 작성 후 부모 댓글 목록 다시 불러오기
+      } else {
+        console.error("Failed to post comment");
+      }
     } catch (error) {
       console.error("Error posting comment:", error);
     }
   };
 
-  // 더보기 버튼 클릭 시 추가 댓글 불러오기
+  // 더보기 버튼 클릭 핸들러
   const handleLoadMoreComments = () => {
-    setOffset((prevOffset) => prevOffset + COMMENTS_LIMIT);
+    const newOffset = offset + COMMENTS_LIMIT;
+    setOffset(newOffset);
+    fetchComments(newOffset);
   };
 
   return (
-    <div className="thread-detail-container">
-      {/* 상단 정보 */}
-      <header className="thread-detail-header">
-        <button onClick={() => navigate("/thread_on")}>&lt; Back</button>
-        {threadDetail && (
-          <>
-            <img
-              src={threadDetail.book_cover}
-              alt="Book Cover"
-              className="book-cover"
-            />
-            <h2>
-              {threadDetail.book_title} ({threadDetail.book_author})
-            </h2>
-            <p>{threadDetail.thread_created_at}</p>
-            <div className="thread-stats">
-              <span>👤 {threadDetail.total_participants}</span>
-              <span>💬 {threadDetail.total_comments}</span>
-            </div>
-          </>
-        )}
-      </header>
+    <div className="thread-detail-page">
+      {threadDetail && (
+        <div className="thread-header">
+          <img src={threadDetail.book_cover} alt="Book Cover" />
+          <h1>{threadDetail.book_title}</h1>
+          <p>등록일: {threadDetail.thread_created_at}</p>
+          <p>총 참여자 수: {threadDetail.participant_count}</p>
+          <p>댓글 및 대댓글 수: {threadDetail.total_comments}</p>
+        </div>
+      )}
 
-      {/* 댓글 섹션 */}
-      <section className="comments-section">
+      <div className="comments-section">
         {comments.map((comment) => (
-          <Comment key={comment.thread_content_num} comment={comment} />
+          <Comment
+            key={comment.thread_content_num}
+            comment={comment}
+            thread_num={thread_num}
+          />
         ))}
-        {comments.length % COMMENTS_LIMIT === 0 && comments.length > 0 && (
-          <button onClick={handleLoadMoreComments}>더보기</button>
-        )}
-      </section>
+        {/* {comments.map((comment, index) => {
+          console.log("comment num", comment.thread_content_num);
+        })}
+        {comments.map((comment, index) => (
+          <Comment
+            key={index} // index를 추가하여 키의 고유성 보장
+            comment={comment}
+            thread_num={thread_num}
+          />
+        ))} */}
+      </div>
 
-      {/* 새 댓글 입력 섹션 */}
-      <section className="new-comment-section">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="댓글을 작성하세요..."
-          maxLength={300}
-        />
-        <button onClick={handleAddComment}>댓글 등록</button>
-      </section>
-      <button onClick={() => navigate("/thread_on")}>To List</button>
+      {hasMoreComments && (
+        <button className="load-more-button" onClick={handleLoadMoreComments}>
+          더보기
+        </button>
+      )}
+
+      {authData ? (
+        <div className="new-comment">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="댓글을 작성하세요..."
+          />
+          <button onClick={handleCommentSubmit}>댓글 작성</button>
+        </div>
+      ) : (
+        <p>로그인 후 댓글을 작성할 수 있습니다.</p>
+      )}
     </div>
   );
-}
+};
 
 export default ThreadDetailPage;

@@ -1,40 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
 
-function Reply({ reply, isUserAuthor, onDelete }) {
+const Reply = ({ reply, isAuthor, onDelete }) => {
+  console.log("Reply component data:", reply); // 전달된 데이터 확인
+
   return (
     <div className="reply-container">
-      {/* 좌측 회색 막대기 */}
-      <div className="reply-bar" />
+      {/* 대댓글을 부모 댓글과 시각적으로 연결하는 좌측 회색 라인 */}
+      <div className="reply-line"></div>
 
       <div className="reply-content">
-        <p className="reply-author">
-          {reply.member_nickname}
+        <div className="reply-header">
+          <span className="reply-nickname">{reply.member_nickname}</span>
           <span className="reply-date">{reply.created_at}</span>
-        </p>
-        <p className="reply-text">
-          {reply.is_active ? reply.thread_content : "[삭제된 댓글입니다.]"}
-        </p>
-
-        {/* 삭제 버튼: 본인이 작성한 대댓글일 경우만 노출 */}
-        {isUserAuthor && (
-          <button
-            className="reply-delete-button"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "정말로 삭제 하시겠습니까? 삭제 후에는 복구가 불가능합니다."
-                )
-              ) {
-                onDelete(reply.thread_content_num);
-              }
-            }}
-          >
-            삭제
-          </button>
-        )}
+          {/* 본인이 작성한 대댓글일 때만 삭제 버튼 표시 */}
+          {isAuthor && (
+            <button
+              onClick={() => onDelete(reply.thread_content_num)}
+              className="delete-button"
+            >
+              ✖
+            </button>
+          )}
+        </div>
+        <div className="reply-text">{reply.thread_content}</div>
       </div>
     </div>
   );
-}
+};
 
 export default Reply;

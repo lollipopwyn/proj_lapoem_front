@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { GET_TOP_BOOKS_API_URL } from "../../util/apiUrl";
-
+import heartRating from '../../assets/images/heart-rating.png';
+import heartCrown from '../../assets/images/crown_icon.png';
 
 const TopOfBookList = () => {
   const [topBooks, setTopBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
   useEffect(() => {
     const fetchTopBooks = async () => {
       setLoading(true);
@@ -27,54 +28,108 @@ const TopOfBookList = () => {
     fetchTopBooks();
   }, []);
 
+  let isDragging = false;
+  let startX;
+
+  const handleMouseDown = (e) => {
+    isDragging = true;
+    startX = e.pageX;
+    e.target.closest('.book-list-container').style.cursor = 'grabbing';
+  };
+
+  const handleMouseUp = (e) => {
+    isDragging = false;
+    e.target.closest('.book-list-container').style.cursor = 'grab';
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const container = e.target.closest('.book-list-container');
+    container.scrollLeft -= e.movementX;
+  };
+
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>{error}</p>;
 
-
   return (
-    <div style={{ padding: "20px", width: "100%", textAlign: "center" }}>
-      <h2 style={{ 
-        fontFamily:"var(--font-en)",
-        fontSize: "40px", 
-        marginBottom: "20px" , 
-        fontWeight:"bold",
-        color:"var(--text-point)"}}>
-      THE MOST BELOVED BOOK IN LAPOEM
+    <div style={{ padding: "10px", width: "100%", textAlign: "center" }}>
+      <h2 style={{
+        fontFamily: "var(--font-en)",
+        fontSize: "35px",
+        marginBottom: "20px",
+        fontWeight: "var(--font-semibold-weight)",
+        color: "var(--text-point)"
+      }}>
+        THE MOST BELOVED BOOK IN LAPOEM
       </h2>
       <div
+        className="book-list-container"
         style={{
           display: "flex",
           overflowX: "auto",
           gap: "20px",
           width: "100%",
-        //   maxWidth: "1200px", 
           marginBottom: "80px",
           padding: "17px 0",
+          cursor: "grab",
+          scrollbarWidth: "none",
         }}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseUp}
       >
         {topBooks.map((book, index) => (
-          <div
+          <Link
+            to={`/book_list/${book.book_id}`}
             key={book.book_id}
             style={{
               flex: "0 0 auto",
               textAlign: "center",
+              textDecoration: "none",
+              color: "inherit",
+              position: "relative", // 추가: 왕관을 책 이미지 위에 배치할 수 있도록
             }}
           >
             <img
               src={book.book_cover}
               alt={book.book_title}
               style={{
-                width: "280px",
-                height: "280px",
+                marginLeft: "10px",
+                width: "200px",
+                height: "200px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                border: index === 0 ? "5px solid gold" : "2px solid var(--text-gray-light)", // 1등 책에 금색 테두리 적용
+                border: "2px solid var(--text-gray-light)",
+                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.25)",
               }}
             />
+            {/* 첫 번째 책에만 왕관 이미지 표시 */}
+            {index === 0 && (
+              <img
+                src={heartCrown}
+                alt="왕관"
+                style={{
+                  position: "absolute",
+                  top: "-18px",
+                  left: "10px",
+                  width: "60px", // 왕관 크기 조정
+                  height: "60px", // 왕관 크기 조정
+                  transform: "rotate(-40deg)", // 시계 반대 방향으로 10도 회전
+                }}
+              />
+            )}
             <p style={{ fontSize: "1em", marginTop: "10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {book.book_title}
             </p>
-          </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "5px" }}>
+              <img src={heartRating} alt="Heart Rating" style={{ width: "16px", height: "16px", marginRight: "5px" }} />
+              <span style={{ fontSize: "0.9em", color: "var(--text-secondary)" }}>
+                {book.average_rating} ({book.review_count})
+              </span>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

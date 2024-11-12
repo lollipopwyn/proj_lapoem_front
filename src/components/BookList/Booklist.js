@@ -5,7 +5,6 @@ import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_SEARCH_BOOKS_API_URL,
 } from "../../util/apiUrl";
-// 컴포넌트
 import Pagination from "../PageNation";
 import SearchBar from "../Common/SearchBar";
 import CategoryFilter from "../Common/CategoryFilter";
@@ -18,13 +17,18 @@ const BookList = () => {
   const [books, setBooks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
-  const [limit] = useState(10); // 페이지당 표시할 책의 수
+  const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState(""); // 검색어 상태 추가
 
   useEffect(() => {
-    fetchBooks(currentPage, selectedCategory);
-  }, [currentPage, selectedCategory]);
+    if (searchKeyword) {
+      fetchSearchResults(currentPage, searchKeyword); // 검색어가 있을 때는 검색 API 호출
+    } else {
+      fetchBooks(currentPage, selectedCategory); // 그렇지 않을 경우 일반 목록 API 호출
+    }
+  }, [currentPage, selectedCategory, searchKeyword]);
 
   const fetchBooks = async (page, genre_tag_id) => {
     setLoading(true);
@@ -35,7 +39,6 @@ const BookList = () => {
       const response = await axios.get(apiUrl, {
         params: { page, limit, genre_tag_id },
       });
-      console.log("Data fetched successfully:", response.data.data);
       setBooks(response.data.data);
       setTotalBooks(response.data.totalBooks);
       setLoading(false);
@@ -46,20 +49,36 @@ const BookList = () => {
   };
 
   // 검색 결과를 처리하는 함수
-  const handleSearch = (data) => {
-    setBooks(data.data); // 검색 결과로 도서 목록 업데이트
-    setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
-    setCurrentPage(data.currentPage); // 현재 페이지 업데이트
+  const handleSearch = (data, keyword) => {
+    setBooks(data.data);
+    setTotalBooks(data.totalBooks);
+    setCurrentPage(1); // 검색 시 페이지를 1로 초기화
     setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
+    setSearchKeyword(keyword); // 검색어 상태 업데이트
   };
 
-  // 카테고리 선택 핸들러
+  const fetchSearchResults = async (page, keyword) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(GET_SEARCH_BOOKS_API_URL, {
+        params: { keyword, page, limit },
+      });
+      setBooks(response.data.data);
+      setTotalBooks(response.data.totalBooks);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setLoading(false);
+    }
+  };
+
   const handleCategoryChange = (category) => {
-    setSelectedCategory(category); // 선택한 카테고리 ID로 상태 업데이트
-    setCurrentPage(1); // 필터 변경 시 페이지를 1로 초기화
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    setSearchKeyword(""); // 카테고리 변경 시 검색어 초기화
   };
 
-  const totalPages = Math.ceil(totalBooks / limit); // 총 페이지 수 계산
+  const totalPages = Math.ceil(totalBooks / limit);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -72,10 +91,7 @@ const BookList = () => {
       <h1 className="booklist_pagetitle">BOOK LIST</h1>
       <div className="booklist_search">
         <CategoryFilter onCategoryChange={handleCategoryChange} />
-        <SearchBar
-          apiUrl={GET_SEARCH_BOOKS_API_URL}
-          onSearch={handleSearch}
-        />{" "}
+        <SearchBar apiUrl={GET_SEARCH_BOOKS_API_URL} onSearch={handleSearch} />
       </div>
       <TopOfBookList />
       {loading ? (
@@ -100,7 +116,7 @@ const BookList = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
+              onPageChange={handlePageChange}
             />
           </div>
         </div>

@@ -23,16 +23,14 @@
   font-weight: bold;
 }
 
-
 /* ==============책 리스트================ */
 
 /* 검색창 */
 .booklist_search {
   display: flex;
   margin-top: 30px;
-  margin-bottom: 150px;
+  margin-bottom: 70px;
 }
-
 
 /* 책 정렬 */
 .booklist_content {
@@ -41,4 +39,3 @@
   justify-content: space-between;
   gap: 40px 0;
 }
-

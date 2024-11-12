@@ -84,11 +84,11 @@ const TopOfBookList = () => {
                 alt="왕관"
                 style={{
                   position: 'absolute',
-                  top: '-20px',
+                  top: '-7px',
                   left: '10px',
-                  width: '50px',
-                  height: '50px',
-                  transform: 'rotate(-33deg)',
+                  width: '40px',
+                  height: '40px',
+                  transform: 'rotate(-38deg)',
                 }}
               />
             )}

@@ -15,6 +15,7 @@ import rank3Icon from '../../assets/images/rank3-icon.png';
 import documentIcon from '../../assets/images/document.png';
 import publicIcon from '../../assets/images/public-icon.png';
 import meIcon from '../../assets/images/only-me-icon.png';
+import Pagination from '../PageNation';
 
 const CommunityMyForum = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,8 @@ const CommunityMyForum = () => {
   const [hotTopics, setHotTopics] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 7;
 
   const {
     fetchCommunityPosts: communityPosts,
@@ -147,6 +150,10 @@ const CommunityMyForum = () => {
     return content;
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="community-container">
       <div className="content-wrapper">
@@ -231,6 +238,13 @@ const CommunityMyForum = () => {
               ))
             )}
           </div>
+          <div className="pagination-container">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredPosts.length / postsPerPage)}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -259,9 +273,9 @@ const CommunityMyForum = () => {
             </div>
           </div>
           <div className="sidebar-section">
-            <h2>Today's Hot Forums</h2>
+            <h2>Weekly Hot Forums</h2>
             <div className="hot-topics">
-              {hotTopics.map((topic, index) => (
+              {hotTopics.slice(0, 3).map((topic, index) => (
                 <div
                   key={topic.posts_id}
                   className="topic-item"

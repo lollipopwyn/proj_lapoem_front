@@ -46,7 +46,9 @@ function HotForums() {
                 {topic.member_nickname}
               </span>
               <span className="forum-date">
-                {new Date(topic.post_created_at).toLocaleDateString()}
+                {new Date(topic.post_created_at)
+                  .toLocaleDateString()
+                  .replace(/\.$/, '')}
               </span>
             </div>
           ))

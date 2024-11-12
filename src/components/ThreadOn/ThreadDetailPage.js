@@ -16,6 +16,7 @@ const ThreadDetailPage = () => {
   const [offset, setOffset] = useState(0);
   const [hasMoreComments, setHasMoreComments] = useState(true);
   const [memberNum, setMemberNum] = useState(null);
+  const [loadedCommentCount, setLoadedCommentCount] = useState(0); // 불러온 총 댓글 수 상태
 
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const navigate = useNavigate();
@@ -82,47 +83,18 @@ const ThreadDetailPage = () => {
 
   // 댓글 삭제 성공 시 호출되는 함수
   const handleDeleteSuccess = async (deletedCommentId) => {
-    setComments((prevComments) => {
-      const updatedComments = prevComments.filter(
+    setComments((prevComments) =>
+      prevComments.filter(
         (comment) => comment.thread_content_num !== deletedCommentId
-      );
+      )
+    );
 
-      // 현재 표시 중인 댓글 개수와 업데이트된 댓글 개수 계산
-      const currentDisplayCount = prevComments.length; // 삭제 전 화면에 보이던 댓글 수
-      const requiredComments = currentDisplayCount - updatedComments.length; // 필요한 추가 댓글 수
-
-      console.log("현재 표시 중인 댓글 수:", currentDisplayCount);
-      console.log("삭제 후 남은 댓글 수:", updatedComments.length);
-      console.log("부족한 댓글 수:", requiredComments);
-
-      // 부족한 댓글 수만큼 로드하여 기존 표시 개수 유지
-      if (requiredComments > 0 && hasMoreComments) {
-        console.log(
-          "fetchComments 호출 - offset:",
-          offset + updatedComments.length,
-          "limit:",
-          requiredComments
-        );
-
-        // 필요한 개수만큼 댓글을 추가 로드
-        fetchComments(offset + updatedComments.length, requiredComments).then(
-          (additionalComments) => {
-            console.log("추가로 불러온 댓글 수:", additionalComments.length);
-            setComments((prevComments) => [
-              ...updatedComments,
-              ...additionalComments,
-            ]);
-            console.log(
-              "최종 표시 댓글 수:",
-              [...updatedComments, ...additionalComments].length
-            );
-          }
-        );
-      } else {
-        setComments(updatedComments);
+    // 삭제 후, 현재까지 불러온 댓글 수 (loadedCommentCount)만큼 다시 댓글 로드
+    fetchComments(0, loadedCommentCount).then((updatedComments) => {
+      setComments(updatedComments);
+      if (updatedComments.length < loadedCommentCount) {
+        setHasMoreComments(false); // 불러온 댓글 수가 총 불러와야 하는 댓글 수보다 적을 경우 더보기 버튼 비활성화
       }
-
-      return updatedComments;
     });
   };
 
@@ -176,6 +148,7 @@ const ThreadDetailPage = () => {
     setOffset(newOffset);
     fetchComments(newOffset).then((moreComments) => {
       setComments((prevComments) => [...prevComments, ...moreComments]);
+      setLoadedCommentCount(loadedCommentCount + moreComments.length); // 불러온 댓글 수 업데이트
     });
   };
 

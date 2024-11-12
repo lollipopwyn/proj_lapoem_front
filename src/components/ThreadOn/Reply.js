@@ -1,7 +1,37 @@
 import React from "react";
+import { DELETE_THREAD_COMMENTS_API_URL } from "../../util/apiUrl";
 
-const Reply = ({ reply, isAuthor, onDelete }) => {
+const Reply = ({ reply, isAuthor, memberNum, onDelete }) => {
   // console.log("Reply component data:", reply); // 전달된 데이터 확인
+
+  // 대댓글 삭제 함수
+  const handleDeleteReply = async () => {
+    if (window.confirm("정말로 대댓글을 삭제하시겠습니까?")) {
+      try {
+        const response = await fetch(
+          DELETE_THREAD_COMMENTS_API_URL(reply.thread_content_num),
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              member_num: memberNum, // 로그인한 사용자의 memberNum을 포함하여 요청
+            }),
+          }
+        );
+
+        if (response.ok) {
+          console.log("대댓글이 성공적으로 삭제되었습니다.");
+          onDelete(reply.thread_content_num); // 삭제된 대댓글의 ID를 부모 컴포넌트에 전달
+        } else {
+          console.error("대댓글 삭제 실패");
+        }
+      } catch (error) {
+        console.error("Error deleting reply:", error);
+      }
+    }
+  };
 
   return (
     <div className="reply-container">
@@ -14,11 +44,8 @@ const Reply = ({ reply, isAuthor, onDelete }) => {
           <span className="reply-date">{reply.created_at}</span>
           {/* 본인이 작성한 대댓글일 때만 삭제 버튼 표시 */}
           {isAuthor && (
-            <button
-              onClick={() => onDelete(reply.thread_content_num)}
-              className="delete-button"
-            >
-              ✖
+            <button onClick={handleDeleteReply} className="delete-button">
+              삭제
             </button>
           )}
         </div>

@@ -94,8 +94,17 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
     }
   };
 
+  // 대댓글 작성 후 새로운 대댓글을 추가하는 함수
   const onSubmitReply = (replyContent) => {
     console.log("대댓글 내용:", replyContent);
+    const newReply = {
+      thread_content_num: Date.now(), // 임시 키 값으로 Date.now() 사용
+      member_num: authData?.memberNum,
+      member_nickname: authData?.nickname,
+      thread_content: replyContent,
+      created_at: new Date().toISOString(),
+    };
+    setReplies((prevReplies) => [newReply, ...prevReplies]); // 새 대댓글을 기존 대댓글 리스트 앞에 추가
   };
 
   return (
@@ -132,7 +141,8 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
           comment={comment}
           thread_num={thread_num}
           onClose={toggleReplyModal}
-          onSubmit={onSubmitReply}
+          onSubmit={onSubmitReply} // 대댓글 작성 후 추가 함수 전달
+          memberNum={authData?.memberNum}
         />
       )}
 
@@ -144,9 +154,12 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
               <Reply
                 key={reply.thread_content_num}
                 reply={reply}
-                isAuthor={reply.member_num === authData?.memberNum}
-                onDelete={() =>
-                  console.log("삭제 버튼 클릭됨", reply.thread_content_num)
+                isAuthor={reply.member_num === authData?.memberNum} // 본인 여부 확인
+                memberNum={authData?.memberNum} // 로그인한 사용자의 memberNum 전달
+                onDelete={(replyId) =>
+                  setReplies((prevReplies) =>
+                    prevReplies.filter((r) => r.thread_content_num !== replyId)
+                  )
                 }
               />
             ))}

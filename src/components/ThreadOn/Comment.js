@@ -3,16 +3,24 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Reply from "./Reply";
 import ReplyModal from "./ReplyModal";
-import { GET_COMMENT_REPLIES_API_URL } from "../../util/apiUrl";
+import {
+  GET_COMMENT_REPLIES_API_URL,
+  DELETE_THREAD_COMMENTS_API_URL,
+} from "../../util/apiUrl";
 
-const Comment = ({ comment, thread_num }) => {
+const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
   const [replies, setReplies] = useState([]);
   const [showMoreReplies, setShowMoreReplies] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const authData = useSelector((state) => state.auth.authData); // authData 가져오기
+  const authData = useSelector((state) => state.auth.user); // authData 가져오기
+
+  // useEffect(() => {
+  //   console.log("Loaded authData:", authData); // authData 확인
+  //   console.log("comment.member_num:", comment.member_num); // comment의 member_num 확인
+  // }, [authData, comment]);
 
   const fetchReplies = async () => {
     try {
@@ -57,6 +65,35 @@ const Comment = ({ comment, thread_num }) => {
     }
   };
 
+  // 댓글 삭제 함수
+  const handleDeleteComment = async () => {
+    if (!window.confirm("정말로 댓글을 삭제하시겠습니까?")) return;
+
+    try {
+      const response = await fetch(
+        DELETE_THREAD_COMMENTS_API_URL(comment.thread_content_num),
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            member_num: authData.memberNum, // 로그인된 사용자의 member_num을 포함
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("댓글이 성공적으로 삭제되었습니다.");
+        if (onDeleteSuccess) onDeleteSuccess(comment.thread_content_num); // 상위 컴포넌트에 삭제 성공 알림
+      } else {
+        console.error("댓글 삭제 실패");
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
   const onSubmitReply = (replyContent) => {
     console.log("대댓글 내용:", replyContent);
   };
@@ -70,8 +107,10 @@ const Comment = ({ comment, thread_num }) => {
         </div>
         <div>
           {/* 로그인한 사용자와 댓글 작성자가 일치할 때만 삭제 버튼 표시 */}
-          {isLoggedIn && authData?.member_num === comment.member_num && (
-            <button className="delete-button">삭제</button>
+          {isLoggedIn && authData?.memberNum === comment.member_num && (
+            <button className="delete-button" onClick={handleDeleteComment}>
+              삭제
+            </button>
           )}
         </div>
       </div>
@@ -105,7 +144,7 @@ const Comment = ({ comment, thread_num }) => {
               <Reply
                 key={reply.thread_content_num}
                 reply={reply}
-                isAuthor={reply.member_num === authData?.member_num}
+                isAuthor={reply.member_num === authData?.memberNum}
                 onDelete={() =>
                   console.log("삭제 버튼 클릭됨", reply.thread_content_num)
                 }

@@ -15,12 +15,19 @@ const ThreadDetailPage = () => {
   const [newComment, setNewComment] = useState("");
   const [offset, setOffset] = useState(0);
   const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [memberNum, setMemberNum] = useState(null);
 
-  const user = useSelector((state) => state.auth.user); // 로그인된 사용자 정보 가져오기
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // 로그인 상태 가져오기
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const navigate = useNavigate();
   const COMMENTS_LIMIT = 5;
 
+  // 초기 로드 시 memberNum 설정
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    setMemberNum(user?.memberNum);
+  }, []);
+
+  // 스레드 상세 정보 가져오기
   useEffect(() => {
     const fetchThreadDetail = async () => {
       try {
@@ -37,48 +44,102 @@ const ThreadDetailPage = () => {
     }
   }, [thread_num]);
 
-  const fetchComments = async (currentOffset) => {
+  // 댓글을 가져오는 함수
+  const fetchComments = async (
+    currentOffset = 0,
+    additionalLimit = COMMENTS_LIMIT
+  ) => {
     try {
       const response = await fetch(
         `${GET_THREADS_COMMENTS_API_URL(
           thread_num
-        )}?offset=${currentOffset}&limit=${COMMENTS_LIMIT}`
+        )}?offset=${currentOffset}&limit=${additionalLimit}`
       );
       const data = await response.json();
 
-      if (data.comments.length < COMMENTS_LIMIT) {
+      if (data.comments.length < additionalLimit) {
         setHasMoreComments(false);
       }
 
-      setComments((prevComments) => {
-        const filteredComments = data.comments.filter(
-          (newComment) =>
-            !prevComments.some(
-              (existingComment) =>
-                existingComment.thread_content_num ===
-                newComment.thread_content_num
-            )
-        );
-        return [...prevComments, ...filteredComments];
-      });
+      return data.comments;
     } catch (error) {
       console.error("Error fetching comments:", error);
+      return [];
     }
   };
 
+  // 초기 로드 시 5개의 부모 댓글을 불러옴
   useEffect(() => {
     if (thread_num) {
       setComments([]);
       setOffset(0);
       setHasMoreComments(true);
-      fetchComments(0);
+      fetchComments(0).then((initialComments) => {
+        setComments(initialComments);
+      });
     }
   }, [thread_num]);
 
+  // 댓글 삭제 성공 시 호출되는 함수
+  const handleDeleteSuccess = async (deletedCommentId) => {
+    setComments((prevComments) => {
+      const updatedComments = prevComments.filter(
+        (comment) => comment.thread_content_num !== deletedCommentId
+      );
+
+      // 현재 표시 중인 댓글 개수와 업데이트된 댓글 개수 계산
+      const currentDisplayCount = prevComments.length; // 삭제 전 화면에 보이던 댓글 수
+      const requiredComments = currentDisplayCount - updatedComments.length; // 필요한 추가 댓글 수
+
+      console.log("현재 표시 중인 댓글 수:", currentDisplayCount);
+      console.log("삭제 후 남은 댓글 수:", updatedComments.length);
+      console.log("부족한 댓글 수:", requiredComments);
+
+      // 부족한 댓글 수만큼 로드하여 기존 표시 개수 유지
+      if (requiredComments > 0 && hasMoreComments) {
+        console.log(
+          "fetchComments 호출 - offset:",
+          offset + updatedComments.length,
+          "limit:",
+          requiredComments
+        );
+
+        // 필요한 개수만큼 댓글을 추가 로드
+        fetchComments(offset + updatedComments.length, requiredComments).then(
+          (additionalComments) => {
+            console.log("추가로 불러온 댓글 수:", additionalComments.length);
+            setComments((prevComments) => [
+              ...updatedComments,
+              ...additionalComments,
+            ]);
+            console.log(
+              "최종 표시 댓글 수:",
+              [...updatedComments, ...additionalComments].length
+            );
+          }
+        );
+      } else {
+        setComments(updatedComments);
+      }
+
+      return updatedComments;
+    });
+  };
+
+  // 댓글 작성 핸들러
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return;
 
-    console.log("member_num:", user?.member_num); // member_num 값 확인용
+    if (!memberNum) {
+      if (
+        window.confirm(
+          "회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        )
+      ) {
+        navigate("/login");
+      }
+      return;
+    }
 
     try {
       const response = await fetch(POST_THREAD_COMMENT_API_URL(thread_num), {
@@ -87,17 +148,18 @@ const ThreadDetailPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          member_num: user.member_num,
+          member_num: memberNum,
           thread_content: newComment,
         }),
       });
 
       if (response.ok) {
         setNewComment("");
-        setComments([]);
         setOffset(0);
         setHasMoreComments(true);
-        fetchComments(0);
+        fetchComments(0).then((initialComments) => {
+          setComments(initialComments);
+        });
       } else {
         const errorData = await response.json();
         console.error("Failed to post comment:", errorData.message);
@@ -108,12 +170,16 @@ const ThreadDetailPage = () => {
     }
   };
 
+  // 더보기 버튼 클릭 핸들러
   const handleLoadMoreComments = () => {
     const newOffset = offset + COMMENTS_LIMIT;
     setOffset(newOffset);
-    fetchComments(newOffset);
+    fetchComments(newOffset).then((moreComments) => {
+      setComments((prevComments) => [...prevComments, ...moreComments]);
+    });
   };
 
+  // 댓글 입력 클릭 시 로그인 확인
   const handleCommentClick = () => {
     if (!isLoggedIn) {
       if (
@@ -144,6 +210,7 @@ const ThreadDetailPage = () => {
             key={comment.thread_content_num}
             comment={comment}
             thread_num={thread_num}
+            onDeleteSuccess={handleDeleteSuccess}
           />
         ))}
       </div>

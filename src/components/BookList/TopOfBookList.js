@@ -50,7 +50,7 @@ const TopOfBookList = () => {
           display: 'flex',
           justifyContent: 'center', // 중앙 정렬
           gap: '20px',
-          marginBottom: '80px',
+          marginBottom: '65px',
           padding: '17px 0',
         }}
       >

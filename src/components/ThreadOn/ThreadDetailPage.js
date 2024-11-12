@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Comment from "./Comment";
 import {
@@ -9,16 +9,18 @@ import {
 } from "../../util/apiUrl";
 
 const ThreadDetailPage = () => {
-  const { thread_num } = useParams(); // useParams를 통해 thread_num을 가져옵니다.
+  const { thread_num } = useParams();
   const [threadDetail, setThreadDetail] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [offset, setOffset] = useState(0);
   const [hasMoreComments, setHasMoreComments] = useState(true);
-  const authData = useSelector((state) => state.auth.authData);
+
+  const user = useSelector((state) => state.auth.user); // 로그인된 사용자 정보 가져오기
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn); // 로그인 상태 가져오기
+  const navigate = useNavigate();
   const COMMENTS_LIMIT = 5;
 
-  // 스레드 상세 정보 가져오기
   useEffect(() => {
     const fetchThreadDetail = async () => {
       try {
@@ -35,7 +37,6 @@ const ThreadDetailPage = () => {
     }
   }, [thread_num]);
 
-  // 부모 댓글 목록 가져오기 함수
   const fetchComments = async (currentOffset) => {
     try {
       const response = await fetch(
@@ -46,11 +47,10 @@ const ThreadDetailPage = () => {
       const data = await response.json();
 
       if (data.comments.length < COMMENTS_LIMIT) {
-        setHasMoreComments(false); // 더 이상 가져올 댓글이 없을 경우
+        setHasMoreComments(false);
       }
 
       setComments((prevComments) => {
-        // 새로운 댓글 중에서 기존 댓글과 중복되지 않은 댓글만 필터링
         const filteredComments = data.comments.filter(
           (newComment) =>
             !prevComments.some(
@@ -66,49 +66,64 @@ const ThreadDetailPage = () => {
     }
   };
 
-  // 부모 댓글 목록 가져오기 (useEffect)
   useEffect(() => {
     if (thread_num) {
-      setComments([]); // thread_num 변경 시 댓글 초기화
+      setComments([]);
       setOffset(0);
       setHasMoreComments(true);
       fetchComments(0);
     }
   }, [thread_num]);
 
-  // 댓글 작성 핸들러
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return;
+
+    console.log("member_num:", user?.member_num); // member_num 값 확인용
 
     try {
       const response = await fetch(POST_THREAD_COMMENT_API_URL(thread_num), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          member_num: authData.member_num,
+          member_num: user.member_num,
           thread_content: newComment,
         }),
       });
 
       if (response.ok) {
         setNewComment("");
-        setComments([]); // 새 댓글 작성 후 기존 댓글 초기화
+        setComments([]);
         setOffset(0);
         setHasMoreComments(true);
-        fetchComments(0); // 새 댓글 작성 후 부모 댓글 목록 다시 불러오기
+        fetchComments(0);
       } else {
-        console.error("Failed to post comment");
+        const errorData = await response.json();
+        console.error("Failed to post comment:", errorData.message);
+        alert(errorData.message);
       }
     } catch (error) {
       console.error("Error posting comment:", error);
     }
   };
 
-  // 더보기 버튼 클릭 핸들러
   const handleLoadMoreComments = () => {
     const newOffset = offset + COMMENTS_LIMIT;
     setOffset(newOffset);
     fetchComments(newOffset);
+  };
+
+  const handleCommentClick = () => {
+    if (!isLoggedIn) {
+      if (
+        window.confirm(
+          "회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        )
+      ) {
+        navigate("/login");
+      }
+    }
   };
 
   return (
@@ -131,16 +146,6 @@ const ThreadDetailPage = () => {
             thread_num={thread_num}
           />
         ))}
-        {/* {comments.map((comment, index) => {
-          console.log("comment num", comment.thread_content_num);
-        })}
-        {comments.map((comment, index) => (
-          <Comment
-            key={index} // index를 추가하여 키의 고유성 보장
-            comment={comment}
-            thread_num={thread_num}
-          />
-        ))} */}
       </div>
 
       {hasMoreComments && (
@@ -149,18 +154,19 @@ const ThreadDetailPage = () => {
         </button>
       )}
 
-      {authData ? (
-        <div className="new-comment">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="댓글을 작성하세요..."
-          />
-          <button onClick={handleCommentSubmit}>댓글 작성</button>
-        </div>
-      ) : (
-        <p>로그인 후 댓글을 작성할 수 있습니다.</p>
-      )}
+      <div className="new-comment" onClick={handleCommentClick}>
+        <textarea
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="댓글을 작성하세요..."
+        />
+        <button
+          onClick={isLoggedIn ? handleCommentSubmit : handleCommentClick}
+          disabled={!isLoggedIn || !newComment.trim()}
+        >
+          댓글 작성
+        </button>
+      </div>
     </div>
   );
 };

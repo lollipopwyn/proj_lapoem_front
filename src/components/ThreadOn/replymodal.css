@@ -1,4 +1,4 @@
-.reply-modal-overlay {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -6,99 +6,84 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
-.reply-modal {
-  width: 1200px;
-  height: 535px;
+.modal-content {
   background: white;
+  padding: 20px;
+  width: 500px;
+  max-width: 90%;
   border-radius: 8px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.reply-modal-header {
-  height: 60px;
-  background-color: #5a4a42; /* 헤더 색상 */
-  color: #ffffff;
+.modal-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  font-size: 24px;
-  font-weight: bold;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
 }
 
 .close-button {
   background: none;
   border: none;
-  font-size: 30px;
-  color: #ffffff;
+  font-size: 20px;
   cursor: pointer;
 }
 
-.reply-modal-content {
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
+.parent-comment-info {
+  margin-bottom: 15px;
 }
 
-.parent-comment {
-  font-size: 18px;
-  color: #333333;
-}
-
-.comment-author {
+.parent-nickname {
   font-weight: bold;
+  font-size: 16px;
 }
 
-.comment-date {
+.parent-date {
   font-size: 14px;
-  color: #666666;
+  color: #888;
+}
+
+.parent-content {
+  font-size: 14px;
+  color: #333;
   margin-top: 5px;
 }
 
-.comment-text {
-  margin-top: 10px;
-  font-size: 18px;
-  color: #333333;
-  line-height: 1.5;
-}
-
-.reply-textarea {
-  width: 1120px;
-  height: 140px;
+.reply-input {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 15px;
   padding: 10px;
-  font-size: 16px;
-  color: #333333;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   resize: none;
 }
 
-.reply-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 20px;
-}
-
-.char-count {
-  font-size: 14px;
-  color: #666666;
-}
-
-.send-button {
-  background-color: #5a4a42; /* 버튼 색상 */
-  color: #ffffff;
+.submit-reply-button {
+  width: 100%;
+  padding: 10px;
   font-size: 16px;
-  padding: 10px 20px;
+  color: white;
+  background-color: #333;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.submit-reply-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

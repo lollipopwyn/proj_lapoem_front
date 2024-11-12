@@ -1,7 +1,7 @@
 import React from "react";
 
 const Reply = ({ reply, isAuthor, onDelete }) => {
-  console.log("Reply component data:", reply); // 전달된 데이터 확인
+  // console.log("Reply component data:", reply); // 전달된 데이터 확인
 
   return (
     <div className="reply-container">

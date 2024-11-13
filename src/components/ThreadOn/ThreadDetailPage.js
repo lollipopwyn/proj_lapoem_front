@@ -89,11 +89,17 @@ const ThreadDetailPage = () => {
       )
     );
 
-    // 삭제 후, 현재까지 불러온 댓글 수 (loadedCommentCount)만큼 다시 댓글 로드
-    fetchComments(0, loadedCommentCount).then((updatedComments) => {
+    // 삭제 후, 현재까지 불러온 댓글 수에 맞춰 다시 댓글을 불러오기
+    const updatedLimit = comments.length; // 현재 화면에 보여지는 댓글 수에 맞춰 설정
+
+    fetchComments(0, updatedLimit).then((updatedComments) => {
       setComments(updatedComments);
-      if (updatedComments.length < loadedCommentCount) {
-        setHasMoreComments(false); // 불러온 댓글 수가 총 불러와야 하는 댓글 수보다 적을 경우 더보기 버튼 비활성화
+
+      // 불러온 댓글 수가 현재 로드된 수보다 적으면 더보기 버튼 비활성화
+      if (updatedComments.length < updatedLimit) {
+        setHasMoreComments(false);
+      } else {
+        setHasMoreComments(true);
       }
     });
   };

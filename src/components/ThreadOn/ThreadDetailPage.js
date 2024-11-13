@@ -35,18 +35,19 @@ const ThreadDetailPage = () => {
     setMemberNum(user?.memberNum);
   }, []);
 
+  // 스레드 상세 정보를 가져오는 함수
+  const fetchThreadDetail = async () => {
+    try {
+      const response = await fetch(GET_THREADS_DETAIL_API_URL(thread_num));
+      const data = await response.json();
+      setThreadDetail(data);
+    } catch (error) {
+      console.error("Error fetching thread detail:", error);
+    }
+  };
+
   // 스레드 상세 정보 가져오기
   useEffect(() => {
-    const fetchThreadDetail = async () => {
-      try {
-        const response = await fetch(GET_THREADS_DETAIL_API_URL(thread_num));
-        const data = await response.json();
-        setThreadDetail(data);
-      } catch (error) {
-        console.error("Error fetching thread detail:", error);
-      }
-    };
-
     if (thread_num) {
       fetchThreadDetail();
     }
@@ -108,6 +109,9 @@ const ThreadDetailPage = () => {
       } else {
         setHasMoreComments(true);
       }
+
+      // 최신 스레드 상세 정보를 다시 가져옴
+      fetchThreadDetail();
     });
   };
 
@@ -142,9 +146,14 @@ const ThreadDetailPage = () => {
         setNewComment("");
         setOffset(0);
         setHasMoreComments(true);
+
+        // 댓글 목록 초기화 후 새로 불러오기
         fetchComments(0).then((initialComments) => {
           setComments(initialComments);
         });
+
+        // 최신 스레드 상세 정보를 다시 가져옴
+        fetchThreadDetail();
       } else {
         const errorData = await response.json();
         console.error("Failed to post comment:", errorData.message);

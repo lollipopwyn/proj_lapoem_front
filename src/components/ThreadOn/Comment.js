@@ -57,6 +57,11 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
     setShowMoreReplies(true);
   };
 
+  // 접기 버튼 클릭 시 실행될 함수
+  const handleCollapseReplies = () => {
+    setShowMoreReplies(false);
+  };
+
   const toggleReplyModal = () => {
     if (isLoggedIn) {
       setIsReplyModalOpen(!isReplyModalOpen);
@@ -178,14 +183,22 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
               />
             );
           })}
-          {replies.length > 2 && !showMoreReplies && (
-            <button
-              onClick={handleShowMoreReplies}
-              className="show-more-replies-button"
-            >
-              더보기
-            </button>
-          )}
+          {replies.length > 2 &&
+            (showMoreReplies ? (
+              <button
+                onClick={handleCollapseReplies}
+                className="collapse-replies-button"
+              >
+                접기
+              </button>
+            ) : (
+              <button
+                onClick={handleShowMoreReplies}
+                className="show-more-replies-button"
+              >
+                더보기
+              </button>
+            ))}
         </div>
       )}
     </div>

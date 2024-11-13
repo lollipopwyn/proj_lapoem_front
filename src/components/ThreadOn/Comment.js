@@ -113,9 +113,16 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
       member_num: authData?.memberNum,
       member_nickname: authData?.nickname,
       thread_content: replyContent,
-      created_at: new Date().toISOString(),
+      created_at: new Date().toLocaleString("ko-KR", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      }),
     };
-    setReplies((prevReplies) => [newReply, ...prevReplies]); // 새 대댓글을 기존 대댓글 리스트 앞에 추가
+    setReplies((prevReplies) => [...prevReplies, newReply]); // 새 대댓글을 기존 대댓글 리스트 뒤에 추가
   };
 
   return (

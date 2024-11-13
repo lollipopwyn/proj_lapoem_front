@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   GET_BOOK_LIST_API_URL,
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_SEARCH_BOOKS_API_URL,
-} from "../../util/apiUrl";
-import Pagination from "../PageNation";
-import SearchBar from "../Common/SearchBar";
-import CategoryFilter from "../Common/CategoryFilter";
-import TopOfBookList from "./TopOfBookList";
-import BookCard from "../Bookcard";
+} from '../../util/apiUrl';
+import Pagination from '../PageNation';
+import SearchBar from '../Common/SearchBar';
+import CategoryFilter from '../Common/CategoryFilter';
+import TopOfBookList from './TopOfBookList';
+import BookCard from '../Bookcard';
 
-import "./Booklist.css";
+import './Booklist.css';
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -19,8 +19,8 @@ const BookList = () => {
   const [totalBooks, setTotalBooks] = useState(0);
   const [limit] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState(""); // 검색어 상태 추가
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState(''); // 검색어 상태 추가
 
   useEffect(() => {
     if (searchKeyword) {
@@ -43,7 +43,7 @@ const BookList = () => {
       setTotalBooks(response.data.totalBooks);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching books:", error);
+      console.error('Error fetching books:', error);
       setLoading(false);
     }
   };
@@ -53,7 +53,7 @@ const BookList = () => {
     setBooks(data.data);
     setTotalBooks(data.totalBooks);
     setCurrentPage(1); // 검색 시 페이지를 1로 초기화
-    setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
+    setSelectedCategory(''); // 검색 시 선택된 카테고리 초기화
     setSearchKeyword(keyword); // 검색어 상태 업데이트
   };
 
@@ -67,7 +67,7 @@ const BookList = () => {
       setTotalBooks(response.data.totalBooks);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching search results:", error);
+      console.error('Error fetching search results:', error);
       setLoading(false);
     }
   };
@@ -75,7 +75,7 @@ const BookList = () => {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setCurrentPage(1);
-    setSearchKeyword(""); // 카테고리 변경 시 검색어 초기화
+    setSearchKeyword(''); // 카테고리 변경 시 검색어 초기화
   };
 
   const totalPages = Math.ceil(totalBooks / limit);
@@ -96,6 +96,8 @@ const BookList = () => {
       <TopOfBookList />
       {loading ? (
         <p>Loading...</p>
+      ) : books.length === 0 ? (
+        <p className="no_book_message">검색 결과가 없습니다.</p>
       ) : (
         <div className="booklist_wrapper">
           <div className="booklist_content">

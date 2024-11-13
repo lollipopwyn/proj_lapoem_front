@@ -30,9 +30,7 @@ function ThreadCard({
             {/* <p className="thread-title">채식주의자(리마스터판)</p> */}
 
             <div className="thread-writer">
-              <p>{author}</p>
-              <p>·</p>
-              <p>{publisher}</p>
+              <p>{`${author} · ${publisher}`}</p>
             </div>
             {/* <div className="thread-writer">
               <p>한강</p>

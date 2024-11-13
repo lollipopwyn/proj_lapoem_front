@@ -7,6 +7,8 @@ import {
   GET_THREADS_COMMENTS_API_URL,
   POST_THREAD_COMMENT_API_URL,
 } from "../../util/apiUrl";
+import "./ThreadDetailPage.css";
+import back from "../../assets/images/back.png";
 
 const ThreadDetailPage = () => {
   const { thread_num } = useParams();
@@ -172,46 +174,65 @@ const ThreadDetailPage = () => {
   };
 
   return (
-    <div className="thread-detail-page">
-      {threadDetail && (
-        <div className="thread-header">
-          <img src={threadDetail.book_cover} alt="Book Cover" />
-          <h1>{threadDetail.book_title}</h1>
-          <p>등록일: {threadDetail.thread_created_at}</p>
-          <p>총 참여자 수: {threadDetail.participant_count}</p>
-          <p>댓글 및 대댓글 수: {threadDetail.total_comments}</p>
+    <div className="thread-detail-container">
+      <h1 className="thread-header">THREAD ON</h1>
+
+      <div className="thread-detail-wrapper">
+        <div className="thread-detail-header-container">
+          {threadDetail && (
+            <div className="thread-detail-header">
+              <div className="thread-detail-left">
+                <img src={back} alt="뒤로 가기" className="to-thread-list" />
+              </div>
+              <div className="thread-detail-center">
+                <img
+                  src={threadDetail.book_cover}
+                  alt="Book Cover"
+                  className="thread-detail-book-img"
+                />
+                <div className="thread-detail-info">
+                  <h1>{threadDetail.book_title}</h1>
+                  <p>{threadDetail.thread_created_at}</p>
+                </div>
+              </div>
+              <div className="thread-detail-right">
+                <p>총 참여자 수: {threadDetail.participant_count}</p>
+                <p>댓글 및 대댓글 수: {threadDetail.total_comments}</p>
+              </div>
+            </div>
+          )}
         </div>
-      )}
 
-      <div className="comments-section">
-        {comments.map((comment) => (
-          <Comment
-            key={comment.thread_content_num}
-            comment={comment}
-            thread_num={thread_num}
-            onDeleteSuccess={handleDeleteSuccess}
+        <div className="comments-section">
+          {comments.map((comment) => (
+            <Comment
+              key={comment.thread_content_num}
+              comment={comment}
+              thread_num={thread_num}
+              onDeleteSuccess={handleDeleteSuccess}
+            />
+          ))}
+        </div>
+
+        {hasMoreComments && (
+          <button className="load-more-button" onClick={handleLoadMoreComments}>
+            더보기
+          </button>
+        )}
+
+        <div className="new-comment" onClick={handleCommentClick}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="댓글을 작성하세요..."
           />
-        ))}
-      </div>
-
-      {hasMoreComments && (
-        <button className="load-more-button" onClick={handleLoadMoreComments}>
-          더보기
-        </button>
-      )}
-
-      <div className="new-comment" onClick={handleCommentClick}>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="댓글을 작성하세요..."
-        />
-        <button
-          onClick={isLoggedIn ? handleCommentSubmit : handleCommentClick}
-          disabled={!isLoggedIn || !newComment.trim()}
-        >
-          댓글 작성
-        </button>
+          <button
+            onClick={isLoggedIn ? handleCommentSubmit : handleCommentClick}
+            disabled={!isLoggedIn || !newComment.trim()}
+          >
+            댓글 작성
+          </button>
+        </div>
       </div>
     </div>
   );

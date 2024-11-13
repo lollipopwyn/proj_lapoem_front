@@ -7,10 +7,11 @@
 }
 
 /* 댓글 데이터 불러오는 부분 css */
-.thread-comment-content {
+.thread-comment-wrapper {
   display: flex;
   flex-direction: column;
   row-gap: 8px;
+  padding: 0 80px;
 }
 
 .thread-comment-header {
@@ -57,7 +58,8 @@
 /* 대댓글 작성 버튼 */
 .post-reply {
   margin-top: 14px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
+  padding: 0 80px;
 }
 
 .reply-button {
@@ -73,13 +75,18 @@
 
 /* 대댓글 더보기 버튼 */
 .is-reply-more {
-  border-top: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 20px;
 }
 
 .is-reply-more > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-top: 1px solid #ccc;
   padding-top: 20px;
 }
 
@@ -87,8 +94,8 @@
 .reply-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
-  padding: 0 12px;
+  /* margin-bottom: 20px; */
+  padding: 0 92px;
   /* max-width: 1560px; */
 }
 
@@ -96,6 +103,7 @@
   width: 4px;
   height: 30px;
   background-color: var(--text-gray-light);
+  margin-top: 20px;
   margin-bottom: 10px;
 }
 

@@ -132,7 +132,7 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
 
   return (
     <div className="thread-comment-container">
-      <div className="thread-comment-content">
+      <div className="thread-comment-wrapper">
         <div className="thread-comment-header">
           <div className="thread-comment-header-left">
             <p className="thread-comment-nickname">{comment.member_nickname}</p>
@@ -200,9 +200,9 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
               />
             );
           })}
-          <div className="is-reply-more">
-            {replies.length > 2 &&
-              (showMoreReplies ? (
+          {replies.length > 2 && (
+            <div className="is-reply-more">
+              {showMoreReplies ? (
                 <button
                   onClick={handleCollapseReplies}
                   className="collapse-replies-button"
@@ -216,8 +216,9 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
                 >
                   <img src={morereply} alt="더보기" />
                 </button>
-              ))}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

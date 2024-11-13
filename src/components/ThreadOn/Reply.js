@@ -1,5 +1,7 @@
 import React from "react";
 import { DELETE_THREAD_COMMENTS_API_URL } from "../../util/apiUrl";
+import "./commentReplyStyles.css";
+import deleteIcon from "../../assets/images/delete.png";
 
 const Reply = ({ reply, isAuthor, memberNum, onDelete }) => {
   // console.log("Reply component data:", reply); // 전달된 데이터 확인
@@ -40,12 +42,14 @@ const Reply = ({ reply, isAuthor, memberNum, onDelete }) => {
 
       <div className="reply-content">
         <div className="reply-header">
-          <span className="reply-nickname">{reply.member_nickname}</span>
-          <span className="reply-date">{reply.created_at}</span>
+          <div className="reply-header-left">
+            <span className="reply-nickname">{reply.member_nickname}</span>
+            <span className="reply-date">{reply.created_at}</span>
+          </div>
           {/* 본인이 작성한 대댓글일 때만 삭제 버튼 표시 */}
           {isAuthor && (
-            <button onClick={handleDeleteReply} className="delete-button">
-              삭제
+            <button onClick={handleDeleteReply} className="reply-delete-button">
+              <img src={deleteIcon} alt="삭제" />
             </button>
           )}
         </div>

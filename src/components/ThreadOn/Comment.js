@@ -7,6 +7,11 @@ import {
   GET_COMMENT_REPLIES_API_URL,
   DELETE_THREAD_COMMENTS_API_URL,
 } from "../../util/apiUrl";
+import "./commentReplyStyles.css";
+import deleteIcon from "../../assets/images/delete.png";
+import replycount from "../../assets/images/comment 2.png";
+import morereply from "../../assets/images/More.png";
+import collapse from "../../assets/images/collapse.png";
 
 const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
   const [replies, setReplies] = useState([]);
@@ -126,28 +131,33 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
   };
 
   return (
-    <div className="comment">
-      <div className="comment-header flex">
-        <div className="flex">
-          <p>{comment.member_nickname}</p>
-          <p>{comment.created_at}</p>
+    <div className="thread-comment-container">
+      <div className="thread-comment-content">
+        <div className="thread-comment-header">
+          <div className="thread-comment-header-left">
+            <p className="thread-comment-nickname">{comment.member_nickname}</p>
+            <p className="thread-comment-date">{comment.created_at}</p>
+          </div>
+          <div>
+            {/* 로그인한 사용자와 댓글 작성자가 일치할 때만 삭제 버튼 표시 */}
+            {isLoggedIn && authData?.memberNum === comment.member_num && (
+              <button
+                className="thread-delete-button"
+                onClick={handleDeleteComment}
+              >
+                <img src={deleteIcon} alt="삭제" />
+              </button>
+            )}
+          </div>
         </div>
         <div>
-          {/* 로그인한 사용자와 댓글 작성자가 일치할 때만 삭제 버튼 표시 */}
-          {isLoggedIn && authData?.memberNum === comment.member_num && (
-            <button className="delete-button" onClick={handleDeleteComment}>
-              삭제
-            </button>
-          )}
+          <p className="thread-comment-content">{comment.thread_content}</p>
         </div>
       </div>
-      <div>
-        <p className="comment-content">{comment.thread_content}</p>
-      </div>
 
-      <div className="reply-action">
+      <div className="post-reply">
         <button onClick={toggleReplyModal} className="reply-button">
-          <span className="reply-icon">💬</span>
+          <img src={replycount} alt="대댓글" />
           {comment.reply_count > 0 && (
             <span className="reply-count"> {comment.reply_count}</span>
           )}
@@ -190,22 +200,24 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
               />
             );
           })}
-          {replies.length > 2 &&
-            (showMoreReplies ? (
-              <button
-                onClick={handleCollapseReplies}
-                className="collapse-replies-button"
-              >
-                접기
-              </button>
-            ) : (
-              <button
-                onClick={handleShowMoreReplies}
-                className="show-more-replies-button"
-              >
-                더보기
-              </button>
-            ))}
+          <div className="is-reply-more">
+            {replies.length > 2 &&
+              (showMoreReplies ? (
+                <button
+                  onClick={handleCollapseReplies}
+                  className="collapse-replies-button"
+                >
+                  <img src={collapse} alt="접기" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleShowMoreReplies}
+                  className="show-more-replies-button"
+                >
+                  <img src={morereply} alt="더보기" />
+                </button>
+              ))}
+          </div>
         </div>
       )}
     </div>

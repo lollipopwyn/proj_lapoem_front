@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { GET_BOOK_REVIEWS_API_URL } from '../../util/apiUrl';
+import { GET_BOOK_REVIEW_DISTRIBUTION_API_URL } from '../../util/apiUrl';
+import heartImage from '../../assets/images/heart-rating.png';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,210 +23,306 @@ ChartJS.register(
   Legend
 );
 
-const BookReviewChart = () => {
-  const { bookId } = useParams(); // bookId는 URL 파라미터로 가져옴
-  const [reviews, setReviews] = useState([]);
+const BookReviewDistributionChart = () => {
+  const { bookId } = useParams();
+  const [reviewData, setReviewData] = useState({
+    ratingDistribution: Array(5).fill(0),
+    genderAgeDistribution: {
+      female: Array(6).fill(0),
+      male: Array(6).fill(0),
+    },
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchReviews(); // 리뷰 데이터를 가져오는 함수 호출
+    fetchReviewDistributionData();
   }, [bookId]);
 
-  const fetchReviews = async () => {
+  const fetchReviewDistributionData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await axios.get(GET_BOOK_REVIEWS_API_URL(bookId), {
-        withCredentials: true,
+      const response = await axios.get(
+        GET_BOOK_REVIEW_DISTRIBUTION_API_URL(bookId),
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log('API Response Data:', response.data);
+
+      const ratingDistribution = response.data.rating_distribution.map(Number);
+      const genderAgeDistribution = {
+        female: response.data.gender_age_distribution.female.map(Number),
+        male: response.data.gender_age_distribution.male.map(Number),
+      };
+
+      setReviewData({
+        ratingDistribution: ratingDistribution || Array(5).fill(0),
+        genderAgeDistribution: genderAgeDistribution || {
+          female: Array(6).fill(0),
+          male: Array(6).fill(0),
+        },
       });
-      setReviews(response.data);
     } catch (err) {
-      console.error('Error fetching reviews:', err);
-      setError('리뷰를 가져오는 중 오류가 발생했습니다.');
+      console.error('Error fetching review distribution data:', err);
+      setError('리뷰 데이터를 가져오는 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 리뷰 데이터 처리
-  const getRatingDistribution = () => {
-    const ratingCounts = [0, 0, 0, 0, 0]; // [1점, 2점, 3점, 4점, 5점]
-    let totalScore = 0; //
+  const totalRatings = reviewData.ratingDistribution.reduce((a, b) => a + b, 0);
 
-    reviews.forEach((review) => {
-      const rating = review.rating;
-      if (rating >= 1 && rating <= 5) {
-        ratingCounts[rating - 1] += 1;
-        totalScore += rating; // 리뷰의 점수 더하기
-      }
-    });
+  const averageRating =
+    totalRatings > 0
+      ? (
+          reviewData.ratingDistribution.reduce(
+            (sum, count, index) => sum + count * (index * 2 + 2),
+            0
+          ) / totalRatings
+        ).toFixed(1)
+      : 'N/A';
 
-    const totalReviews = reviews.length;
-    const percentages = ratingCounts.map((count) =>
-      ((count / totalReviews) * 100).toFixed(2)
-    );
+  const heartsArray = [
+    Array(5).fill(0),
+    Array(4).fill(0),
+    Array(3).fill(0),
+    Array(2).fill(0),
+    Array(1).fill(0),
+  ];
 
-    // 평균 점수 계산: 총 점수 합 / 리뷰 수
-    const averageRating = (totalScore / totalReviews).toFixed(2);
-
-    return {
-      labels: ['1 Heart', '2 Hearts', '3 Hearts', '4 Hearts', '5 Hearts'],
-      datasets: [
-        {
-          label: `평균 점수: ${averageRating}/10점`,
-          data: percentages,
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
+  const ratingDistributionData = {
+    labels: ['', '', '', '', ''],
+    datasets: [
+      {
+        label: '평점 분포',
+        data: [...reviewData.ratingDistribution].reverse(),
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+      },
+    ],
   };
 
-  const getGenderAgeDistribution = () => {
-    const genderAgeGroups = {
-      Female_10s: 0,
-      Female_20s: 0,
-      Female_30s: 0,
-      Female_40s: 0,
-      Male_10s: 0,
-      Male_20s: 0,
-      Male_30s: 0,
-      Male_40s: 0,
-    };
+  const genderAgeDistributionData = {
+    labels: ['10대', '20대', '30대', '40대', '50대', '60대 이상'],
+    datasets: [
+      {
+        label: '여성',
+        data: reviewData.genderAgeDistribution.female,
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      {
+        label: '남성',
+        data: reviewData.genderAgeDistribution.male,
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+      },
+    ],
+  };
 
-    reviews.forEach((review) => {
-      const { member_gender, member_birth_date, rating } = review;
-      const age =
-        new Date().getFullYear() - new Date(member_birth_date).getFullYear();
-      const ageGroup =
-        age <= 19 ? '10s' : age <= 30 ? '20s' : age <= 40 ? '30s' : '40s 이상';
-      const groupKey = `${member_gender}_${ageGroup}`;
-
-      if (rating === 10) {
-        // 하트 5개 (10점)
-        genderAgeGroups[groupKey] += 1;
-      }
-    });
-
-    const totalReviews = reviews.length;
-    const percentages = Object.values(genderAgeGroups).map((count) =>
-      ((count / totalReviews) * 100).toFixed(2)
-    );
-
-    return {
-      labels: [
-        'Female 10s',
-        'Female 20s',
-        'Female 30s',
-        'Female 40s대 이상',
-        'Male 10s',
-        'Male 20s',
-        'Male 30s',
-        'Male 40s 이상',
-      ],
-      datasets: [
-        {
-          label: 'Gender & Age Group Distribution (%)',
-          data: percentages,
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)',
-            'rgba(105, 105, 105, 0.2)',
-            'rgba(255, 105, 180, 0.2)',
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)',
-            'rgba(105, 105, 105, 1)',
-            'rgba(255, 105, 180, 1)',
-          ],
-          borderWidth: 1,
+  const ratingDistributionOptions = {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const percentage = ((context.raw / totalRatings) * 100).toFixed(1);
+            return `${context.raw}명 (${percentage}%)`;
+          },
         },
-      ],
-    };
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        reverse: false,
+        ticks: {
+          display: false,
+        },
+      },
+      x: {
+        beginAtZero: true,
+        max: Math.max(...reviewData.ratingDistribution) + 5,
+        grid: {
+          display: false,
+        },
+        ticks: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  const genderAgeDistributionOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const totalForGender =
+              context.dataset.label === '여성'
+                ? reviewData.genderAgeDistribution.female.reduce(
+                    (a, b) => a + b,
+                    0
+                  )
+                : reviewData.genderAgeDistribution.male.reduce(
+                    (a, b) => a + b,
+                    0
+                  );
+            const percentage = ((context.raw / totalForGender) * 100).toFixed(
+              1
+            );
+            return `${context.raw}명 (${percentage}%)`;
+          },
+        },
+      },
+      legend: {
+        position: 'top',
+      },
+    },
+    scales: {
+      y: {
+        display: false,
+      },
+    },
   };
 
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>{error}</p>;
 
-  const ratingDistributionData = getRatingDistribution();
-  const genderAgeDistributionData = getGenderAgeDistribution();
-
-  const options = {
-    indexAxis: 'y', // 누워있는 바 차트
-    plugins: {
-      datalabels: {
-        color: 'black',
-        font: {
-          weight: 'bold',
-          size: 12,
-        },
-        formatter: (value) => `${value}%`, // 퍼센트를 데이터 레이블로 표시
-      },
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-      },
-    },
-  };
-
   return (
     <div>
-      <h2>Book Review Statistics</h2>
-      {/* 평점 분포 그래프 */}
-      <div>
-        <h3>Rating Distribution</h3>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div>
-            <p>하트 1개</p>
-            <Bar data={ratingDistributionData} options={options} />
-            <p>{ratingDistributionData.datasets[0].label}</p>
-          </div>
+      <div style={{ display: 'flex', gap: '50px' }}>
+        <div style={{ width: '45%' }}>
+          <h3
+            style={{
+              textAlign: 'center',
+              fontSize: '24px',
+              marginBottom: '10px',
+              color: 'rgba(54, 162, 235, 1)',
+            }}
+          >
+            리뷰 작성자 분포
+          </h3>
+          <Bar
+            data={genderAgeDistributionData}
+            options={genderAgeDistributionOptions}
+          />
         </div>
-      </div>
-
-      {/* 성별 및 나이대별 분포 그래프 */}
-      <div>
-        <h3>Gender & Age Group Distribution (10s, 20s, 30s, 40s)</h3>
-        <Bar data={genderAgeDistributionData} options={options} />
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <p>
-            여성:{' '}
-            {genderAgeDistributionData.datasets[0].data.slice(0, 4).join('%, ')}
-            %
-          </p>
-          <p>
-            남성:{' '}
-            {genderAgeDistributionData.datasets[0].data.slice(4).join('%, ')}%
-          </p>
+        <div style={{ width: '45%' }}>
+          <div
+            style={{ display: 'flex', alignItems: 'center', marginTop: '54px' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                marginRight: '10px',
+                gap: '34px',
+              }}
+            >
+              {heartsArray.map((hearts, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '15px',
+                  }}
+                >
+                  {hearts.map((_, i) => (
+                    <img
+                      key={i}
+                      src={heartImage}
+                      alt="Heart"
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        marginRight: '2px',
+                      }}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <div style={{ height: '330px' }}>
+                <Bar
+                  data={ratingDistributionData}
+                  options={ratingDistributionOptions}
+                />
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -54,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: '#ff6384',
+                  fontSize: '1.5em',
+                  textAlign: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <img
+                    src={heartImage}
+                    alt="Heart"
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      marginRight: '8px',
+                      marginTop: '3px',
+                    }}
+                  />
+                  <span>평점 평균: {averageRating}점</span>
+                </div>
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: '-40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-around',
+                  height: '100%',
+                }}
+              >
+                {reviewData.ratingDistribution
+                  .slice()
+                  .reverse()
+                  .map((count, index) => {
+                    const percentage = totalRatings
+                      ? ((count / totalRatings) * 100).toFixed(1)
+                      : 0;
+                    return (
+                      <span key={index} style={{ color: '#ff6384' }}>
+                        {percentage}%
+                      </span>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default BookReviewChart;
+export default BookReviewDistributionChart;

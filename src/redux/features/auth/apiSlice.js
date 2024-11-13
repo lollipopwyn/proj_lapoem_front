@@ -20,6 +20,7 @@ import {
   GET_MEMBER_INFO_API_URL,
   UPDATE_MEMBER_INFO_API_URL,
   GET_TOP_BOOKS_API_URL,
+  GET_BOOK_REVIEW_DISTRIBUTION_API_URL,
 
   //post
   CREATE_COMMUNITY_POST_API_URL,
@@ -492,11 +493,18 @@ export const updateMemberInfoData = createApiThunk(
   patchRequest
 );
 
-//북 리뷰 삭제 썬크
+// 회원탈퇴
 export const fetchDeleteMemberData = createApiThunk(
   'api/fetchDeleteMember',
   (member_num) => DELETE_MEMBER_API_URL(member_num),
   deleteRequest
+);
+
+// 리뷰 분포 데이터 가져오기 Thunk
+export const fetchBookReviewDistributionData = createApiThunk(
+  'api/fetchBookReviewDistribution',
+  async (bookId) => GET_BOOK_REVIEW_DISTRIBUTION_API_URL(bookId),
+  getRequest
 );
 
 // 다른 관련 Thunks생성
@@ -566,7 +574,7 @@ const apiSlice = createSlice({
     createThreadReplyData: null,
     deleteThreadCommentData: null,
     fetchDeleteMember: null,
-
+    reviewDistribution: {},
     isLoading: false,
     isError: false,
     errorMessage: '',
@@ -712,7 +720,6 @@ const apiSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(updateCommunityPostData.rejected, handleRejected)
-
       .addCase(deleteCommunityPostData.pending, handlePending)
       .addCase(deleteCommunityPostData.fulfilled, (state, action) => {
         // 삭제된 게시글을 커뮤니티 목록에서 제거
@@ -807,7 +814,20 @@ const apiSlice = createSlice({
         fetchDeleteMemberData.fulfilled,
         handleFullfilled('fetchDeleteMember')
       )
-      .addCase(fetchDeleteMemberData.rejected, handleRejected);
+      .addCase(fetchDeleteMemberData.rejected, handleRejected)
+
+      // 리뷰 분포 데이터 가져오기 처리
+      .addCase(fetchBookReviewDistributionData.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchBookReviewDistributionData.fulfilled, (state, action) => {
+        state.reviewDistribution = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchBookReviewDistributionData.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      });
 
     // 다른 extraReducers 설정
   },

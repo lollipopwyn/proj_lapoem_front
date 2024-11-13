@@ -52,6 +52,10 @@ export const GET_MEMBER_INFO_API_URL = (memberNum) =>
 export const UPDATE_MEMBER_INFO_API_URL = (memberNum) =>
   `${BASE_URL}/members/${memberNum}`;
 
+// 리뷰 차트
+export const GET_BOOK_REVIEW_DISTRIBUTION_API_URL = (bookId) =>
+  `${BASE_URL}/book-list/${bookId}/review-distribution`;
+
 // ==============================POST 요청 URL=========================================
 export const JOIN_USER_API_URL = `${BASE_URL}/join`; // 회원 가입 URL
 export const LOGIN_USER_API_URL = `${BASE_URL}/login`; // 회원 로그인 URL

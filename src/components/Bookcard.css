@@ -38,11 +38,12 @@
 .book-star {
   display: flex;
   gap: 4px;
+  align-items: center;
 }
 
-.small_star {
-  width: 20px;
-  height: 20px;
+.heart_rating {
+  width: 12px;
+  height: 12px;
   object-fit: contain;
 }
 

@@ -1,19 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import small_star from "../assets/images/small_star.png";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import heart_rating from '../assets/images/heart-rating.png';
 // import ex from "../assets/images/ex_image.jpg"; css 확인용 더미 이미지
-import "./Bookcard.css";
+import './Bookcard.css';
 
-function BookCard({
-  thumbnail,
-  title,
-  author,
-  publisher,
-  rating,
-  reviewCount,
-  bookId,
-  disableLink = false,
-}) {
+function BookCard({ thumbnail, title, author, publisher, rating, reviewCount, bookId, disableLink = false }) {
   const cardContent = (
     <div className="book-card">
       <div className="book-thumbnail mb-[10px]">
@@ -25,11 +16,7 @@ function BookCard({
           <p>{`${author} · ${publisher}`}</p>
         </div>
         <div className="book-star">
-          <img
-            src={small_star}
-            alt="아이콘"
-            className="small_star w-[20px] h-[20px]"
-          />
+          <img src={heart_rating} alt="아이콘" className="heart_rating" />
           <p className="average_star">{rating}</p>
           <p className="comment_total_people">({reviewCount})</p>
         </div>
@@ -37,11 +24,7 @@ function BookCard({
     </div>
   );
 
-  return disableLink ? (
-    cardContent
-  ) : (
-    <Link to={`/book_list/${bookId}`}>{cardContent}</Link>
-  );
+  return disableLink ? cardContent : <Link to={`/book_list/${bookId}`}>{cardContent}</Link>;
 }
 
 export default BookCard;

@@ -10,6 +10,9 @@ import {
 import "./ThreadDetailPage.css";
 import back from "../../assets/images/back.png";
 import viewmore from "../../assets/images/viewmore.png";
+import totalcomment from "../../assets/images/comment 2.png";
+import totalpeople from "../../assets/images/totalpeople.png";
+import rightarrow from "../../assets/images/rightarrow.png";
 
 const ThreadDetailPage = () => {
   const { thread_num } = useParams();
@@ -203,8 +206,14 @@ const ThreadDetailPage = () => {
                 </div>
               </div>
               <div className="thread-detail-right">
-                <p>총 참여자 수: {threadDetail.participant_count}</p>
-                <p>댓글 및 대댓글 수: {threadDetail.total_comments}</p>
+                <div className="thread-total-people">
+                  <img src={totalpeople} alt="총 참여자수" />
+                  <p>{threadDetail.participant_count}</p>
+                </div>
+                <div className="thread-total-comment">
+                  <img src={totalcomment} alt="총 댓글 및 대댓글 수" />
+                  <p>{threadDetail.total_comments}</p>
+                </div>
               </div>
             </div>
           )}
@@ -238,7 +247,7 @@ const ThreadDetailPage = () => {
               className="thread-comment-input"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder="댓글을 작성하세요..."
+              placeholder="댓글을 입력해주세요."
               maxLength="300"
             />
             <div className="thread-comment-footer">
@@ -252,6 +261,11 @@ const ThreadDetailPage = () => {
               </button>
             </div>
           </div>
+
+          <button className="back-to-list-button" onClick={handleBackClick}>
+            To List
+            <img src={rightarrow} alt="화살표" />
+          </button>
         </div>
       </div>
     </div>

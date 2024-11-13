@@ -129,12 +129,12 @@ const Mypage = () => {
 
   useEffect(() => {
     if (message && !alertShownRef.current) {
-      alertShownRef.current = true; // 알림을 한 번만 표시하도록 설정
+      alertShownRef.current = true;
       alert(message);
-      dispatch(clearMessage());
+      dispatch(clearMessage()); // 메시지를 초기화하여 다른 곳에서 중복으로 표시되지 않도록 함
       setTimeout(() => {
         navigate('/');
-      }, 0); // navigate를 비동기적으로 처리하여 충돌 방지
+      }, 0);
     }
   }, [message, dispatch, navigate]);
 

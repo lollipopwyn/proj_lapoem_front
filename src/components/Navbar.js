@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  logoutUser,
-  clearMessage,
-  clearError,
-} from '../redux/features/auth/authSlice';
+import { logoutUser, clearMessage, clearError } from '../redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
 
 import logo_w from '../assets/images/logo-w.png';
@@ -33,13 +29,13 @@ function Navbar() {
   };
 
   useEffect(() => {
-    // 로그아웃 성공 시 메시지 표시
-    if (message) {
-      alert(message); // "로그아웃 되었습니다." 메시지 표시
+    // 로그아웃 성공 시 메시지 표시 - Mypage에서는 표시하지 않음
+    if (message && location.pathname !== '/mypage') {
+      alert(message); // "로그아웃되었습니다." 메시지 표시
       dispatch(clearMessage()); // 메시지 초기화
       navigate('/'); // 홈으로 리다이렉트
     }
-  }, [message, dispatch, navigate]);
+  }, [message, dispatch, navigate, location.pathname]);
 
   const handleLoginClick = () => {
     dispatch(clearError()); // 로그인 페이지로 이동하기 전에 에러 상태 초기화
@@ -59,9 +55,7 @@ function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${
-                location.pathname === item.path ? 'active' : ''
-              }`}
+              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
             >
               <p>{item.label}</p>
             </Link>
@@ -81,10 +75,7 @@ function Navbar() {
                   <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                     마이페이지
                   </Link>
-                  <Link
-                    to="/community/my_forum"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/community/my_forum" onClick={() => setIsMenuOpen(false)}>
                     마이포럼
                   </Link>
                   <button onClick={handleLogout}>로그아웃</button>

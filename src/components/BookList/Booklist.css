@@ -39,3 +39,10 @@
   justify-content: space-between;
   gap: 40px 0;
 }
+
+.no_book_message {
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: 10px;
+  font-size: 24px;
+}

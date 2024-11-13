@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser, clearError } from '../../redux/features/auth/authSlice';
+import { loginUser, clearMessage } from '../../redux/features/auth/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
@@ -15,7 +15,7 @@ function Login() {
 
   useEffect(() => {
     // 로그인 페이지가 로드될 때 error 초기화
-    dispatch(clearError());
+    dispatch(clearMessage());
   }, [dispatch]);
 
   const handle_change = (e) => {
@@ -44,13 +44,7 @@ function Login() {
       <h2 className="login_title">Login</h2>
       <span>로그인 후 라보엠의 모든 서비스를 이용해보세요</span>
       <form onSubmit={handle_login}>
-        <input
-          type="text"
-          name="member_id"
-          placeholder="아이디"
-          onChange={handle_change}
-          className="login_input"
-        />
+        <input type="text" name="member_id" placeholder="아이디" onChange={handle_change} className="login_input" />
         <input
           type="password"
           name="member_password"

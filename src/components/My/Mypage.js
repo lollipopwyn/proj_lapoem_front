@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {
-  logoutUser,
-  updateNickname,
-} from '../../redux/features/auth/authSlice';
+import { logoutUser, updateNickname, clearMessage } from '../../redux/features/auth/authSlice';
 import birthIcon from '../../assets/images/birth_icon.png';
-import {
-  GET_MEMBER_INFO_API_URL,
-  UPDATE_MEMBER_INFO_API_URL,
-  DELETE_MEMBER_API_URL,
-} from '../../util/apiUrl';
+import { GET_MEMBER_INFO_API_URL, UPDATE_MEMBER_INFO_API_URL, DELETE_MEMBER_API_URL } from '../../util/apiUrl';
 import '../My/Mypage.css';
 
 const Mypage = () => {
@@ -19,7 +12,7 @@ const Mypage = () => {
   const navigate = useNavigate();
   const member_num = useSelector((state) => state.auth.user?.memberNum);
   const [memberData, setMemberData] = useState(null);
-  const [memberId, setMemberId] = useState(''); // State to store the member_id
+  const [memberId, setMemberId] = useState('');
   const [nickname, setNickname] = useState('');
   const [contact, setContact] = useState('');
   const [email, setEmail] = useState('');
@@ -27,27 +20,19 @@ const Mypage = () => {
   const [gender, setGender] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [error, setError] = useState(null);
-  const [isEdited, setIsEdited] = useState(false); // 수정 여부 상태 추가
-  const [isSaved, setIsSaved] = useState(false); // 저장 여부 상태 추가
+  const [isEdited, setIsEdited] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const message = useSelector((state) => state.auth.message);
 
-  // 회원 정보 조회
+  const alertShownRef = useRef(false);
+
   useEffect(() => {
-    console.log('Redux member_num:', member_num); // Log member number for debugging
     if (member_num) {
       const fetchMemberInfo = async () => {
         try {
-          const response = await axios.get(
-            GET_MEMBER_INFO_API_URL(member_num),
-            {
-              withCredentials: true,
-            }
-          );
-
+          const response = await axios.get(GET_MEMBER_INFO_API_URL(member_num), { withCredentials: true });
           const data = response.data;
-          //회원 아이디 출력 추가
           setMemberId(data.member_id);
-
-          // Map response data to state variables
           setMemberData(data);
           setNickname(data.member_nickname || '');
           setContact(data.member_phone || '');
@@ -55,32 +40,24 @@ const Mypage = () => {
           setMarketingConsent(data.marketing_consent || false);
           setGender(data.member_gender || '');
           setBirthdate(data.member_birth_date || '');
-          console.log('회원정보:', response.data);
         } catch (error) {
-          console.error('Error fetching member info:', error);
-          setError(
-            error.response?.data?.message || 'Failed to fetch member info'
-          );
+          setError(error.response?.data?.message || 'Failed to fetch member info');
         }
       };
-
       fetchMemberInfo();
     }
   }, [member_num]);
 
-  // input 값이 변경될 때마다 isEdited 상태를 true로 설정
   const handleInputChange = (e, setter) => {
     setter(e.target.value);
     setIsEdited(true);
   };
 
-  // 마케팅 동의 체크박스 값이 변경될 때마다 isEdited 상태를 true로 설정
   const handleMarketingConsentChange = (e) => {
     setMarketingConsent(e.target.checked);
-    setIsEdited(true); // 마케팅 동의 변경 시 isEdited 상태 변경
+    setIsEdited(true);
   };
 
-  // 변경된 정보 유효성 검사 함수들
   const validateNickname = (nickname) => {
     if (nickname.length < 1 || nickname.length > 20) {
       return '닉네임은 1자리 이상 20자리 이하만 설정 가능합니다!';
@@ -104,9 +81,7 @@ const Mypage = () => {
     return null;
   };
 
-  // 수정된 정보를 서버에 업데이트하는 함수
   const handleSave = async () => {
-    // 유효성 검사
     const nicknameError = validateNickname(nickname);
     const emailError = validateEmail(email);
     const contactError = validateContact(contact);
@@ -126,63 +101,56 @@ const Mypage = () => {
           marketing_consent: marketingConsent,
         };
 
-        const url = UPDATE_MEMBER_INFO_API_URL(member_num);
-
-        // 서버에 PATCH 요청
-        const response = await axios.patch(url, updatedData, {
+        const response = await axios.patch(UPDATE_MEMBER_INFO_API_URL(member_num), updatedData, {
           withCredentials: true,
         });
 
         if (response.status === 200) {
-          setIsSaved(true); // 저장 후 성공 메시지 표시
-          setIsEdited(false); // 수정 완료 후 isEdited 상태 초기화
-          setMemberData(response.data); // 수정된 데이터를 클라이언트 상태에 반영
-
-          dispatch(updateNickname(nickname)); // Redux 상태의 닉네임 업데이트
-          setTimeout(() => setIsSaved(false), 3000); // 3초 후 저장 알림 숨김
+          setIsSaved(true);
+          setIsEdited(false);
+          setMemberData(response.data);
+          dispatch(updateNickname(nickname));
+          setTimeout(() => setIsSaved(false), 3000);
         }
       } catch (error) {
-        console.error('Error updating member info:', error);
-        setError(
-          error.response?.data?.message || 'Failed to update member info'
-        );
+        setError(error.response?.data?.message || 'Failed to update member info');
       }
     }
   };
 
-  // 취소 버튼을 눌렀을 때 수정된 내용을 초기화하는 함수
   const handleCancel = () => {
     setNickname(memberData?.member_nickname || '');
     setContact(memberData?.member_phone || '');
     setEmail(memberData?.member_email || '');
     setMarketingConsent(memberData?.marketing_consent || false);
     setIsEdited(false);
-
     window.location.reload();
   };
 
-  // 회원 탈퇴 함수
+  useEffect(() => {
+    if (message && !alertShownRef.current) {
+      alertShownRef.current = true; // 알림을 한 번만 표시하도록 설정
+      alert(message);
+      dispatch(clearMessage());
+      setTimeout(() => {
+        navigate('/');
+      }, 0); // navigate를 비동기적으로 처리하여 충돌 방지
+    }
+  }, [message, dispatch, navigate]);
+
   const handleDeleteAccount = async () => {
-    const isConfirmed = window.confirm(
-      '정말 회원 탈퇴를 하시겠습니까? 계정 삭제 후엔 복구가 불가합니다.'
-    );
+    const isConfirmed = window.confirm('정말 회원 탈퇴를 하시겠습니까? 계정 삭제 후엔 복구가 불가합니다.');
     if (isConfirmed) {
       try {
-        // 회원 탈퇴 요청
         const response = await axios.delete(DELETE_MEMBER_API_URL(member_num), {
           withCredentials: true,
         });
 
         if (response.status === 200) {
-          // 로그아웃 후 홈으로 이동
-          await dispatch(logoutUser()); // Redux에서 logout 액션을 호출하여 상태 초기화
-          navigate('/'); // 홈 화면으로 이동
+          await dispatch(logoutUser({ isDelete: true }));
         }
       } catch (error) {
-        console.error('Error deleting account:', error);
-        setError(
-          error.response?.data?.message || 'Failed to delete the account'
-        );
+        setError(error.response?.data?.message || 'Failed to delete the account');
       }
     }
   };
@@ -191,16 +159,10 @@ const Mypage = () => {
     <div className="mypage_container">
       <div className="my_page_top">
         <div className="my_page_title">MY PAGE</div>
-        <div className="my_page_desc">
-          가입 시 작성한 회원 정보를 수정할 수 있습니다.
-        </div>
+        <div className="my_page_desc">가입 시 작성한 회원 정보를 수정할 수 있습니다.</div>
       </div>
       {error && <div className="error-message">{error}</div>}
-      {isSaved && (
-        <div className="success-message">
-          회원 정보가 성공적으로 수정되었습니다.
-        </div>
-      )}
+      {isSaved && <div className="success-message">회원 정보가 성공적으로 수정되었습니다.</div>}
       <div className="my_page_content">
         <div className="my_page_content_title">회원 정보 수정</div>
         <div className="my_page_content_info">
@@ -236,7 +198,6 @@ const Mypage = () => {
             />
           </div>
           <div className="marketing-container">
-            {/* 마케팅 동의 체크박스 컨테이너 */}
             <input
               type="checkbox"
               id="marketingConsent"
@@ -248,7 +209,7 @@ const Mypage = () => {
           <div className="my_privacy">
             <div className="my_birth">
               <div className="birthdate-display">
-                <img src={birthIcon} alt="birtday icon" />
+                <img src={birthIcon} alt="birthday icon" />
                 <span>{birthdate}</span>
               </div>
             </div>
@@ -271,22 +232,11 @@ const Mypage = () => {
           DELETE MY ACCOUNT
         </button>
         <div className="button-group-right">
-          <button
-            id="saveBtn"
-            className={isEdited ? 'active' : ''} // 수정 사항이 있을 때만 활성화
-            disabled={!isEdited}
-            onClick={handleSave}
-          >
+          <button id="saveBtn" className={isEdited ? 'active' : ''} disabled={!isEdited} onClick={handleSave}>
             SAVE
           </button>
-          <button
-            id="cancelBtn"
-            className={isEdited ? 'active' : ''}
-            disabled={!isEdited}
-            onClick={handleCancel}
-          >
-            {' '}
-            {/* 취소 버튼 클릭 시 초기화 */}CANCEL
+          <button id="cancelBtn" className={isEdited ? 'active' : ''} disabled={!isEdited} onClick={handleCancel}>
+            CANCEL
           </button>
         </div>
       </div>

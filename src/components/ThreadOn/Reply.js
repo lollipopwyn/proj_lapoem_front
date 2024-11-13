@@ -16,7 +16,7 @@ const Reply = ({ reply, isAuthor, memberNum, onDelete }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              member_num: memberNum, // 로그인한 사용자의 memberNum을 포함하여 요청
+              member_num: memberNum, // 프론트엔드에서 memberNum을 member_num으로 변환하여 전송
             }),
           }
         );

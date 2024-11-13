@@ -28,6 +28,9 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
         GET_COMMENT_REPLIES_API_URL(comment.thread_content_num)
       );
       const data = await response.json();
+      console.log("Fetched replies data:", data); // 응답 데이터 확인
+
+      // 최신순으로 정렬 후 중복 제거하여 상태에 저장
       setReplies((prevReplies) => {
         const filteredReplies = data.replies.filter(
           (newReply) =>
@@ -36,7 +39,10 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
                 existingReply.thread_content_num === newReply.thread_content_num
             )
         );
-        return [...prevReplies, ...filteredReplies];
+        const sortedReplies = [...prevReplies, ...filteredReplies].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at) // 최신순 정렬
+        );
+        return sortedReplies;
       });
     } catch (error) {
       console.error("Error fetching replies:", error);
@@ -148,13 +154,21 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
 
       {replies.length > 0 && (
         <div className="replies-section">
-          {replies
-            .slice(0, showMoreReplies ? replies.length : 2)
-            .map((reply) => (
+          {(showMoreReplies ? replies : replies.slice(-2)).map((reply) => {
+            const isAuthor = reply.member_num === authData?.memberNum;
+            console.log(
+              "reply.member_num:",
+              reply.member_num,
+              "authData.memberNum:",
+              authData?.memberNum,
+              "isAuthor:",
+              isAuthor
+            ); // 디버깅 로그 추가
+            return (
               <Reply
                 key={reply.thread_content_num}
                 reply={reply}
-                isAuthor={reply.member_num === authData?.memberNum} // 본인 여부 확인
+                isAuthor={isAuthor} // 본인 여부 확인
                 memberNum={authData?.memberNum} // 로그인한 사용자의 memberNum 전달
                 onDelete={(replyId) =>
                   setReplies((prevReplies) =>
@@ -162,7 +176,8 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
                   )
                 }
               />
-            ))}
+            );
+          })}
           {replies.length > 2 && !showMoreReplies && (
             <button
               onClick={handleShowMoreReplies}

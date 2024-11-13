@@ -20,17 +20,24 @@ const SearchBar = ({ apiUrl, onSearch }) => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(); // Enter 키를 누르면 검색
+    }
+  };
+
   return (
     <div className="searchbar">
       <input
         type="text"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
+        onKeyPress={handleKeyPress} // Enter 키 입력 시 검색
         placeholder="검색할 도서명 혹은 저자를 입력해주세요."
       />
       <div className="divider"></div>
       <button onClick={handleSearch}>
-        <img src={SerchIcon} alt="search_icon" className="search_icon"></img>
+        <img src={SerchIcon} alt="search_icon" className="search_icon" />
       </button>
     </div>
   );

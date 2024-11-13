@@ -187,6 +187,16 @@ const ThreadDetailPage = () => {
     }
   };
 
+  // 대댓글 등록 성공 시 호출되는 함수
+  const handleReplySubmitSuccess = () => {
+    fetchThreadDetail(); // 스레드 상세 정보 업데이트
+  };
+
+  // 대댓글 삭제 성공 시 호출되는 함수
+  const handleReplyDeleteSuccess = () => {
+    fetchThreadDetail(); // 스레드 상세 정보 업데이트
+  };
+
   // 뒤로가기 핸들러
   const handleBackClick = () => {
     navigate("/thread_on");
@@ -235,6 +245,8 @@ const ThreadDetailPage = () => {
               comment={comment}
               thread_num={thread_num}
               onDeleteSuccess={handleDeleteSuccess}
+              onReplySubmitSuccess={handleReplySubmitSuccess} // 대댓글 등록 콜백
+              onReplyDeleteSuccess={handleReplyDeleteSuccess} // 대댓글 삭제 콜백
             />
           ))}
         </div>

@@ -13,7 +13,13 @@ import replycount from "../../assets/images/comment 2.png";
 import morereply from "../../assets/images/More.png";
 import collapse from "../../assets/images/collapse.png";
 
-const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
+const Comment = ({
+  comment,
+  thread_num,
+  onDeleteSuccess,
+  onReplySubmitSuccess,
+  onReplyDeleteSuccess,
+}) => {
   const [replies, setReplies] = useState([]);
   const [showMoreReplies, setShowMoreReplies] = useState(false);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
@@ -128,6 +134,11 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
       }),
     };
     setReplies((prevReplies) => [...prevReplies, newReply]); // 새 대댓글을 기존 대댓글 리스트 뒤에 추가
+
+    // 대댓글 등록 성공 시 상위 콜백 호출
+    if (onReplySubmitSuccess) {
+      onReplySubmitSuccess();
+    }
   };
 
   return (
@@ -190,13 +201,17 @@ const Comment = ({ comment, thread_num, onDeleteSuccess }) => {
               <Reply
                 key={reply.thread_content_num}
                 reply={reply}
-                isAuthor={isAuthor} // 본인 여부 확인
-                memberNum={authData?.memberNum} // 로그인한 사용자의 memberNum 전달
-                onDelete={(replyId) =>
+                isAuthor={isAuthor}
+                memberNum={authData?.memberNum}
+                onDelete={(replyId) => {
                   setReplies((prevReplies) =>
                     prevReplies.filter((r) => r.thread_content_num !== replyId)
-                  )
-                }
+                  );
+                  // 대댓글 삭제 성공 시 상위 콜백 호출
+                  if (onReplyDeleteSuccess) {
+                    onReplyDeleteSuccess();
+                  }
+                }}
               />
             );
           })}

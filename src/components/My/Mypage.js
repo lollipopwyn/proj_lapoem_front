@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { updateNickname } from '../../redux/features/auth/authSlice';
+import {
+  logoutUser,
+  updateNickname,
+} from '../../redux/features/auth/authSlice';
 import birthIcon from '../../assets/images/birth_icon.png';
 import {
   GET_MEMBER_INFO_API_URL,
   UPDATE_MEMBER_INFO_API_URL,
+  DELETE_MEMBER_API_URL,
 } from '../../util/apiUrl';
 import '../My/Mypage.css';
 
 const Mypage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const member_num = useSelector((state) => state.auth.user?.memberNum);
   const [memberData, setMemberData] = useState(null);
   const [memberId, setMemberId] = useState(''); // State to store the member_id
@@ -155,6 +161,32 @@ const Mypage = () => {
     window.location.reload();
   };
 
+  // 회원 탈퇴 함수
+  const handleDeleteAccount = async () => {
+    const isConfirmed = window.confirm(
+      '정말 회원 탈퇴를 하시겠습니까? 계정 삭제 후엔 복구가 불가합니다.'
+    );
+    if (isConfirmed) {
+      try {
+        // 회원 탈퇴 요청
+        const response = await axios.delete(DELETE_MEMBER_API_URL(member_num), {
+          withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          // 로그아웃 후 홈으로 이동
+          await dispatch(logoutUser()); // Redux에서 logout 액션을 호출하여 상태 초기화
+          navigate('/'); // 홈 화면으로 이동
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        setError(
+          error.response?.data?.message || 'Failed to delete the account'
+        );
+      }
+    }
+  };
+
   return (
     <div className="mypage_container">
       <div className="my_page_top">
@@ -235,7 +267,9 @@ const Mypage = () => {
       </div>
 
       <div className="my_page_button">
-        <button id="deleteBtn">DELETE MY ACCOUNT</button>
+        <button id="deleteBtn" onClick={handleDeleteAccount}>
+          DELETE MY ACCOUNT
+        </button>
         <div className="button-group-right">
           <button
             id="saveBtn"

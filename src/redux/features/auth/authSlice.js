@@ -98,6 +98,9 @@ const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(state.user)); // 로컬 스토리지에 업데이트된 사용자 정보 저장
       }
     },
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -146,6 +149,7 @@ const authSlice = createSlice({
         state.isLoggedIn = false;
         state.authInitialized = false; // 로그아웃 시 초기화 상태 리셋
         state.message = '로그아웃 되었습니다.';
+        state.error = null; // 로그아웃 후 에러 초기화
         localStorage.removeItem('user');
       })
       .addCase(logoutUser.rejected, (state, action) => {
@@ -154,5 +158,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearMessage, updateNickname } = authSlice.actions;
+export const { clearMessage, updateNickname, clearError } = authSlice.actions;
 export default authSlice.reducer;

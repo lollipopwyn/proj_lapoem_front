@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/features/auth/authSlice';
+import { loginUser, clearError } from '../../redux/features/auth/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
-  const [login_data, set_login_data] = useState({ member_id: '', member_password: '' });
+  const [login_data, set_login_data] = useState({
+    member_id: '',
+    member_password: '',
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { error, isLoggedIn } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // 로그인 페이지가 로드될 때 error 초기화
+    dispatch(clearError());
+  }, [dispatch]);
 
   const handle_change = (e) => {
     set_login_data({ ...login_data, [e.target.name]: e.target.value });
@@ -36,7 +44,13 @@ function Login() {
       <h2 className="login_title">Login</h2>
       <span>로그인 후 라보엠의 모든 서비스를 이용해보세요</span>
       <form onSubmit={handle_login}>
-        <input type="text" name="member_id" placeholder="아이디" onChange={handle_change} className="login_input" />
+        <input
+          type="text"
+          name="member_id"
+          placeholder="아이디"
+          onChange={handle_change}
+          className="login_input"
+        />
         <input
           type="password"
           name="member_password"

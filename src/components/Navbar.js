@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser, clearMessage } from '../redux/features/auth/authSlice';
+import {
+  logoutUser,
+  clearMessage,
+  clearError,
+} from '../redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
 
 import logo_w from '../assets/images/logo-w.png';
@@ -36,6 +40,11 @@ function Navbar() {
       navigate('/'); // 홈으로 리다이렉트
     }
   }, [message, dispatch, navigate]);
+
+  const handleLoginClick = () => {
+    dispatch(clearError()); // 로그인 페이지로 이동하기 전에 에러 상태 초기화
+    navigate('/login');
+  };
 
   return (
     <nav className="nav-container">
@@ -83,9 +92,9 @@ function Navbar() {
               )}
             </div>
           ) : (
-            <Link to="/login">
+            <button onClick={handleLoginClick} className="login-button">
               <img src={login} alt="login" className="w-10 h-10" />
-            </Link>
+            </button>
           )}
         </div>
       </div>

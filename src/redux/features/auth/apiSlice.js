@@ -35,6 +35,7 @@ import {
   POST_THREAD_COMMENT_API_URL,
   POST_THREAD_REPLY_API_URL,
   DELETE_THREAD_COMMENTS_API_URL,
+  DELETE_MEMBER_API_URL,
 } from '../../../util/apiUrl';
 
 import {
@@ -491,6 +492,13 @@ export const updateMemberInfoData = createApiThunk(
   patchRequest
 );
 
+//북 리뷰 삭제 썬크
+export const fetchDeleteMemberData = createApiThunk(
+  'api/fetchDeleteMember',
+  (member_num) => DELETE_MEMBER_API_URL(member_num),
+  deleteRequest
+);
+
 // 다른 관련 Thunks생성
 
 //========================3. 비동기 API 호출 처리========================
@@ -557,6 +565,7 @@ const apiSlice = createSlice({
     createThreadCommentData: null,
     createThreadReplyData: null,
     deleteThreadCommentData: null,
+    fetchDeleteMember: null,
 
     isLoading: false,
     isError: false,
@@ -791,7 +800,14 @@ const apiSlice = createSlice({
         updateMemberInfoData.fulfilled,
         handleFullfilled('updateMemberInfo')
       )
-      .addCase(updateMemberInfoData.rejected, handleRejected);
+      .addCase(updateMemberInfoData.rejected, handleRejected)
+
+      //  회원삭제 -----------------------------------------------------
+      .addCase(
+        fetchDeleteMemberData.fulfilled,
+        handleFullfilled('fetchDeleteMember')
+      )
+      .addCase(fetchDeleteMemberData.rejected, handleRejected);
 
     // 다른 extraReducers 설정
   },

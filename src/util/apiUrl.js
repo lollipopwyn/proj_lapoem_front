@@ -1,20 +1,20 @@
 // util/apiUrl.js
 const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "http://222.112.27.120:8002" // 배포용 URL
-    : "http://localhost:8002"; // 로컬 개발용 URL
+  process.env.NODE_ENV === 'production'
+    ? 'http://222.112.27.120:8002' // 배포용 URL
+    : 'http://localhost:8002'; // 로컬 개발용 URL
 
 // FastAPI 서버의 BASE URL (HTTP API 요청용)
 const FASTAPI_HTTP_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "http://222.112.27.120:9002" // 배포용 HTTP API URL
-    : "http://localhost:9002"; // 로컬 개발용 HTTP API URL
+  process.env.NODE_ENV === 'production'
+    ? 'http://222.112.27.120:9002' // 배포용 HTTP API URL
+    : 'http://localhost:9002'; // 로컬 개발용 HTTP API URL
 
 // FastAPI WebSocket URL
 const FASTAPI_WEBSOCKET_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "ws://222.112.27.120:9002" // 배포용 WebSocket URL
-    : "ws://localhost:9002"; // 로컬 개발용 WebSocket URL
+  process.env.NODE_ENV === 'production'
+    ? 'ws://222.112.27.120:9002' // 배포용 WebSocket URL
+    : 'ws://localhost:9002'; // 로컬 개발용 WebSocket URL
 
 // ==============================GET 요청 URL=========================================
 export const GET_TERMS_API_URL = `${BASE_URL}/terms`; // 약관 목록 조회
@@ -78,6 +78,9 @@ export const DELETE_REVIEW_API_URL = (bookId, reviewId) =>
 
 export const DELETE_THREAD_COMMENTS_API_URL = (commentId) =>
   `${BASE_URL}/threads/comment/${commentId}`; // 스레드 댓글 및 대댓글 삭제 API URL
+
+export const DELETE_MEMBER_API_URL = (member_num) =>
+  `${BASE_URL}/members/${member_num}`;
 
 // ==============================Chat 관련 API URL=========================================
 export const API_CHAT_URL = `${FASTAPI_HTTP_BASE_URL}/chat`; // HTTP API URL

@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import SearchBar from "../Common/SearchBar";
+
 import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_LIST_API_URL,
   GET_SEARCH_BOOKS_API_URL,
 } from "../../util/apiUrl";
+
+import SearchBar from "../Common/SearchBar";
 import CategoryFilter from "../Common/CategoryFilter";
 import Pagination from "../PageNation";
 import BookCard from "../Bookcard";
+
 import "./Threadon_post.css";
+
 import small_star from "../../assets/images/small_star.png";
-import { Link } from "react-router-dom";
 
 const Threadon_post = () => {
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
@@ -117,6 +122,7 @@ const Threadon_post = () => {
       setThreadComment("");
       setSelectedBook(null);
       closeModal();
+      navigate("/thread_on");
     } catch (error) {
       console.error("Error creating thread:", error);
       setErrorMessage("스레드 생성 중 오류가 발생했습니다.");

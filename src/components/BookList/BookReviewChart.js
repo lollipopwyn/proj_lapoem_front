@@ -289,7 +289,7 @@ const BookReviewDistributionChart = () => {
                       marginTop: '3px',
                     }}
                   />
-                  <span>평점 평균: {averageRating}점</span>
+                  <span>평점 평균: {averageRating} 점 / 10점</span>
                 </div>
               </div>
               <div

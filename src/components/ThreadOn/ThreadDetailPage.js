@@ -9,6 +9,7 @@ import {
 } from "../../util/apiUrl";
 import "./ThreadDetailPage.css";
 import back from "../../assets/images/back.png";
+import viewmore from "../../assets/images/viewmore.png";
 
 const ThreadDetailPage = () => {
   const { thread_num } = useParams();
@@ -21,8 +22,9 @@ const ThreadDetailPage = () => {
   const [loadedCommentCount, setLoadedCommentCount] = useState(0); // 불러온 총 댓글 수 상태
 
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const navigate = useNavigate();
   const COMMENTS_LIMIT = 5;
+
+  const navigate = useNavigate();
 
   // 초기 로드 시 memberNum 설정
   useEffect(() => {
@@ -173,6 +175,11 @@ const ThreadDetailPage = () => {
     }
   };
 
+  // 뒤로가기 핸들러
+  const handleBackClick = () => {
+    navigate("/thread_on");
+  };
+
   return (
     <div className="thread-detail-container">
       <h1 className="thread-header">THREAD ON</h1>
@@ -181,7 +188,7 @@ const ThreadDetailPage = () => {
         <div className="thread-detail-header-container">
           {threadDetail && (
             <div className="thread-detail-header">
-              <div className="thread-detail-left">
+              <div className="thread-detail-left" onClick={handleBackClick}>
                 <img src={back} alt="뒤로 가기" className="to-thread-list" />
               </div>
               <div className="thread-detail-center">
@@ -215,23 +222,36 @@ const ThreadDetailPage = () => {
         </div>
 
         {hasMoreComments && (
-          <button className="load-more-button" onClick={handleLoadMoreComments}>
-            더보기
-          </button>
+          <div className="view-more-comment">
+            <button
+              className="load-more-button"
+              onClick={handleLoadMoreComments}
+            >
+              <img src={viewmore} alt="댓글 더보기" />
+            </button>
+          </div>
         )}
 
-        <div className="new-comment" onClick={handleCommentClick}>
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="댓글을 작성하세요..."
-          />
-          <button
-            onClick={isLoggedIn ? handleCommentSubmit : handleCommentClick}
-            disabled={!isLoggedIn || !newComment.trim()}
-          >
-            댓글 작성
-          </button>
+        <div className="thread-comment-input-wrapper">
+          <div className="thread-new-comment">
+            <textarea
+              className="thread-comment-input"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="댓글을 작성하세요..."
+              maxLength="300"
+            />
+            <div className="thread-comment-footer">
+              <span className="thread-char-count">{newComment.length}/300</span>
+              <button
+                className="submit-button"
+                onClick={isLoggedIn ? handleCommentSubmit : handleCommentClick}
+                disabled={!isLoggedIn || !newComment.trim()}
+              >
+                Send
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -100,8 +100,8 @@ const BookReviewDistributionChart = () => {
       {
         label: '평점 분포',
         data: [...reviewData.ratingDistribution].reverse(),
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(203, 157, 240, 0.5)',
+        borderColor: 'rgba(139, 93, 255, 1)',
         borderWidth: 1,
       },
     ],
@@ -200,14 +200,37 @@ const BookReviewDistributionChart = () => {
 
   return (
     <div>
+      <div
+        style={{
+          borderBottom: '1px solid var(--text-gray-light)',
+          margin: '40px auto 80px auto',
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%',
+          maxWidth: '1255px',
+        }}
+      ></div>
+      <h2
+        style={{
+          textAlign: 'center',
+          fontSize: '30px',
+          fontFamily: 'var(--font-en)',
+          fontWeight: 'bold',
+          color: 'var(--text-point)',
+          marginBottom: '100px',
+        }}
+      >
+        REVIEW GRAPH
+      </h2>
       <div style={{ display: 'flex', gap: '50px' }}>
         <div style={{ width: '45%' }}>
           <h3
             style={{
               textAlign: 'center',
-              fontSize: '24px',
-              marginBottom: '10px',
-              color: 'rgba(54, 162, 235, 1)',
+              fontSize: '1.3em',
+              marginBottom: '20px',
+              color: 'var(--text-gray-medium)',
+              fontFamily: 'var(--font-kr)',
             }}
           >
             리뷰 작성자 분포
@@ -236,7 +259,6 @@ const BookReviewDistributionChart = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    marginBottom: '15px',
                   }}
                 >
                   {hearts.map((_, i) => (
@@ -245,8 +267,8 @@ const BookReviewDistributionChart = () => {
                       src={heartImage}
                       alt="Heart"
                       style={{
-                        width: '16px',
-                        height: '16px',
+                        width: '19px',
+
                         marginRight: '2px',
                       }}
                     />
@@ -255,7 +277,7 @@ const BookReviewDistributionChart = () => {
               ))}
             </div>
             <div style={{ flex: 1, position: 'relative' }}>
-              <div style={{ height: '330px' }}>
+              <div style={{ height: '270px' }}>
                 <Bar
                   data={ratingDistributionData}
                   options={ratingDistributionOptions}
@@ -267,8 +289,9 @@ const BookReviewDistributionChart = () => {
                   top: -54,
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  color: '#ff6384',
-                  fontSize: '1.5em',
+                  color: 'var(--text-gray-medium)',
+                  fontFamily: 'var(--font-kr)',
+                  fontSize: '1.3em',
                   textAlign: 'center',
                 }}
               >
@@ -279,17 +302,16 @@ const BookReviewDistributionChart = () => {
                     justifyContent: 'center',
                   }}
                 >
-                  <img
-                    src={heartImage}
-                    alt="Heart"
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      marginRight: '8px',
-                      marginTop: '3px',
-                    }}
-                  />
-                  <span>평점 평균: {averageRating} 점 / 10점</span>
+                  <span>
+                    점수별 평점 분포 <br />
+                    <span
+                      style={{
+                        fontSize: '18px',
+                      }}
+                    >
+                      ({averageRating} 점 / 10점)
+                    </span>
+                  </span>
                 </div>
               </div>
               <div
@@ -311,7 +333,10 @@ const BookReviewDistributionChart = () => {
                       ? ((count / totalRatings) * 100).toFixed(1)
                       : 0;
                     return (
-                      <span key={index} style={{ color: '#ff6384' }}>
+                      <span
+                        key={index}
+                        style={{ color: 'var(--text-gray-medium)' }}
+                      >
                         {percentage}%
                       </span>
                     );

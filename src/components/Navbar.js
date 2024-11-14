@@ -22,7 +22,7 @@ function Navbar() {
   const navItems = [
     { path: '/', label: 'HOME' },
     { path: '/book_list', label: 'BOOK LIST' },
-    { path: '/chatstella', label: 'STELLA CHAT' },
+    { path: '/chatstella', label: 'CHAT STELLA' },
     { path: '/thread_on', label: 'THREAD ON' },
     { path: '/community', label: 'COMMUNITY' },
   ];

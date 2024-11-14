@@ -7,6 +7,8 @@ import {
   GET_BOOK_BY_CATEGORY_API_URL,
   GET_BOOK_LIST_API_URL,
   GET_SEARCH_BOOKS_API_URL,
+  GET_CHECK_THREAD_EXISTENCE_API_URL,
+  POST_CREATE_THREAD_API_URL,
 } from "../../util/apiUrl";
 
 import SearchBar from "../Common/SearchBar";
@@ -79,7 +81,7 @@ const Threadon_post = () => {
   const handleBookSelect = async (book) => {
     try {
       const response = await axios.get(
-        `http://localhost:8002/threads/exists/${book.book_id}`
+        GET_CHECK_THREAD_EXISTENCE_API_URL(book.book_id)
       );
       if (response.data.exists) {
         alert("이미 해당 책에 대한 스레드가 존재합니다.");
@@ -116,7 +118,7 @@ const Threadon_post = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8002/threads",
+        POST_CREATE_THREAD_API_URL,
         requestData
       );
       setThreadComment("");

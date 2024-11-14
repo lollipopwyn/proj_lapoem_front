@@ -202,6 +202,19 @@ const ThreadDetailPage = () => {
     navigate("/thread_on");
   };
 
+  // 댓글 입력 클릭 시 로그인 확인
+  const handleCommentInputClick = () => {
+    if (!isLoggedIn) {
+      if (
+        window.confirm(
+          "회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?"
+        )
+      ) {
+        navigate("/login"); // 예를 누르면 로그인 페이지로 이동
+      }
+    }
+  };
+
   return (
     <div className="thread-detail-container">
       <h1 className="thread-header">THREAD ON</h1>
@@ -270,6 +283,7 @@ const ThreadDetailPage = () => {
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="댓글을 입력해주세요."
               maxLength="300"
+              onClick={handleCommentInputClick}
             />
             <div className="thread-comment-footer">
               <span className="thread-char-count">{newComment.length}/300</span>

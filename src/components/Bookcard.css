@@ -42,9 +42,10 @@
 }
 
 .heart_rating {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
+  margin-top: 2px;
 }
 
 .average_star {

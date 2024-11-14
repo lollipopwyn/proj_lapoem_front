@@ -114,7 +114,12 @@ const TopOfBookList = () => {
               <img
                 src={heartRating}
                 alt="Heart Rating"
-                style={{ width: '12px', height: '12px', marginRight: '5px' }}
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  marginRight: '5px',
+                  marginTop: '3px',
+                }}
               />
               <span
                 style={{ fontSize: '0.9em', color: 'var(--text-secondary)' }}

@@ -62,6 +62,18 @@ const Stella = () => {
   }, [user]);
 
   useEffect(() => {
+    // bookId가 없으면 일회성 채팅 모드로 전환
+    if (!bookId) {
+      setSelectedRoom(0);
+      setChatHistory([
+        { sender_id: 'stella', message: '일회성 채팅방에 오신 것을 환영합니다!' },
+        { sender_id: 'stella', message: 'ex) 책에 대해 궁금한 점을 물어보세요.' },
+      ]);
+      setIsSocketOpen(false); // WebSocket 연결 초기화
+    }
+  }, [bookId]);
+
+  useEffect(() => {
     const loadBookInfoAndChatHistory = async () => {
       if (selectedRoom && user) {
         try {

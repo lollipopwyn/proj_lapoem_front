@@ -28,6 +28,7 @@ const Threadon_post = () => {
   const [limit] = useState(5); // 페이지당 표시할 책의 수, 검색 시에도 5개로 제한
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState(""); // 검색어 상태 추가
 
   const [selectedBook, setSelectedBook] = useState(null); // 선택된 도서 상태 추가
 
@@ -37,16 +38,30 @@ const Threadon_post = () => {
   const memberNum = useSelector((state) => state.auth.user?.memberNum); // Redux에서 memberNum 가져오기
 
   useEffect(() => {
-    fetchBooks(currentPage, selectedCategory);
+    console.log(
+      "Current Page:",
+      currentPage,
+      "Selected Category:",
+      selectedCategory,
+      "Search Keyword:",
+      searchKeyword
+    );
+    fetchBooks(currentPage, selectedCategory, searchKeyword);
   }, [currentPage, selectedCategory]);
 
-  const fetchBooks = async (page, genre_tag_id) => {
+  const fetchBooks = async (page, genre_tag_id, keyword) => {
     setLoading(true);
     try {
-      const apiUrl = genre_tag_id
-        ? GET_BOOK_BY_CATEGORY_API_URL
-        : GET_BOOK_LIST_API_URL;
-      const params = { page, limit, genre_tag_id }; // limit을 항상 추가
+      const apiUrl = keyword
+        ? GET_SEARCH_BOOKS_API_URL // 검색어가 있을 경우 검색 API 사용
+        : genre_tag_id
+        ? GET_BOOK_BY_CATEGORY_API_URL // 카테고리가 있을 경우 카테고리 API 사용
+        : GET_BOOK_LIST_API_URL; // 기본 전체 목록 API
+
+      const params = keyword
+        ? { page, limit, keyword }
+        : { page, limit, genre_tag_id };
+      console.log("Fetching books with params:", params, "Using API:", apiUrl); // 디버깅용 콘솔로그
 
       const response = await axios.get(apiUrl, { params });
       setBooks(response.data.data.slice(0, limit)); // 항상 limit만큼 데이터 표시
@@ -58,11 +73,13 @@ const Threadon_post = () => {
     }
   };
 
-  const handleSearch = (data) => {
-    setBooks(data.data.slice(0, limit)); // 검색 결과 중 상위 5개만 도서 목록 업데이트
-    setTotalBooks(data.totalBooks); // 총 도서 수 업데이트
+  const handleSearch = (responseData, keyword) => {
+    setSearchKeyword(keyword); // 검색어 상태 업데이트
+    setBooks(responseData.data.slice(0, limit)); // 검색 결과 중 상위 5개만 도서 목록 업데이트
+    setTotalBooks(responseData.totalBooks); // 총 도서 수 업데이트
     setCurrentPage(1); // 검색 시 페이지를 1로 초기화
     setSelectedCategory(""); // 검색 시 선택된 카테고리 초기화
+    console.log("Search triggered with keyword:", keyword);
   };
 
   const handleCategoryChange = (category) => {
@@ -75,6 +92,12 @@ const Threadon_post = () => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      console.log(
+        "Page changed to:",
+        page,
+        "Current Search Keyword:",
+        searchKeyword
+      ); // 페이지 변경 확인용 콘솔로그
     }
   };
 

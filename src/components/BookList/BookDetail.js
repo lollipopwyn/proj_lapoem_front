@@ -8,6 +8,8 @@ import BookReviews from './BookReviews';
 import { useSelector } from 'react-redux';
 
 import heartRating from '../../assets/images/heart-rating.png';
+import chatbot from '../../assets/images/chat.png';
+import thread from '../../assets/images/thread.png';
 import './BookDetail.css';
 
 const BookDetail = () => {
@@ -43,24 +45,17 @@ const BookDetail = () => {
 
   const handleStartChat = () => {
     if (memberNum) {
-      // 전달되는 bookId와 memberNum을 확인하는 로그 추가
-      console.log('Navigating to Stella with bookId and memberNum:', {
-        bookId,
-        memberNum,
-      });
-
-      // 사용자 번호와 책 번호를 URL에 포함하여 navigate
       navigate(`/chatstella/${bookId}?memberNum=${memberNum}`);
     } else {
-      const shouldNavigateToLogin = window.confirm(
-        '회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?'
-      );
-      // 사용자 번호가 없으면 확인/취소 선택 메시지
+      const shouldNavigateToLogin = window.confirm('회원 로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?');
       if (shouldNavigateToLogin) {
-        navigate('/login'); // 확인을 누른 경우 로그인 페이지로 이동
+        navigate('/login');
       }
-      // 취소를 누른 경우 아무 작업도 하지 않음 (현재 페이지에 그대로 머무름)
     }
+  };
+
+  const handleThread = () => {
+    navigate('/thread_on');
   };
 
   if (loading) return <p>Loading...</p>;
@@ -81,28 +76,26 @@ const BookDetail = () => {
                 />
               </div>
               <div className="book-detail-right">
+                {/* <!-- 아이콘 버튼들을 담을 컨테이너 --> */}
+                <div class="book-detail-icons">
+                  <button class="chatbot" onClick={handleStartChat}>
+                    <img src={chatbot} alt="채팅 시작" />
+                  </button>
+                  <button class="thread" onClick={handleThread}>
+                    <img src={thread} alt="스레드 이동" />
+                  </button>
+                </div>
                 <div className="book-detail-labels">
-                  {bookDetail.is_book_best && (
-                    <span className="label-best-seller">베스트 셀러</span>
-                  )}
-                  <span className="label-genre">
-                    {bookDetail.genre_tag_name}
-                  </span>
+                  {bookDetail.is_book_best && <span className="label-best-seller">베스트 셀러</span>}
+                  <span className="label-genre">{bookDetail.genre_tag_name}</span>
                 </div>
                 <h2 className="book-detail-title">{bookDetail.book_title}</h2>
                 <p className="book-detail-rating">
                   <span className="rating-score">
-                    <img
-                      src={heartRating}
-                      alt="아이콘"
-                      className="heart_rating w-[20px] h-[20px]"
-                    />
+                    <img src={heartRating} alt="아이콘" className="heart_rating w-[20px] h-[20px]" />
                     {bookDetail.average_rating}
                   </span>
-                  <span className="review-count">
-                    {' '}
-                    ({bookDetail.review_count})
-                  </span>
+                  <span className="review-count"> ({bookDetail.review_count})</span>
                 </p>
                 <div className="book-detail-info">
                   <p>
@@ -132,10 +125,6 @@ const BookDetail = () => {
               <BookReviewChart />
               <BookReviews />
             </div>
-            <button className="chatbot" onClick={handleStartChat}>
-              채팅 시작
-            </button>
-            {/* 채팅 시작 버튼 */}
           </>
         ) : (
           <p>No details available for this book.</p>

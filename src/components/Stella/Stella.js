@@ -100,9 +100,9 @@ const Stella = () => {
   useEffect(() => {
     if (!authInitialized || !isLoggedIn || !user || selectedRoom === null) return;
 
-    // 기존 WebSocket 연결이 존재하면 닫기
+    // 기존 WebSocket 연결 닫기
     if (wsRef.current) {
-      wsRef.current.onclose = null; // 재연결 중 onclose 이벤트가 다시 호출되지 않도록
+      wsRef.current.onclose = null;
       wsRef.current.close();
     }
 
@@ -114,16 +114,18 @@ const Stella = () => {
 
       const wsUrl = `${WEBSOCKET_CHAT_URL}?member_num=${user.memberNum}&book_id=${selectedRoom}`;
       const ws = new WebSocket(wsUrl);
-      wsRef.current = ws; // WebSocket 인스턴스를 ref에 저장
+      wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log(`Connected to the chat server with book_id: ${selectedRoom}`);
+        // console.log(`Connected to the chat server with book_id: ${selectedRoom}`);
         setIsSocketOpen(true);
-        reconnectAttemptsRef.current = 0;
+        reconnectAttemptsRef.current = 0; // 재연결 횟수 초기화
+        reconnectDelayRef.current = INITIAL_RECONNECT_DELAY; // 지연 시간 초기화
       };
 
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
+        setIsSocketOpen(false); // WebSocket이 열리지 않은 상태로 설정
       };
 
       ws.onclose = () => {
@@ -131,10 +133,11 @@ const Stella = () => {
         setIsSocketOpen(false);
         wsRef.current = null;
 
+        // 일정 시간 이후 재연결 시도
         if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
           setTimeout(connectWebSocket, reconnectDelayRef.current);
           reconnectAttemptsRef.current += 1;
-          reconnectDelayRef.current *= 2;
+          reconnectDelayRef.current *= 2; // 지연 시간 증가 (지수 재시도)
         }
       };
 
@@ -151,8 +154,8 @@ const Stella = () => {
 
     return () => {
       if (wsRef.current) {
-        wsRef.current.onclose = null; // 재연결 중 onclose 이벤트가 다시 호출되지 않도록
-        wsRef.current.close(); // 기존 연결을 확실히 닫기
+        wsRef.current.onclose = null;
+        wsRef.current.close();
       }
       reconnectAttemptsRef.current = 0;
       reconnectDelayRef.current = INITIAL_RECONNECT_DELAY;

@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser, clearMessage, clearError } from '../redux/features/auth/authSlice';
+import {
+  logoutUser,
+  clearMessage,
+  clearError,
+} from '../redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
 
 import logo_w from '../assets/images/logo-w.png';
@@ -37,6 +41,11 @@ function Navbar() {
     }
   }, [message, dispatch, navigate, location.pathname]);
 
+  useEffect(() => {
+    dispatch(clearError());
+    dispatch(clearMessage());
+  }, [location.pathname, dispatch]);
+
   const handleLoginClick = () => {
     dispatch(clearError()); // 로그인 페이지로 이동하기 전에 에러 상태 초기화
     navigate('/login');
@@ -55,7 +64,9 @@ function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              className={`nav-item ${
+                location.pathname === item.path ? 'active' : ''
+              }`}
             >
               <p>{item.label}</p>
             </Link>
@@ -75,7 +86,10 @@ function Navbar() {
                   <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                     마이페이지
                   </Link>
-                  <Link to="/community/my_forum" onClick={() => setIsMenuOpen(false)}>
+                  <Link
+                    to="/community/my_forum"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
                     마이포럼
                   </Link>
                   <button onClick={handleLogout}>로그아웃</button>

@@ -242,7 +242,7 @@ const BookReviewDistributionChart = () => {
         </div>
         <div style={{ width: '45%' }}>
           <div
-            style={{ display: 'flex', alignItems: 'center', marginTop: '54px' }}
+            style={{ display: 'flex', alignItems: 'center', marginTop: '90px' }}
           >
             <div
               style={{
@@ -286,7 +286,7 @@ const BookReviewDistributionChart = () => {
               <div
                 style={{
                   position: 'absolute',
-                  top: -54,
+                  top: -90,
                   left: '50%',
                   transform: 'translateX(-50%)',
                   color: 'var(--text-gray-medium)',

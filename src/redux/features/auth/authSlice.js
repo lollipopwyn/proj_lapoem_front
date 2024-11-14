@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { JOIN_USER_API_URL, LOGIN_USER_API_URL, LOGOUT_USER_API_URL, VERIFY_USER_API_URL } from '../../../util/apiUrl';
+import {
+  JOIN_USER_API_URL,
+  LOGIN_USER_API_URL,
+  LOGOUT_USER_API_URL,
+  VERIFY_USER_API_URL,
+} from '../../../util/apiUrl';
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -12,47 +17,56 @@ const initialState = {
 };
 
 // 회원가입
-export const joinUser = createAsyncThunk('auth/joinUser', async (userData, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(JOIN_USER_API_URL, userData);
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || '회원가입 오류');
+export const joinUser = createAsyncThunk(
+  'auth/joinUser',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(JOIN_USER_API_URL, userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || '회원가입 오류');
+    }
   }
-});
+);
 
 // 로그인
-export const loginUser = createAsyncThunk('auth/loginUser', async (loginData, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(LOGIN_USER_API_URL, loginData, {
-      withCredentials: true,
-    });
-    const userData = response.data;
-    localStorage.setItem('user', JSON.stringify(userData)); // 로컬 스토리지에 사용자 정보 저장
-    return userData;
-  } catch (error) {
-    return rejectWithValue(error.response?.data?.message || '로그인 오류');
-  }
-});
-
-// 새로고침 시 로그인 상태 초기화
-export const initializeAuth = createAsyncThunk('auth/initializeAuth', async (_, { rejectWithValue }) => {
-  try {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      return storedUser; // 로컬 스토리지에 저장된 사용자 정보를 반환
-    } else {
-      const response = await axios.get(VERIFY_USER_API_URL, {
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (loginData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(LOGIN_USER_API_URL, loginData, {
         withCredentials: true,
       });
-      const userData = response.data.user;
+      const userData = response.data;
       localStorage.setItem('user', JSON.stringify(userData)); // 로컬 스토리지에 사용자 정보 저장
       return userData;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || '로그인 오류');
     }
-  } catch (error) {
-    return rejectWithValue('Token verification failed');
   }
-});
+);
+
+// 새로고침 시 로그인 상태 초기화
+export const initializeAuth = createAsyncThunk(
+  'auth/initializeAuth',
+  async (_, { rejectWithValue }) => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      if (storedUser) {
+        return storedUser; // 로컬 스토리지에 저장된 사용자 정보를 반환
+      } else {
+        const response = await axios.get(VERIFY_USER_API_URL, {
+          withCredentials: true,
+        });
+        const userData = response.data.user;
+        localStorage.setItem('user', JSON.stringify(userData)); // 로컬 스토리지에 사용자 정보 저장
+        return userData;
+      }
+    } catch (error) {
+      return rejectWithValue('Token verification failed');
+    }
+  }
+);
 
 // 로그아웃
 export const logoutUser = createAsyncThunk(
@@ -112,6 +126,10 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
+        state.user = null; // 로그인 실패 시 사용자 정보 초기화
+        state.isLoggedIn = false; // 로그인 상태 초기화
+        state.isAuthInitializing = false; // 초기화 상태를 false로 변경
+        state.authInitialized = false; // 초기화 완료 상태도 false로 설정
       })
       .addCase(initializeAuth.pending, (state) => {
         state.isAuthInitializing = true;

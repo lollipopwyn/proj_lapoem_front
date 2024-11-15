@@ -16,14 +16,34 @@ const BookCreateReview = ({ handleAddReview }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const [charCount, setCharCount] = useState(0); // 글자 수 상태 추가
   const maxCharLimit = 300; // 최대 글자 수 제한 설정
+  const [hasExistingReview, setHasExistingReview] = useState(false); // 새로운 상태로 기존 리뷰 존재 여부 확인
   const navigate = useNavigate();
   const reviewBoxRef = useRef(null);
 
   const member_num = useSelector((state) => state.auth.user?.memberNum);
 
   useEffect(() => {
-    console.log('Redux member_num:', member_num); // Redux에서 member_num 확인
-  }, [member_num]); // member_num이 변경될 때마다 실행
+    //이미 존재한 리뷰 체크
+    const checkExistingReview = async () => {
+      if (!member_num) return;
+      try {
+        const response = await axios.get(CREATE_BOOK_REVIEW_API_URL(bookId), {
+          withCredentials: true,
+        });
+
+        // "삭제됨"이 아닌 리뷰가 있는지 확인
+        const existingReview = response.data.find(
+          (review) =>
+            review.member_num === member_num && review.status !== 'deleted'
+        );
+
+        setHasExistingReview(!!existingReview);
+      } catch (error) {
+        console.error('Error checking for existing review:', error);
+      }
+    };
+    checkExistingReview();
+  }, [bookId, member_num]);
 
   const handleReviewSubmit = async () => {
     if (!member_num) {
@@ -31,6 +51,12 @@ const BookCreateReview = ({ handleAddReview }) => {
       console.log('User not logged in'); // 로그인 확인 콘솔 출력
       return;
     }
+
+    if (hasExistingReview) {
+      alert('이미 작성한 리뷰가 있습니다. 리뷰는 한 번만 작성할 수 있습니다.');
+      return;
+    }
+
     if (rating === 0) {
       alert('별점을 선택해주세요.');
       return;

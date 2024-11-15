@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   //get
   GET_BOOK_LIST_API_URL,
+  GET_THREAD_BOOK_LIST_API_URL,
   GET_BOOK_REVIEWS_API_URL,
   GET_BOOK_DETAIL_API_URL,
   GET_SEARCH_BOOKS_API_URL,
@@ -72,6 +73,13 @@ const createApiThunk = (actionType, apiURL, requestMethod) => {
 export const fetchBookListData = createApiThunk(
   'api/fetchGetBookList',
   GET_BOOK_LIST_API_URL,
+  getRequest
+);
+
+// 스레드 북리스트
+export const fetchThreadBookListData = createApiThunk(
+  'api/api/fetchThreadBookList',
+  GET_THREAD_BOOK_LIST_API_URL,
   getRequest
 );
 
@@ -589,6 +597,12 @@ const apiSlice = createSlice({
         handleFullfilled('fetchGetBookList')
       )
       .addCase(fetchBookListData.rejected, handleRejected)
+      // 스레드 북 리스트 -----------------------------------------------------
+      .addCase(
+        fetchThreadBookListData.fulfilled,
+        handleFullfilled('fetchThreadBookList')
+      )
+      .addCase(fetchThreadBookListData.rejected, handleRejected)
       // 평점 리뷰 최고인 책 -----------------------------------------------------
       .addCase(fetchTopBooksData.fulfilled, handleFullfilled('fetchTopBooks'))
       .addCase(fetchTopBooksData.rejected, handleRejected)

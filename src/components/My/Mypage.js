@@ -2,17 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {
-  logoutUser,
-  updateNickname,
-  clearMessage,
-} from '../../redux/features/auth/authSlice';
+import { logoutUser, updateNickname, clearMessage } from '../../redux/features/auth/authSlice';
 import birthIcon from '../../assets/images/birth_icon.png';
-import {
-  GET_MEMBER_INFO_API_URL,
-  UPDATE_MEMBER_INFO_API_URL,
-  DELETE_MEMBER_API_URL,
-} from '../../util/apiUrl';
+import { GET_MEMBER_INFO_API_URL, UPDATE_MEMBER_INFO_API_URL, DELETE_MEMBER_API_URL } from '../../util/apiUrl';
 import '../My/Mypage.css';
 
 const Mypage = () => {
@@ -38,10 +30,7 @@ const Mypage = () => {
     if (member_num) {
       const fetchMemberInfo = async () => {
         try {
-          const response = await axios.get(
-            GET_MEMBER_INFO_API_URL(member_num),
-            { withCredentials: true }
-          );
+          const response = await axios.get(GET_MEMBER_INFO_API_URL(member_num), { withCredentials: true });
           const data = response.data;
           setMemberId(data.member_id);
           setMemberData(data);
@@ -52,18 +41,21 @@ const Mypage = () => {
           setGender(data.member_gender || '');
           setBirthdate(data.member_birth_date || '');
         } catch (error) {
-          setError(
-            error.response?.data?.message || 'Failed to fetch member info'
-          );
+          setError(error.response?.data?.message || 'Failed to fetch member info');
         }
       };
       fetchMemberInfo();
     }
   }, [member_num]);
 
-  const handleInputChange = (e, setter) => {
-    setter(e.target.value);
+  const handleInputChange = (e, setter, validateFunc) => {
+    const value = e.target.value;
+    setter(value);
     setIsEdited(true);
+
+    // 유효성 검사 함수가 있는 경우, 오류 메시지를 업데이트합니다.
+    const validationError = validateFunc ? validateFunc(value) : null;
+    setError(validationError);
   };
 
   const handleMarketingConsentChange = (e) => {
@@ -114,13 +106,9 @@ const Mypage = () => {
           marketing_consent: marketingConsent,
         };
 
-        const response = await axios.patch(
-          UPDATE_MEMBER_INFO_API_URL(member_num),
-          updatedData,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.patch(UPDATE_MEMBER_INFO_API_URL(member_num), updatedData, {
+          withCredentials: true,
+        });
 
         if (response.status === 200) {
           setIsSaved(true);
@@ -130,9 +118,7 @@ const Mypage = () => {
           setTimeout(() => setIsSaved(false), 3000);
         }
       } catch (error) {
-        setError(
-          error.response?.data?.message || 'Failed to update member info'
-        );
+        setError(error.response?.data?.message || 'Failed to update member info');
       }
     }
   };
@@ -158,9 +144,7 @@ const Mypage = () => {
   }, [message, dispatch, navigate]);
 
   const handleDeleteAccount = async () => {
-    const isConfirmed = window.confirm(
-      '정말 회원 탈퇴를 하시겠습니까? 계정 삭제 후엔 복구가 불가합니다.'
-    );
+    const isConfirmed = window.confirm('정말 회원 탈퇴를 하시겠습니까? 계정 삭제 후엔 복구가 불가합니다.');
     if (isConfirmed) {
       try {
         const response = await axios.delete(DELETE_MEMBER_API_URL(member_num), {
@@ -171,9 +155,7 @@ const Mypage = () => {
           await dispatch(logoutUser({ isDelete: true }));
         }
       } catch (error) {
-        setError(
-          error.response?.data?.message || 'Failed to delete the account'
-        );
+        setError(error.response?.data?.message || 'Failed to delete the account');
       }
     }
   };
@@ -182,16 +164,10 @@ const Mypage = () => {
     <div className="mypage_container">
       <div className="my_page_top">
         <div className="my_page_title">MY PAGE</div>
-        <div className="my_page_desc">
-          가입 시 작성한 회원 정보를 수정할 수 있습니다.
-        </div>
+        <div className="my_page_desc">가입 시 작성한 회원 정보를 수정할 수 있습니다.</div>
       </div>
       {error && <div className="error-message">{error}</div>}
-      {isSaved && (
-        <div className="success-message">
-          회원 정보가 성공적으로 수정되었습니다.
-        </div>
-      )}
+      {isSaved && <div className="success-message">회원 정보가 성공적으로 수정되었습니다.</div>}
       <div className="my_page_content">
         <div className="my_page_content_title">회원 정보 수정</div>
         <div className="my_page_content_info">
@@ -261,20 +237,10 @@ const Mypage = () => {
           DELETE MY ACCOUNT
         </button>
         <div className="button-group-right">
-          <button
-            id="saveBtn"
-            className={isEdited ? 'active' : ''}
-            disabled={!isEdited}
-            onClick={handleSave}
-          >
+          <button id="saveBtn" className={isEdited ? 'active' : ''} disabled={!isEdited} onClick={handleSave}>
             SAVE
           </button>
-          <button
-            id="cancelBtn"
-            className={isEdited ? 'active' : ''}
-            disabled={!isEdited}
-            onClick={handleCancel}
-          >
+          <button id="cancelBtn" className={isEdited ? 'active' : ''} disabled={!isEdited} onClick={handleCancel}>
             CANCEL
           </button>
         </div>

@@ -67,6 +67,7 @@ const BookReviews = () => {
         DELETE_REVIEW_API_URL(bookId, reviewId),
         { withCredentials: true }
       );
+      window.location.reload(); // 리뷰가 삭제된 후 페이지를 새로고침
       if (deleteResponse.status === 200) {
         setReviews((prevReviews) =>
           prevReviews.filter((review) => review.review_num !== reviewId)

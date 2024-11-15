@@ -7,11 +7,9 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './Slider.css';
 
-
-import Slide1 from "./SlideImage/main_banner_02.png";
-import Slide2 from "./SlideImage/main_banner_03.png";
-import Slide3 from "./SlideImage/Slide.jpg";
-
+import Slide1 from './SlideImage/main_banner_02.png';
+import Slide2 from './SlideImage/main_banner_03.png';
+import Slide3 from './SlideImage/Slide.jpg';
 
 const Slider = () => {
   const swiperRef = useRef(null);

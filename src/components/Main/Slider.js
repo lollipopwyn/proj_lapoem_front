@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import React, { useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import "./Slider.css";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import './Slider.css';
 
-import Slide1 from "./SlideImage/Slide.jpg";
-import Slide2 from "./SlideImage/Slide.jpg";
-import Slide3 from "./SlideImage/Slide.jpg";
+import Slide1 from './SlideImage/Slide.jpg';
+import Slide2 from './SlideImage/Slide2.jpg';
+import Slide3 from './SlideImage/Slide3.jpg';
 
 const Slider = () => {
   const swiperRef = useRef(null);

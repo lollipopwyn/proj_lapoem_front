@@ -18,7 +18,8 @@ const FASTAPI_WEBSOCKET_BASE_URL =
 
 // ==============================GET 요청 URL=========================================
 export const GET_TERMS_API_URL = `${BASE_URL}/terms`; // 약관 목록 조회
-export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`; //도사 리스트
+export const GET_BOOK_LIST_API_URL = `${BASE_URL}/book-list`; //도서 리스트
+export const GET_THREAD_BOOK_LIST_API_URL = `${BASE_URL}/book-list`;
 export const GET_BOOK_DETAIL_API_URL = (bookId) =>
   `${BASE_URL}/book-list/${bookId}`; //도서 상세 페이지
 export const GET_BOOK_REVIEWS_API_URL = (bookId) =>

@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './navbar.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  logoutUser,
-  clearMessage,
-  clearError,
-} from '../redux/features/auth/authSlice';
+import { logoutUser, clearMessage, clearError } from '../redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
 
 import logo_w from '../assets/images/logo-w.png';
@@ -22,10 +18,14 @@ function Navbar() {
   const navItems = [
     { path: '/', label: 'HOME' },
     { path: '/book_list', label: 'BOOK LIST' },
-    { path: '/chatstella', label: 'STELLA CHAT' },
+    { path: '/chatstella', label: 'CHAT STELLA' },
     { path: '/thread_on', label: 'THREAD ON' },
     { path: '/community', label: 'COMMUNITY' },
   ];
+
+  const handleChatStellaClick = () => {
+    navigate('/chatstella'); // URL을 /chatstella로 이동하여 bookId를 제거
+  };
 
   const handleLogout = async () => {
     await dispatch(logoutUser()); // 서버와 클라이언트 모두에서 로그아웃 처리
@@ -64,9 +64,8 @@ function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-item ${
-                location.pathname === item.path ? 'active' : ''
-              }`}
+              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={item.path === '/chatstella' ? handleChatStellaClick : null} // CHAT STELLA 클릭 시 실행
             >
               <p>{item.label}</p>
             </Link>
@@ -86,10 +85,7 @@ function Navbar() {
                   <Link to="/mypage" onClick={() => setIsMenuOpen(false)}>
                     마이페이지
                   </Link>
-                  <Link
-                    to="/community/my_forum"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
+                  <Link to="/community/my_forum" onClick={() => setIsMenuOpen(false)}>
                     마이포럼
                   </Link>
                   <button onClick={handleLogout}>로그아웃</button>

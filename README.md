@@ -1,11 +1,14 @@
 <div align="center">
 
 # 📓 라보엠 (La Poem)  
-_“책을 통해 사람과 사람, 그리고 사람과 인공지능이 소통하는 공간”_
+_“책을 통해 사람과 사람, 사람과 인공지능이 소통하는 공간”_
 
-![Banner](https://img.shields.io/badge/Community-Reading-blue?style=flat-square&logo=bookstack)
+
+![Project](https://img.shields.io/badge/Project-La%20Poem-blue?style=flat-square&logo=bookstack)
 ![Status](https://img.shields.io/badge/Status-Developing-success?style=flat-square&logo=github)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
+![Tech](https://img.shields.io/badge/Tech-GitHub%20|%20Jenkins%20|%20Docker%20|%20DockerHub%20|%20React%20|%20Node.js%20|%20Python%20|%20PostgreSQL-orange?style=flat-square)
+![Project Preview](./src/assets/images/Cream%20Black%20Vintage%20Productivity%20Planner%20Presentation.jpg)
+
 
 </div>
 
@@ -112,3 +115,4 @@ gantt
     section Week 4
     관리자 페이지 개발 & RPA/디버깅 & 배포  :         des4, 2024-11-04, 18d
 ```
+

@@ -7,7 +7,7 @@ _“책을 통해 사람과 사람, 사람과 인공지능이 소통하는 공�
 ![Project](https://img.shields.io/badge/Project-La%20Poem-blue?style=flat-square&logo=bookstack)
 ![Status](https://img.shields.io/badge/Status-Developing-success?style=flat-square&logo=github)
 ![Tech](https://img.shields.io/badge/Tech-GitHub%20|%20Jenkins%20|%20Docker%20|%20DockerHub%20|%20React%20|%20Node.js%20|%20Python%20|%20PostgreSQL-orange?style=flat-square)
-![Project Preview](./src/assets/images/Cream%20Black%20Vintage%20Productivity%20Planner%20Presentation.jpg)
+![Project Preview](./src/assets/images/lapoem_readme_banner.jpg)
 
 
 </div>
@@ -55,40 +55,15 @@ _“책을 통해 사람과 사람, 사람과 인공지능이 소통하는 공�
 
 ## ✨ 주요 기능
 
-<table>
-<tr>
-<td align="center">📖 Book List</td>
-<td align="center">💬 Communication</td>
-<td align="center">🤖 Chat Stella</td>
-<td align="center">🛠 Admin</td>
-</tr>
-<tr>
-<td>
+## ✨ 기능 소개
 
-- 도서 목록 조회  
-- 상세 페이지 (책 정보, 별점 분포도, 리뷰)
-
-</td>
-<td>
-
-- 스레드온: 도서별 토론 스레드  
-- 자유 게시판 & 인기 게시글/회원 랭킹  
-
-</td>
-<td>
-
-- AI 챗봇 스텔라와 독서 토론  
-- 감상 정리 및 글쓰기 지원  
-
-</td>
-<td>
-
-- 도서 등록/삭제  
-- 베스트셀러 및 신간 알림 관리  
-
-</td>
-</tr>
-</table>
+| 기능 | 설명 | 시연 |
+|------|------|------|
+| Book List | 도서 목록 조회 및 상세 페이지 (책 정보, 별점 분포도, 리뷰) | ![Book List Demo](./assets/gif/book_list.gif) |
+| Thread-on | 도서별 토론 스레드 생성 및 참여 | ![Thread-on Demo](./assets/gif/thread_on.gif) |
+| Community Board | 자유 게시판 & 인기 게시글·회원 랭킹 | ![Community Board Demo](./assets/gif/community_board.gif) |
+| Chat Stella | AI 챗봇 스텔라와 독서 토론 / 감상 정리 및 글쓰기 지원 | ![Chat Stella Demo](./assets/gif/chat_stella.gif) |
+| Admin | 도서 등록/삭제, 베스트셀러 및 신간 알림 관리 | ![Admin Demo](./assets/gif/admin.gif) |
 
 ---
 
@@ -115,4 +90,5 @@ gantt
     section Week 4
     관리자 페이지 개발 & RPA/디버깅 & 배포  :         des4, 2024-11-04, 18d
 ```
+
 
